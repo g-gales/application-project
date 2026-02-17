@@ -1,25 +1,25 @@
-## Tech Stack
+# Tech Stack
 
-# Frontend
+## Frontend
 
 React (Vite)
 Tailwind CSS
 ESLint + Prettier
 
-# Backend
+## Backend
 
 Node.js
 Express
 MongoDB (Mongoose)
 dotenv
 
-# Tooling
+## Tooling
 
 Concurrently (run client + server together)
 GitHub PR workflow
 Branch protection on main
 
-## Project Structure
+# Project Structure
 
 StudentPowerup/
 │
@@ -28,23 +28,23 @@ StudentPowerup/
 ├── package.json # Root scripts (concurrently)
 └── README.md
 
-## Installation
+# Installation
 
-# Clone Repo
+## Clone Repo
 
 git clone [<repo-url>](https://github.com/g-gales/application-project)
 cd StudentPowerup
 
-# Install Root Dependencies
+## Install Root Dependencies
 
 npm install
 
-# Install Frontend and Backend Dependencies
+## Install Frontend and Backend Dependencies
 
 npm --prefix client install
 npm --prefix server install
 
-## Running the Project
+# Running the Project
 
 npm run dev
 
