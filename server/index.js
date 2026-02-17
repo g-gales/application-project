@@ -1,5 +1,3 @@
-// If you don’t want ESM imports in Node, you can switch this to require(...). If you do want ESM, add "type": "module" to server/package.json.
-
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
