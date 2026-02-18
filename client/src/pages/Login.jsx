@@ -1,7 +1,10 @@
 import { GoogleLogin } from "@react-oauth/google";
 import api from "../api/axiosConfig";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
+  const { login } = useAuth();
+
   const handleSuccess = async (credentialResponse) => {
     try {
       // sending the token to the backend for verification and user creation
@@ -10,10 +13,9 @@ const Login = () => {
       });
 
       // TODO: remove alert and console.log, add logic
-      console.log("User Data from Backend:", response.data);
-      alert(`Welcome, ${response.data.data.user.firstName}!`);
-
+      const { user, token } = response.data.data;
       // TODO: save the user to a "Global State" or "Context" here
+      login(user, token);
     } catch (error) {
       console.error("Backend Login Error:", error);
       alert("Login failed. Check if your server is running on port 3001!");
@@ -28,7 +30,7 @@ const Login = () => {
         <GoogleLogin
           onSuccess={handleSuccess}
           onError={() => console.log("Login Failed")}
-          useOneTap
+          useOneTap={false}
           shape="pill"
           theme="filled_blue"
         />
