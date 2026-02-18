@@ -2,7 +2,6 @@
   "name": "studentpowerup",
   "version": "1.0.0",
   "description": "",
-  "main": "postcss.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
@@ -15,5 +14,8 @@
   "type": "commonjs",
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18"
   }
 }
