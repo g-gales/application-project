@@ -3,11 +3,16 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+import userRoutes from "./routes/userRoutes.js";
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ROUTES - TODO: later must separate routes, handlers, controllers etc.
+app.use("/api/v1/users", userRoutes);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
