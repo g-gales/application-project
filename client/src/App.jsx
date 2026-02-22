@@ -4,6 +4,9 @@ import { useAuth } from "./hooks/useAuth";
 import Login from "./pages/Login";
 import Dashboard from "./components/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Courses from "./components/Courses";
+import CourseDetails from "./components/CourseDetails";
+import Calendar from "./components/Calendar";
 
 function App() {
   const { user } = useAuth();
@@ -20,7 +23,9 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route index element={<Navigate replace to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* TODO: additional routes added here:
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:courseId" element={<CourseDetails />} />
+        <Route path="/calendar" element={<Calendar />} />        {/* TODO: additional routes added here:
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/wellness" element={<Wellness />} /> */
         /* */}
