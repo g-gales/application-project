@@ -9,6 +9,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* FullCalendar styles */
+  --fc-button-bg-color: #1379b8;
+  --fc-button-active-bg-color: #0a0f5a;
+  --fc-border-color: none;
 }
 
 #root {
@@ -18,6 +23,24 @@
   align-items: center;
   min-height: 100vh;
   min-width: 100vw;
+}
+
+/* FullCalendar styles */
+.fc .fc-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0a0f5a;
+}
+/* cursor: pointer for FC events and day*/
+.fc-event {
+  cursor: pointer;
+}
+.fc-daygrid-day {
+  cursor: pointer;
+}
+/* FC day hover effect */
+.fc-daygrid-day:hover {
+  background-color: aliceblue;
 }
 
 html,
