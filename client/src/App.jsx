@@ -7,6 +7,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Courses from "./components/Courses";
 import CourseDetails from "./components/CourseDetails";
 import Calendar from "./components/Calendar";
+import SimpleCalendar from "./components/SimpleCalendar.jsx";
 
 function App() {
   const { user } = useAuth();
@@ -25,7 +26,9 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:courseId" element={<CourseDetails />} />
-        <Route path="/calendar" element={<Calendar />} />        {/* TODO: additional routes added here:
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/simple-calendar" element={<SimpleCalendar />} />
+        {/* TODO: additional routes added here:
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/wellness" element={<Wellness />} /> */
         /* */}
