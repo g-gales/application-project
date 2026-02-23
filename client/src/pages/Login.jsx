@@ -6,15 +6,24 @@ const Login = () => {
   const { login } = useAuth();
 
   const handleSuccess = async (credentialResponse) => {
+    console.log(
+      "1. Frontend: Received Google Token:",
+      credentialResponse.credential,
+    );
     try {
-      // sending the token to the backend for verification and user creation
+      // sending the token to the backend for verification
       const response = await api.post("/users/google-login", {
         token: credentialResponse.credential,
       });
+      console.log(
+        "4. Frontend: Backend responded with user:",
+        response.data.data.user,
+      );
 
-      // TODO: remove alert and console.log, add logic
+      // getting user and token from backend
       const { user, token } = response.data.data;
-      // TODO: save the user to a "Global State" or "Context" here
+      // saving the token pass for user locally
+      localStorage.setItem("google_token", token);
       login(user, token);
     } catch (error) {
       console.error("Backend Login Error:", error);
