@@ -7,25 +7,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
 
-    const fetchUser = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await api.get("/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/users/me");
         setUser(res.data.data.user);
-      } catch {
+      } catch (error) {
+        console.error("Backend auth check failed:", error);
         localStorage.removeItem("token");
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
+
+    checkAuth();
   }, []);
 
   const login = (userData, token) => {

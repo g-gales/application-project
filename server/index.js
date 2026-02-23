@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import userRoutes from "./routes/userRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // ROUTES - TODO: later must separate routes, handlers, controllers etc.
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/events", eventRoutes);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
