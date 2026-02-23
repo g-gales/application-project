@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
+        // on refresh, this runs the getMe route in /server which verifies the user again
         const res = await api.get("/users/me");
         setUser(res.data.data.user);
       } catch (error) {

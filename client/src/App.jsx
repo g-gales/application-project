@@ -3,6 +3,7 @@ import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
 import Dashboard from "./components/Dashboard";
+import TestComponent from "./components/TestComponent";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -21,9 +22,9 @@ function App() {
         <Route index element={<Navigate replace to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* TODO: additional routes added here:
-        <Route path="/calendar" element={<Calendar />} />
         <Route path="/wellness" element={<Wellness />} /> */
         /* */}
+        <Route path="/test-component" element={<TestComponent />} />
       </Route>
 
       {/* 404 Route */}
