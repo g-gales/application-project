@@ -14,10 +14,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
  */
 export const googleLogin = async (req, res) => {
   const { token } = req.body;
-  console.log(
-    "2. Backend: Received token from frontend:",
-    req.body.token?.substring(0, 10) + "...",
-  );
 
   try {
     const ticket = await client.verifyIdToken({
@@ -39,7 +35,6 @@ export const googleLogin = async (req, res) => {
         lastName: family_name,
         picture,
       });
-      console.log("🆕 New User Created in DB!");
     }
 
     res.status(200).json({ status: "success", data: { user, token } });

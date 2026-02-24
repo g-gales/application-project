@@ -6,19 +6,11 @@ const Login = () => {
   const { login } = useAuth();
 
   const handleSuccess = async (credentialResponse) => {
-    console.log(
-      "1. Frontend: Received Google Token:",
-      credentialResponse.credential,
-    );
     try {
       // sending the token to the backend for verification
       const response = await api.post("/users/google-login", {
         token: credentialResponse.credential,
       });
-      console.log(
-        "4. Frontend: Backend responded with user:",
-        response.data.data.user,
-      );
 
       // getting user and token from backend
       const { user, token } = response.data.data;

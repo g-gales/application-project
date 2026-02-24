@@ -39,13 +39,20 @@ export default function Sidebar() {
                   ? "border-[var(--border)] bg-[var(--surface-2)] font-bold"
                   : "border-transparent hover:bg-[var(--surface-2)]",
               ].join(" ")
-            }>
+            }
+          >
             {l.label}
           </NavLink>
         ))}
       </nav>
 
       <div className="mt-auto pt-3 border-t border-[var(--border)]">
+        <button
+          onClick={logout}
+          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium"
+        >
+          Logout
+        </button>
         <div className="text-xs text-[var(--muted-text)]">
           v0.1 • Sprint 1 shell
         </div>
