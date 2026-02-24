@@ -2,34 +2,50 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
-import Dashboard from "./components/Dashboard";
-import TestComponent from "./components/TestComponent";
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+import AppLayout from "./layout/AppLayout";
+
+import Dashboard from "./pages/Dashboard";
+import Calendar from "./pages/Calendar";
+import Wellness from "./pages/Wellness";
+import Pomodoro from "./pages/Pomodoro";
+import Flashcards from "./pages/Flashcards";
+
+import { ThemeProvider } from "./components/theme/ThemeContext";
+
+import "./styles/global.css";
 
 function App() {
   const { user } = useAuth();
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/login"
-        element={user ? <Navigate to="/dashboard" replace /> : <Login />}
-      />
+    <ThemeProvider>
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/dashboard" replace /> : <Login />}
+        />
 
-      {/* Protected Routes - everything here requires being logged in */}
-      <Route element={<ProtectedRoute />}>
-        <Route index element={<Navigate replace to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        {/* TODO: additional routes added here:
-        <Route path="/wellness" element={<Wellness />} /> */
-        /* */}
-        <Route path="/test-component" element={<TestComponent />} />
-      </Route>
+        {/* Protected Routes - everything here requires being logged in */}
+        <Route element={<ProtectedRoute />}>
+          {/* App shell + nested pages */}
+          <Route path="/app" element={<AppLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="wellness" element={<Wellness />} />
+            <Route path="pomodoro" element={<Pomodoro />} />
+            <Route path="flashcards" element={<Flashcards />} />
+          </Route>
+          {/* <Route path="/test-component" element={<TestComponent />} /> */}
+        </Route>
 
-      {/* 404 Route */}
-      <Route path="*" element={<h1>Page Not Found</h1>} />
-    </Routes>
+        {/* 404 Route */}
+        <Route path="*" element={<h1>Page Not Found</h1>} />
+      </Routes>
+    </ThemeProvider>
   );
 }
 

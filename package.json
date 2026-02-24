@@ -16,6 +16,7 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.18"
+    "@tailwindcss/vite": "^4.1.18",
+    "react-router-dom": "^7.13.1"
   }
 }

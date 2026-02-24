@@ -1,0 +1,47 @@
+/* ---------- Theme Tokens (US-004 + US-007) ---------- */
+:root {
+  color-scheme: light;
+
+  --bg: #f7f7fb;
+  --surface: #ffffff;
+  --surface-2: #f0f1f6;
+
+  --text: #111322;
+  --muted-text: #33364d;
+  --border: #d7d9e5;
+
+  --primary: #2b59ff;
+  --primary-contrast: #ffffff;
+
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  --radius: 14px;
+  --container-pad: 18px;
+
+  --focus: 0 0 0 3px rgba(43, 89, 255, 0.35);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0b0e14;
+  --surface: #121826;
+  --surface-2: #0f1420;
+
+  --text: #f2f4ff;
+  --muted-text: #c8cce6;
+  --border: #24304a;
+
+  --primary: #7aa2ff;
+  --primary-contrast: #0b0e14;
+
+  --shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  --focus: 0 0 0 3px rgba(122, 162, 255, 0.45);
+}
+
+/* WCAG-friendly focus */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 0.75rem;
+}
