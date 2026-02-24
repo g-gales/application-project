@@ -23,6 +23,7 @@ function App() {
     <ThemeProvider>
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
         <Route
           path="/login"
           element={user ? <Navigate to="/app/dashboard" replace /> : <Login />}
