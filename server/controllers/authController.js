@@ -24,9 +24,9 @@ export const googleLogin = async (req, res) => {
     const { sub, email, given_name, family_name, picture } =
       ticket.getPayload();
 
-    // if no user, create user
     let user = await User.findOne({ googleId: sub });
 
+    // if no user, create user
     if (!user) {
       user = await User.create({
         googleId: sub,
@@ -57,4 +57,27 @@ export const getMe = async (req, res) => {
     status: "success",
     data: { user: req.user },
   });
+};
+
+export const guestLogin = async (req, res) => {
+  try {
+    const guestId = "GUEST_USER_POWERUP";
+
+    let user = await User.findOne({ googleId: guestId });
+
+    if (!user) {
+      user = await User.create({
+        googleId: guestId,
+        email: "professor@grading.com",
+        firstName: "Professor",
+        lastName: "Guest",
+        picture: "https://ui-avatars.com/api/?name=Madhavi+Mohan",
+      });
+    }
+
+    // send guestId as the token
+    res.status(200).json({ status: "success", data: { user, token: guestId } });
+  } catch (error) {
+    res.status(401).json({ status: "fail", message: "Invalid Google Token" });
+  }
 };

@@ -14,6 +14,19 @@ export const protect = async (req, res, next) => {
         .json({ status: "fail", message: "No token provided" });
     }
 
+    // guest login
+    if (token === "GUEST_USER_POWERUP") {
+      const user = await User.findOne({ googleId: "GUEST_USER_POWERUP" });
+      if (!user)
+        return res
+          .status(401)
+          .json({ message: "Guest session initialized. Please try again." });
+
+      // if guest user, skip verify Google ID
+      req.user = user;
+      return next();
+    }
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
