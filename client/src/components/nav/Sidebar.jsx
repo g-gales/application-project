@@ -50,7 +50,7 @@ export default function Sidebar() {
       <div className="mt-auto pt-3 border-t border-[var(--border)]">
         <button
           onClick={logout}
-          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium"
+          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium cursor-pointer"
         >
           Logout
         </button>
