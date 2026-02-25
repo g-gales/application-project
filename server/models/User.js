@@ -1,8 +1,3 @@
-// TODO: USER schema
-// 1. create mongoose schema for user
-// 2. add fields as per wiki specs
-// 3. export the model
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({

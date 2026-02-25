@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../api/axiosConfig"; // axios
 
 const NEW_TERM_VALUE = "__new__";
 
@@ -7,10 +8,17 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetch("/mockCourses.json")
-      .then((res) => res.json())
-      .then((data) => setCourses(Array.isArray(data) ? data : []))
-      .catch(() => setCourses([]));
+    const fetchCourses = async () => {
+      try {
+        const res = await api.get("/courses");
+        setCourses(Array.isArray(res.data) ? res.data : []);
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+        setCourses([]);
+      }
+    };
+
+    fetchCourses();
   }, []);
 
   const minutesToHhMm = (mins) => {
@@ -24,14 +32,21 @@ const Courses = () => {
     if (!yyyyMmDd) return "—";
     const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
     const date = new Date(Date.UTC(y, m - 1, d));
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const fmtIsoShort = (yyyyMmDd) => {
     if (!yyyyMmDd) return "—";
     const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
     const date = new Date(Date.UTC(y, m - 1, d));
-    return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const getNextDue = (assignments = []) => {
@@ -108,7 +123,7 @@ const Courses = () => {
 
     setMode("edit");
     setForm({
-      id: course.id,
+      id: course._id, // add mongo ID
       code: course.code || "",
       name: course.name || "",
       color: course.color || "#3B82F6",
@@ -129,7 +144,9 @@ const Courses = () => {
     setError("");
   };
 
-  const makeId = () => `course-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+  // mock ID not needed
+  // const makeId = () =>
+  //   `course-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 
   const isValidIsoDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s || ""));
 
@@ -140,7 +157,9 @@ const Courses = () => {
 
     const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
 
-    const term = usingNewTerm ? form.term.trim() : String(form.termSelect || "").trim();
+    const term = usingNewTerm
+      ? form.term.trim()
+      : String(form.termSelect || "").trim();
     const termStart = String(form.termStart || "").trim();
     const termEnd = String(form.termEnd || "").trim();
 
@@ -149,7 +168,8 @@ const Courses = () => {
 
     if (!term) return "Term name is required (e.g., Winter 2026).";
     if (!termStart || !termEnd) return "Term start and end dates are required.";
-    if (!isValidIsoDate(termStart) || !isValidIsoDate(termEnd)) return "Term dates must be YYYY-MM-DD.";
+    if (!isValidIsoDate(termStart) || !isValidIsoDate(termEnd))
+      return "Term dates must be YYYY-MM-DD.";
     if (termStart > termEnd) return "Term start must be on/before term end.";
 
     if (!/^#[0-9A-Fa-f]{6}$/.test(form.color)) return "Pick a valid color.";
@@ -157,7 +177,7 @@ const Courses = () => {
       return "Weekly goal minutes must be greater than 0.";
 
     const duplicate = courses.some((c) => {
-      if (mode === "edit" && c.id === form.id) return false;
+      if (mode === "edit" && c._id === form.id) return false;
       return String(c.code).toLowerCase() === code.toLowerCase();
     });
     if (duplicate) return "That course code already exists.";
@@ -165,56 +185,66 @@ const Courses = () => {
     return "";
   };
 
-  const saveCourse = () => {
+  const saveCourse = async () => {
     const msg = validateCourseForm();
     if (msg) return setError(msg);
     setError("");
 
     const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
 
+    // adapting the data for MongoDB
     const cleaned = {
       code: form.code.trim(),
       name: form.name.trim(),
       color: form.color,
       weeklyGoalMinutes: Number(form.weeklyGoalMinutes),
 
-      term: usingNewTerm ? form.term.trim() : String(form.termSelect || "").trim(),
+      term: usingNewTerm
+        ? form.term.trim()
+        : String(form.termSelect || "").trim(),
       termStart: String(form.termStart || "").trim(),
       termEnd: String(form.termEnd || "").trim(),
     };
 
-    if (mode === "add") {
-      const newCourse = {
-        id: makeId(),
-        ...cleaned,
-        studyMinutesThisWeek: 0,
-        meetings: [],
-        assignments: [],
-      };
-      setCourses((prev) => [newCourse, ...(prev || [])]);
-      closeModal();
-      return;
-    }
+    try {
+      if (mode === "add") {
+        const response = await api.post("/courses", cleaned);
+        // if successful, savedCourse is the new MongoDB object
+        const savedCourse = response.data.data
+          ? response.data.data.course
+          : response.data;
 
-    setCourses((prev) =>
-      (prev || []).map((c) => {
-        if (c.id !== form.id) return c;
-        return {
-          ...c,
-          ...cleaned,
-          studyMinutesThisWeek: Number(c.studyMinutesThisWeek || 0),
-          meetings: Array.isArray(c.meetings) ? c.meetings : [],
-          assignments: Array.isArray(c.assignments) ? c.assignments : [],
-        };
-      })
-    );
-    closeModal();
+        setCourses((prev) => [savedCourse, ...(prev || [])]);
+      } else {
+        const response = await api.put(`/courses/${form.id}`, cleaned);
+        const updatedCourse = response.data.data
+          ? response.data.data.course
+          : response.data;
+
+        // setting the courses to either previous value, or empty array, if course ID equals the one on the form, returns the new, updatedCourse from DB, else returns the local course
+        setCourses((prev) =>
+          (prev || []).map((c) => (c._id === form.id ? updatedCourse : c)),
+        );
+      }
+
+      closeModal();
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Server Error: Could not save course",
+      );
+    }
   };
 
-  const handleRemoveCourse = (id) => {
-    const ok = window.confirm("Remove this course? This can't be undone.");
-    if (!ok) return;
-    setCourses((prev) => (prev || []).filter((c) => c.id !== id));
+  const handleRemoveCourse = async (id) => {
+    // return early if no
+    if (!window.confirm("Remove course?")) return;
+
+    try {
+      await api.delete(`/courses/${id}`);
+      setCourses((prev) => prev.filter((c) => c._id !== id));
+    } catch (error) {
+      alert("Delete failed:", error);
+    }
   };
 
   const viewCourses = useMemo(() => {
@@ -225,7 +255,9 @@ const Courses = () => {
   }, [courses]);
 
   const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
-  const selectedExistingTerm = !usingNewTerm ? terms.find((t) => t.term === form.termSelect) : null;
+  const selectedExistingTerm = !usingNewTerm
+    ? terms.find((t) => t.term === form.termSelect)
+    : null;
 
   const onChangeTermSelect = (value) => {
     if (value === NEW_TERM_VALUE) {
@@ -264,31 +296,41 @@ const Courses = () => {
             const pct = Math.min(
               100,
               Math.round(
-                (Number(course.studyMinutesThisWeek || 0) / Number(course.weeklyGoalMinutes || 1)) * 100
-              )
+                (Number(course.studyMinutesThisWeek || 0) /
+                  Number(course.weeklyGoalMinutes || 1)) *
+                  100,
+              ),
             );
 
             return (
               <div
-                key={course.id}
+                key={course._id}
                 className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300"
               >
                 <Link
-                  to={`/courses/${course.id}`}
+                  to={`/app/courses/${course._id}`}
                   className="block p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label={`Open ${course.code} ${course.name}`}
                 >
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-start sm:items-center gap-3">
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: course.color }} />
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: course.color }}
+                        />
                         <div>
-                          <div className="text-sm font-semibold text-gray-700">{course.code}</div>
-                          <h2 className="text-base sm:text-lg font-bold text-gray-900">{course.name}</h2>
+                          <div className="text-sm font-semibold text-gray-700">
+                            {course.code}
+                          </div>
+                          <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                            {course.name}
+                          </h2>
                           <p className="text-sm text-gray-600">
                             {course.term || "—"}{" "}
                             <span className="text-gray-400">
-                              ({fmtIsoShort(course.termStart)} → {fmtIsoShort(course.termEnd)})
+                              ({fmtIsoShort(course.termStart)} →{" "}
+                              {fmtIsoShort(course.termEnd)})
                             </span>
                           </p>
                         </div>
@@ -303,15 +345,21 @@ const Courses = () => {
                             </span>{" "}
                             / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                           </div>
-                          <div className="text-sm text-gray-500 mt-2 sm:mt-0">{pct}%</div>
+                          <div className="text-sm text-gray-500 mt-2 sm:mt-0">
+                            {pct}%
+                          </div>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
-                          <div className="h-2 sm:h-3 rounded-full bg-blue-600" style={{ width: `${pct}%` }} />
+                          <div
+                            className="h-2 sm:h-3 rounded-full bg-blue-600"
+                            style={{ width: `${pct}%` }}
+                          />
                         </div>
                       </div>
 
                       <div className="mt-4 text-sm text-gray-700">
-                        <span className="font-medium">Next Due:</span> {course.nextDueTitle} – {course.nextDueDate}
+                        <span className="font-medium">Next Due:</span>{" "}
+                        {course.nextDueTitle} – {course.nextDueDate}
                       </div>
                     </div>
 
@@ -335,7 +383,7 @@ const Courses = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleRemoveCourse(course.id);
+                          handleRemoveCourse(course._id);
                         }}
                         className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
                         title="Remove"
@@ -371,7 +419,9 @@ const Courses = () => {
           <div className="relative w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl border border-slate-200">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">{mode === "add" ? "Add Course" : "Edit Course"}</h3>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {mode === "add" ? "Add Course" : "Edit Course"}
+                </h3>
               </div>
               <button
                 onClick={closeModal}
@@ -385,17 +435,23 @@ const Courses = () => {
             <div className="mt-4 space-y-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Course Code</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Course Code
+                  </label>
                   <input
                     value={form.code}
-                    onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, code: e.target.value }))
+                    }
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., INFO-5139"
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Term</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Term
+                  </label>
                   <select
                     value={form.termSelect}
                     onChange={(e) => onChangeTermSelect(e.target.value)}
@@ -411,13 +467,18 @@ const Courses = () => {
                         <option value={NEW_TERM_VALUE}>+ Add new term…</option>
                       </>
                     ) : (
-                      <option value={NEW_TERM_VALUE}>Add your first term…</option>
+                      <option value={NEW_TERM_VALUE}>
+                        Add your first term…
+                      </option>
                     )}
                   </select>
 
-                  {!usingNewTerm && selectedExistingTerm?.termStart && selectedExistingTerm?.termEnd ? (
+                  {!usingNewTerm &&
+                  selectedExistingTerm?.termStart &&
+                  selectedExistingTerm?.termEnd ? (
                     <p className="mt-1 text-xs text-slate-500">
-                      Dates: {fmtIsoShort(selectedExistingTerm.termStart)} → {fmtIsoShort(selectedExistingTerm.termEnd)}
+                      Dates: {fmtIsoShort(selectedExistingTerm.termStart)} →{" "}
+                      {fmtIsoShort(selectedExistingTerm.termEnd)}
                     </p>
                   ) : null}
                 </div>
@@ -426,10 +487,14 @@ const Courses = () => {
               {usingNewTerm ? (
                 <>
                   <div>
-                    <label className="text-sm font-semibold text-slate-700">New Term Name</label>
+                    <label className="text-sm font-semibold text-slate-700">
+                      New Term Name
+                    </label>
                     <input
                       value={form.term}
-                      onChange={(e) => setForm((p) => ({ ...p, term: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, term: e.target.value }))
+                      }
                       className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., Winter 2026"
                     />
@@ -437,20 +502,28 @@ const Courses = () => {
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-semibold text-slate-700">Term Start</label>
+                      <label className="text-sm font-semibold text-slate-700">
+                        Term Start
+                      </label>
                       <input
                         type="date"
                         value={form.termStart}
-                        onChange={(e) => setForm((p) => ({ ...p, termStart: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, termStart: e.target.value }))
+                        }
                         className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-slate-700">Term End</label>
+                      <label className="text-sm font-semibold text-slate-700">
+                        Term End
+                      </label>
                       <input
                         type="date"
                         value={form.termEnd}
-                        onChange={(e) => setForm((p) => ({ ...p, termEnd: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, termEnd: e.target.value }))
+                        }
                         className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -459,10 +532,14 @@ const Courses = () => {
               ) : null}
 
               <div>
-                <label className="text-sm font-semibold text-slate-700">Course Name</label>
+                <label className="text-sm font-semibold text-slate-700">
+                  Course Name
+                </label>
                 <input
                   value={form.name}
-                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, name: e.target.value }))
+                  }
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Internet Applications"
                 />
@@ -470,31 +547,49 @@ const Courses = () => {
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Weekly Goal (minutes)</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Weekly Goal (minutes)
+                  </label>
                   <input
                     type="number"
                     min={10}
                     step={10}
                     value={form.weeklyGoalMinutes}
-                    onChange={(e) => setForm((p) => ({ ...p, weeklyGoalMinutes: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        weeklyGoalMinutes: Number(e.target.value),
+                      }))
+                    }
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <p className="mt-1 text-xs text-slate-500">({minutesToHhMm(form.weeklyGoalMinutes)} per week)</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    ({minutesToHhMm(form.weeklyGoalMinutes)} per week)
+                  </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Color</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Color
+                  </label>
                   <div className="mt-2 flex items-center gap-3">
                     <input
                       type="color"
                       value={form.color}
-                      onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, color: e.target.value }))
+                      }
                       className="h-10 w-12 cursor-pointer rounded border border-slate-200 bg-white p-1"
                       aria-label="Pick a color"
                     />
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: form.color }} />
-                      <code className="text-sm text-slate-700">{String(form.color).toUpperCase()}</code>
+                      <span
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: form.color }}
+                      />
+                      <code className="text-sm text-slate-700">
+                        {String(form.color).toUpperCase()}
+                      </code>
                     </div>
                   </div>
                 </div>
