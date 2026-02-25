@@ -28,16 +28,14 @@ const courseSchema = new mongoose.Schema(
     credits: { type: Number, default: 3 },
 
     // optional fields
-    semester: {
-      type: String,
-      required: [true, "Semester is required"],
-      enum: ["Fall", "Spring", "Summer", "Winter"],
-    },
-    year: {
-      type: Number,
-      required: [true, "Year is required"],
-      default: new Date().getFullYear(),
-    },
+    // semester: {
+    //   type: String,
+    //   enum: ["Fall", "Spring", "Summer", "Winter"],
+    // },
+    // year: {
+    //   type: Number,
+    //   default: new Date().getFullYear(),
+    // },
   },
   { timestamps: true },
 );

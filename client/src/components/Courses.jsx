@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axiosConfig"; // axios
 
@@ -19,11 +19,6 @@ const Courses = () => {
     };
 
     fetchCourses();
-
-    // fetch("/mockCourses.json")
-    //   .then((res) => res.json())
-    //   .then((data) => setCourses(Array.isArray(data) ? data : []))
-    //   .catch(() => setCourses([]));
   }, []);
 
   const minutesToHhMm = (mins) => {
@@ -128,7 +123,7 @@ const Courses = () => {
 
     setMode("edit");
     setForm({
-      id: course._id,
+      id: course._id, // add mongo ID
       code: course.code || "",
       name: course.name || "",
       color: course.color || "#3B82F6",
@@ -149,8 +144,9 @@ const Courses = () => {
     setError("");
   };
 
-  const makeId = () =>
-    `course-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+  // mock ID not needed
+  // const makeId = () =>
+  //   `course-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 
   const isValidIsoDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s || ""));
 
@@ -181,7 +177,7 @@ const Courses = () => {
       return "Weekly goal minutes must be greater than 0.";
 
     const duplicate = courses.some((c) => {
-      if (mode === "edit" && c.id === form.id) return false;
+      if (mode === "edit" && c._id === form.id) return false;
       return String(c.code).toLowerCase() === code.toLowerCase();
     });
     if (duplicate) return "That course code already exists.";
@@ -189,14 +185,14 @@ const Courses = () => {
     return "";
   };
 
-  // FIXME: change this monstrosity
-  const saveCourse = () => {
+  const saveCourse = async () => {
     const msg = validateCourseForm();
     if (msg) return setError(msg);
     setError("");
 
     const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
 
+    // adapting the data for MongoDB
     const cleaned = {
       code: form.code.trim(),
       name: form.name.trim(),
@@ -210,35 +206,35 @@ const Courses = () => {
       termEnd: String(form.termEnd || "").trim(),
     };
 
-    if (mode === "add") {
-      const newCourse = {
-        id: makeId(),
-        ...cleaned,
-        studyMinutesThisWeek: 0,
-        meetings: [],
-        assignments: [],
-      };
-      setCourses((prev) => [newCourse, ...(prev || [])]);
-      closeModal();
-      return;
-    }
+    try {
+      if (mode === "add") {
+        const response = await api.post("/courses", cleaned);
+        // if successful, savedCourse is the new MongoDB object
+        const savedCourse = response.data.data
+          ? response.data.data.course
+          : response.data;
 
-    setCourses((prev) =>
-      (prev || []).map((c) => {
-        if (c.id !== form.id) return c;
-        return {
-          ...c,
-          ...cleaned,
-          studyMinutesThisWeek: Number(c.studyMinutesThisWeek || 0),
-          meetings: Array.isArray(c.meetings) ? c.meetings : [],
-          assignments: Array.isArray(c.assignments) ? c.assignments : [],
-        };
-      }),
-    );
-    closeModal();
+        setCourses((prev) => [savedCourse, ...(prev || [])]);
+      } else {
+        const response = await api.put(`/courses/${form.id}`, cleaned);
+        const updatedCourse = response.data.data
+          ? response.data.data.course
+          : response.data;
+
+        // setting the courses to either previous value, or empty array, if course ID equals the one on the form, returns the new, updatedCourse from DB, else returns the local course
+        setCourses((prev) =>
+          (prev || []).map((c) => (c._id === form.id ? updatedCourse : c)),
+        );
+      }
+
+      closeModal();
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Server Error: Could not save course",
+      );
+    }
   };
 
-  // FIXME: change this monstrosity
   const handleRemoveCourse = async (id) => {
     // return early if no
     if (!window.confirm("Remove course?")) return;
@@ -249,8 +245,6 @@ const Courses = () => {
     } catch (error) {
       alert("Delete failed:", error);
     }
-
-    setCourses((prev) => (prev || []).filter((c) => c.id !== id));
   };
 
   const viewCourses = useMemo(() => {
