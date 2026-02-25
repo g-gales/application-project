@@ -308,7 +308,7 @@ const Courses = () => {
                 className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300"
               >
                 <Link
-                  to={`/courses/${course._id}`}
+                  to={`/app/courses/${course._id}`}
                   className="block p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label={`Open ${course.code} ${course.name}`}
                 >
