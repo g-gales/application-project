@@ -297,7 +297,7 @@ export default function CourseDetails() {
 
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Link
-                  to="/courses"
+                  to="/app/courses"
                   className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
                 >
                   ← Back to Courses
