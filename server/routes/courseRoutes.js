@@ -62,8 +62,6 @@ router.get("/:id", protect, async (req, res) => {
   }
 });
 
-export default router;
-
 /**
  * FIXME: this might not work yet
  * PATCH /api/v1/courses/:id
@@ -87,3 +85,30 @@ router.patch("/:id", protect, async (req, res) => {
     res.status(400).json({ status: "fail", message: error.message });
   }
 });
+
+/**
+ * FIXME: this might not work yet
+ * DELETE /api/v1/courses/:id
+ */
+router.delete("/:id", protect, async (req, res) => {
+  try {
+    // pass course id and user id into findOne
+    const deletedCourse = await Course.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+
+    if (!deletedCourse) {
+      return res.status(404).json({
+        status: "success",
+        data: null,
+      });
+    }
+
+    res.status(204).json({ status: "success", data: null });
+  } catch (error) {
+    res.status(500).json({ status: "fails", message: error.message });
+  }
+});
+
+export default router;

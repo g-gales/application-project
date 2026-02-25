@@ -216,7 +216,7 @@ const Courses = () => {
 
         setCourses((prev) => [savedCourse, ...(prev || [])]);
       } else {
-        const response = await api.put(`/courses/${form.id}`, cleaned);
+        const response = await api.patch(`/courses/${form.id}`, cleaned);
         const updatedCourse = response.data.data
           ? response.data.data.course
           : response.data;
@@ -243,7 +243,8 @@ const Courses = () => {
       await api.delete(`/courses/${id}`);
       setCourses((prev) => prev.filter((c) => c._id !== id));
     } catch (error) {
-      alert("Delete failed:", error);
+      console.error(error);
+      alert(`Delete failed: ${error.response?.data?.message || error.message}`);
     }
   };
 
