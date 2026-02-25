@@ -4,6 +4,10 @@ import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Courses from "./components/Courses";
+import CourseDetails from "./components/CourseDetails";
+import Calendar from "./components/Calendar";
+import SimpleCalendar from "./components/SimpleCalendar.jsx";
 
 import AppLayout from "./layout/AppLayout";
 
@@ -42,6 +46,7 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="/courses/:courseId" element={<CourseDetails />} />
               <Route path="wellness" element={<Wellness />} />
               <Route path="pomodoro" element={<Pomodoro />} />
               <Route path="flashcards" element={<Flashcards />} />

@@ -1,0 +1,125 @@
+[
+  {
+    "id": "course-1",
+    "code": "INFO-5139",
+    "name": "Internet Applications",
+    "term": "Winter 2026",
+    "termStart": "2026-01-06",
+    "termEnd": "2026-04-20",
+    "color": "#10B981",
+    "weeklyGoalMinutes": 120,
+    "studyMinutesThisWeek": 60,
+    "meetings": [
+      {
+        "id": "m-1",
+        "seriesId": "s-info-5139-1",
+        "day": "Mon",
+        "start": "10:00",
+        "end": "11:20",
+        "location": "Room 210",
+        "skipDates": []
+      },
+      {
+        "id": "m-2",
+        "seriesId": "s-info-5139-1",
+        "day": "Wed",
+        "start": "13:00",
+        "end": "14:20",
+        "location": "Room 210",
+        "skipDates": []
+      }
+    ],
+    "assignments": [
+      {
+        "id": "a-1",
+        "title": "Lab 3 – API Integration",
+        "dueDate": "2026-03-05",
+        "estimatedMinutes": 120,
+        "minutesCompleted": 30,
+        "status": "in-progress"
+      },
+      {
+        "id": "a-2",
+        "title": "Midterm Exam",
+        "dueDate": "2026-03-12",
+        "estimatedMinutes": 360,
+        "minutesCompleted": 0,
+        "status": "not-started"
+      }
+    ]
+  },
+  {
+    "id": "course-2",
+    "code": "CS-4201",
+    "name": "Advanced JavaScript",
+    "term": "Winter 2026",
+    "termStart": "2026-01-06",
+    "termEnd": "2026-04-20",
+    "color": "#3B82F6",
+    "weeklyGoalMinutes": 60,
+    "studyMinutesThisWeek": 20,
+    "meetings": [
+      {
+        "id": "m-3",
+        "seriesId": "s-cs-4201-1",
+        "day": "Tue",
+        "start": "18:00",
+        "end": "20:50",
+        "location": "Online",
+        "skipDates": []
+      }
+    ],
+    "assignments": [
+      {
+        "id": "b-1",
+        "title": "Project Proposal",
+        "dueDate": "2026-02-28",
+        "estimatedMinutes": 120,
+        "minutesCompleted": 20,
+        "status": "in-progress"
+      }
+    ]
+  },
+  {
+    "id": "course-3",
+    "code": "DES-3010",
+    "name": "Web Design Fundamentals",
+    "term": "Winter 2026",
+    "termStart": "2026-01-06",
+    "termEnd": "2026-04-20",
+    "color": "#F59E0B",
+    "weeklyGoalMinutes": 180,
+    "studyMinutesThisWeek": 40,
+    "meetings": [
+      {
+        "id": "m-4",
+        "seriesId": "s-des-3010-1",
+        "day": "Thu",
+        "start": "09:00",
+        "end": "10:20",
+        "location": "Room 105",
+        "skipDates": []
+      },
+      {
+        "id": "m-5",
+        "seriesId": "s-des-3010-1",
+        "day": "Fri",
+        "start": "11:00",
+        "end": "12:20",
+        "location": "Lab 3",
+        "skipDates": []
+      }
+    ],
+    "assignments": [
+      {
+        "id": "c-1",
+        "title": "Final Portfolio",
+        "dueDate": "2026-04-20",
+        "estimatedMinutes": 600,
+        "minutesCompleted": 90,
+        "status": "in-progress",
+        "notes": "Update case study writeups"
+      }
+    ]
+  }
+]
