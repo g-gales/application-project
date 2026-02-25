@@ -4,7 +4,7 @@ import User from "../models/User.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /**
- * Handles initial Google Login/Sign-up.
+ * Front door to the application, handles Google login flow.
  * Verifies the Google JWT token, creates a user in MongoDB if they don't exist,
  * and returns the user profile with the session token.
  * @param {Object} req - Express request object. Expects `req.body.token` (Google ID Token).
@@ -24,9 +24,9 @@ export const googleLogin = async (req, res) => {
     const { sub, email, given_name, family_name, picture } =
       ticket.getPayload();
 
-    // if no user, create user
     let user = await User.findOne({ googleId: sub });
 
+    // if no user, create user
     if (!user) {
       user = await User.create({
         googleId: sub,
@@ -35,7 +35,6 @@ export const googleLogin = async (req, res) => {
         lastName: family_name,
         picture,
       });
-      console.log("🆕 New User Created in DB!");
     }
 
     res.status(200).json({ status: "success", data: { user, token } });
@@ -54,35 +53,31 @@ export const googleLogin = async (req, res) => {
  * @returns {JSON} 404 - Failure: User exists in Google but not in our database.
  */
 export const getMe = async (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: { user: req.user },
+  });
+};
+
+export const guestLogin = async (req, res) => {
   try {
-    // Get token from the "Bearer <token>" header
-    const token = req.headers.authorization?.split(" ")[1];
+    const guestId = "GUEST_USER_POWERUP";
 
-    if (!token) {
-      return res
-        .status(401)
-        .json({ status: "fail", message: "No token provided" });
-    }
-
-    // verify token with Google
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const { sub } = ticket.getPayload();
-
-    // find user in DB using the Google ID
-    const user = await User.findOne({ googleId: sub });
+    let user = await User.findOne({ googleId: guestId });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "User not found" });
+      user = await User.create({
+        googleId: guestId,
+        email: "professor@grading.com",
+        firstName: "Professor",
+        lastName: "Guest",
+        picture: "https://ui-avatars.com/api/?name=Madhavi+Mohan",
+      });
     }
 
-    res.status(200).json({ status: "success", data: { user } });
+    // send guestId as the token
+    res.status(200).json({ status: "success", data: { user, token: guestId } });
   } catch (error) {
-    res.status(401).json({ status: "fail", message: "Invalid session" });
+    res.status(401).json({ status: "fail", message: "Invalid Google Token" });
   }
 };

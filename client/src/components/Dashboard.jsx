@@ -1,5 +1,6 @@
 // auth hook needed to pull information of the logged-in user, e.g. username
 import { useAuth } from "../hooks/useAuth";
+import { NavLink } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -31,6 +32,9 @@ const Dashboard = () => {
             <p className="text-sm text-blue-600 mt-2">
               Let's get ready to PowerUp!
             </p>
+            <NavLink to="/test-component">
+              Go to another protected route
+            </NavLink>
           </div>
         </div>
 

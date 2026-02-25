@@ -1,9 +1,16 @@
 import express from "express";
-import { googleLogin, getMe } from "../controllers/authController.js"; // Use your existing file!
+import {
+  googleLogin,
+  getMe,
+  guestLogin,
+} from "../controllers/authController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/google-login", googleLogin);
-router.get("/me", getMe);
+// protect verifies google ID with google Oauth before running additional routes
+router.get("/me", protect, getMe);
+router.post("/guest-login", guestLogin);
 
 export default router;

@@ -4,7 +4,7 @@ import App from "./App";
 
 // user login imports
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "./context/AuthContext.jsx";
+import { AuthProvider } from "./context/AuthProvider.jsx";
 
 // routing imports
 import { BrowserRouter } from "react-router-dom";
