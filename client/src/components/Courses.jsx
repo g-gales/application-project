@@ -280,14 +280,13 @@ const Courses = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-white">
+    <div className="min-h-screen py-8 px-4 bg-[var(--surface)]">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
           <button
             onClick={openAddCourse}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-          >
+            className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg transition">
             + Add Course
           </button>
         </div>
@@ -306,13 +305,11 @@ const Courses = () => {
             return (
               <div
                 key={course._id}
-                className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300"
-              >
+                className="bg-[var(--surface)] rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300">
                 <Link
                   to={`/app/courses/${course._id}`}
                   className="block p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label={`Open ${course.code} ${course.name}`}
-                >
+                  aria-label={`Open ${course.code} ${course.name}`}>
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-start sm:items-center gap-3">
@@ -321,15 +318,15 @@ const Courses = () => {
                           style={{ backgroundColor: course.color }}
                         />
                         <div>
-                          <div className="text-sm font-semibold text-gray-700">
+                          <div className="text-sm font-semibold text-[var(--muted-text)]">
                             {course.code}
                           </div>
-                          <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                          <h2 className="text-base sm:text-lg font-bold text-[var(--text)]">
                             {course.name}
                           </h2>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-[var(--muted-text)]">
                             {course.term || "—"}{" "}
-                            <span className="text-gray-400">
+                            <span className="text-[var(--muted-text-2)]">
                               ({fmtIsoShort(course.termStart)} →{" "}
                               {fmtIsoShort(course.termEnd)})
                             </span>
@@ -339,26 +336,26 @@ const Courses = () => {
 
                       <div className="mt-4">
                         <div className="flex flex-col sm:flex-row items-baseline sm:justify-between">
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-[var(--muted-text-2)]">
                             Study This Week:{" "}
-                            <span className="font-medium text-gray-800">
+                            <span className="font-medium text-[var(--muted-text)]">
                               {minutesToHhMm(course.studyMinutesThisWeek)}
                             </span>{" "}
                             / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                           </div>
-                          <div className="text-sm text-gray-500 mt-2 sm:mt-0">
+                          <div className="text-sm text-[var(--muted-text-2)] mt-2 sm:mt-0">
                             {pct}%
                           </div>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
+                        <div className="w-full bg-[var(--tertiary)] rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
                           <div
-                            className="h-2 sm:h-3 rounded-full bg-blue-600"
+                            className="h-2 sm:h-3 rounded-full bg-[var(--primary)]"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
                       </div>
 
-                      <div className="mt-4 text-sm text-gray-700">
+                      <div className="mt-4 text-sm text-[var(--muted-text)]">
                         <span className="font-medium">Next Due:</span>{" "}
                         {course.nextDueTitle} – {course.nextDueDate}
                       </div>
@@ -366,17 +363,15 @@ const Courses = () => {
 
                     <div
                       className="flex-shrink-0 flex gap-2 sm:flex-col sm:gap-3 sm:ml-4 ml-0 mt-4 sm:mt-0"
-                      onClick={(e) => e.preventDefault()}
-                    >
+                      onClick={(e) => e.preventDefault()}>
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           openEditCourse(course);
                         }}
-                        className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full transition flex items-center justify-center border border-green-600/40"
-                        title="Edit"
-                      >
+                        className="bg-green-500 hover:bg-green-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-green-600/40"
+                        title="Edit">
                         ✎
                       </button>
 
@@ -386,9 +381,8 @@ const Courses = () => {
                           e.stopPropagation();
                           handleRemoveCourse(course._id);
                         }}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
-                        title="Remove"
-                      >
+                        className="bg-red-500 hover:bg-red-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
+                        title="Remove">
                         🗑
                       </button>
                     </div>
@@ -400,12 +394,13 @@ const Courses = () => {
         </div>
 
         {viewCourses.length === 0 && (
-          <div className="rounded-lg shadow-md p-12 text-center bg-white border border-gray-200">
-            <p className="text-gray-600 text-lg">No courses enrolled yet.</p>
+          <div className="rounded-lg shadow-md p-12 text-center bg-[var(--surface)] border border-[var(--border)]">
+            <p className="text-[var(--text)] text-lg">
+              No courses enrolled yet.
+            </p>
             <button
               onClick={openAddCourse}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg mt-4 transition"
-            >
+              className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg mt-4 transition">
               + Add Course
             </button>
           </div>
@@ -417,18 +412,17 @@ const Courses = () => {
           <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
 
           {/* ✅ Modal box background restored */}
-          <div className="relative w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl border border-slate-200">
+          <div className="relative w-full max-w-lg rounded-2xl bg-[var(--surface)] p-5 shadow-xl border border-[var(--border)]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-[var(--text)]">
                   {mode === "add" ? "Add Course" : "Edit Course"}
                 </h3>
               </div>
               <button
                 onClick={closeModal}
-                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Close"
-              >
+                className="rounded-lg p-2 text-[var(--muted-text)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+                aria-label="Close">
                 ✕
               </button>
             </div>
@@ -436,7 +430,7 @@ const Courses = () => {
             <div className="mt-4 space-y-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">
+                  <label className="text-sm font-semibold text-[var(--text)]">
                     Course Code
                   </label>
                   <input
@@ -444,20 +438,19 @@ const Courses = () => {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, code: e.target.value }))
                     }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., INFO-5139"
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">
+                  <label className="text-sm font-semibold text-[var(--text)]">
                     Term
                   </label>
                   <select
                     value={form.termSelect}
                     onChange={(e) => onChangeTermSelect(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     {terms.length ? (
                       <>
                         {terms.map((t) => (
@@ -477,7 +470,7 @@ const Courses = () => {
                   {!usingNewTerm &&
                   selectedExistingTerm?.termStart &&
                   selectedExistingTerm?.termEnd ? (
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-[var(--muted-text)]">
                       Dates: {fmtIsoShort(selectedExistingTerm.termStart)} →{" "}
                       {fmtIsoShort(selectedExistingTerm.termEnd)}
                     </p>
@@ -488,7 +481,7 @@ const Courses = () => {
               {usingNewTerm ? (
                 <>
                   <div>
-                    <label className="text-sm font-semibold text-slate-700">
+                    <label className="text-sm font-semibold text-[var(--text)]">
                       New Term Name
                     </label>
                     <input
@@ -496,14 +489,14 @@ const Courses = () => {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, term: e.target.value }))
                       }
-                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                      className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., Winter 2026"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-semibold text-slate-700">
+                      <label className="text-sm font-semibold text-[var(--text)]">
                         Term Start
                       </label>
                       <input
@@ -512,11 +505,11 @@ const Courses = () => {
                         onChange={(e) =>
                           setForm((p) => ({ ...p, termStart: e.target.value }))
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-slate-700">
+                      <label className="text-sm font-semibold text-[var(--text)]">
                         Term End
                       </label>
                       <input
@@ -525,7 +518,7 @@ const Courses = () => {
                         onChange={(e) =>
                           setForm((p) => ({ ...p, termEnd: e.target.value }))
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -533,7 +526,7 @@ const Courses = () => {
               ) : null}
 
               <div>
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-[var(--text)]">
                   Course Name
                 </label>
                 <input
@@ -541,14 +534,14 @@ const Courses = () => {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, name: e.target.value }))
                   }
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Internet Applications"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">
+                  <label className="text-sm font-semibold text-[var(--text)]">
                     Weekly Goal (minutes)
                   </label>
                   <input
@@ -562,15 +555,15 @@ const Courses = () => {
                         weeklyGoalMinutes: Number(e.target.value),
                       }))
                     }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-[var(--muted-text)]">
                     ({minutesToHhMm(form.weeklyGoalMinutes)} per week)
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">
+                  <label className="text-sm font-semibold text-[var(--text)]">
                     Color
                   </label>
                   <div className="mt-2 flex items-center gap-3">
@@ -580,7 +573,7 @@ const Courses = () => {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, color: e.target.value }))
                       }
-                      className="h-10 w-12 cursor-pointer rounded border border-slate-200 bg-white p-1"
+                      className="h-10 w-12 cursor-pointer rounded border border-[var(--border)] bg-[var(--surface)] p-1"
                       aria-label="Pick a color"
                     />
                     <div className="flex items-center gap-2">
@@ -588,7 +581,7 @@ const Courses = () => {
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: form.color }}
                       />
-                      <code className="text-sm text-slate-700">
+                      <code className="text-sm text-[var(--text)]">
                         {String(form.color).toUpperCase()}
                       </code>
                     </div>
@@ -605,14 +598,12 @@ const Courses = () => {
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   onClick={closeModal}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-                >
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--text)] shadow-sm hover:bg-[var(--surface)]">
                   Cancel
                 </button>
                 <button
                   onClick={saveCourse}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-                >
+                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
                   {mode === "add" ? "Add" : "Save"}
                 </button>
               </div>
