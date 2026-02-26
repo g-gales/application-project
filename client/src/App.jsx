@@ -4,7 +4,6 @@ import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import SimpleCalendar from "./components/SimpleCalendar.jsx";
 
 import AppLayout from "./layout/AppLayout";
 
@@ -16,7 +15,7 @@ const Pomodoro = lazy(() => import("./pages/Pomodoro"));
 const Flashcards = lazy(() => import("./pages/Flashcards"));
 const Courses = lazy(() => import("./components/Courses"));
 const CourseDetails = lazy(() => import("./components/CourseDetails"));
-const Calendar = lazy(() => import("./components/SimpleCalendar"));
+const SimpleCalendar = lazy(() => import("./components/SimpleCalendar"));
 
 import { ThemeProvider } from "./components/theme/ThemeContext";
 
