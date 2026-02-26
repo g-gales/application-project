@@ -564,7 +564,7 @@ export default function Calendar() {
         }
         onClick={(e) => e.stopPropagation()}
         className={[
-          "w-full max-w-full min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 overflow-hidden",
+          "w-full max-w-full min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface-3)] px-2 py-1 overflow-hidden",
           draggable ? "cursor-grab active:cursor-grabbing" : "",
         ].join(" ")}
         title={
@@ -644,7 +644,7 @@ export default function Calendar() {
                   "px-3 py-2 text-sm font-semibold",
                   viewMode === "month"
                     ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
-                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                    : "text-[var(--muted-text)] hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]",
                 ].join(" ")}>
                 Month
               </button>
@@ -654,7 +654,7 @@ export default function Calendar() {
                   "px-3 py-2 text-sm font-semibold",
                   viewMode === "week"
                     ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
-                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                    : "text-[var(--muted-text)] hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]",
                 ].join(" ")}>
                 Week
               </button>
@@ -664,7 +664,7 @@ export default function Calendar() {
                   "px-3 py-2 text-sm font-semibold",
                   viewMode === "day"
                     ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
-                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                    : "text-[var(--muted-text)] hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]",
                 ].join(" ")}>
                 Day
               </button>
@@ -672,17 +672,17 @@ export default function Calendar() {
 
             <button
               onClick={goPrev}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]">
               ← Prev
             </button>
             <button
               onClick={goToday}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]">
               Today
             </button>
             <button
               onClick={goNext}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--tertiary)] hover:text-[var(--tertiary-contrast)]">
               Next →
             </button>
           </div>
@@ -700,7 +700,7 @@ export default function Calendar() {
                     "rounded-2xl border bg-[var(--bg)] shadow-sm overflow-hidden",
                     isToday ? "border-emerald-400" : "border-[var(--border)]",
                   ].join(" ")}>
-                  <div className="border-b border-[var(--border)]p-4 flex items-center justify-between gap-3">
+                  <div className="border-b border-[var(--border)] p-4 flex items-center justify-between gap-3">
                     <div>
                       <div className="text-sm font-bold text-[var(--text)]">
                         {fromISOToLocalDate(iso).toLocaleDateString(undefined, {
@@ -725,15 +725,15 @@ export default function Calendar() {
                             );
                             setDayError("");
                           }}
-                          className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--hover-primary)]">
+                          className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
                           + Add meeting
                         </button>
                       </div>
 
                       {showAdd === "meeting" ? (
-                        <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Course
                               <select
                                 value={meetingForm.courseId}
@@ -743,7 +743,7 @@ export default function Calendar() {
                                     courseId: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm">
                                 {courses.map((c) => (
                                   <option key={c.id} value={c.id}>
                                     {c.code} — {c.name}
@@ -752,7 +752,7 @@ export default function Calendar() {
                               </select>
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Location
                               <input
                                 value={meetingForm.location}
@@ -762,12 +762,12 @@ export default function Calendar() {
                                     location: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[avr(--bg)] px-3 py-2 text-sm"
                                 placeholder="Optional"
                               />
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Start
                               <input
                                 type="time"
@@ -778,11 +778,11 @@ export default function Calendar() {
                                     start: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm"
                               />
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               End
                               <input
                                 type="time"
@@ -793,13 +793,13 @@ export default function Calendar() {
                                     end: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm"
                               />
                             </label>
                           </div>
 
                           <div className="mt-3 flex flex-wrap items-center gap-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                            <label className="inline-flex items-center gap-2 text-sm text-[var(--text)]">
                               <input
                                 type="checkbox"
                                 checked={meetingForm.repeatWeekly}
@@ -815,7 +815,7 @@ export default function Calendar() {
 
                             {meetingForm.repeatWeekly ? (
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-xs font-semibold text-slate-600">
+                                <span className="text-xs font-semibold text-[var(--muted-text)]">
                                   Days:
                                 </span>
                                 {DAYS.map((d) => {
@@ -835,8 +835,8 @@ export default function Calendar() {
                                       className={[
                                         "rounded-lg border px-2 py-1 text-xs font-semibold",
                                         active
-                                          ? "border-blue-600 bg-blue-600 text-white"
-                                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                                          ? "border-blue-600 bg-[var(--primary)] text-[var(--primary-contrast)]"
+                                          : "border-slate-200 bg-[var(--bg)] text-[var(--text)] hover:bg-slate-50",
                                       ].join(" ")}>
                                       {d}
                                     </button>
@@ -849,12 +849,12 @@ export default function Calendar() {
                           <div className="mt-4 flex items-center justify-end gap-2">
                             <button
                               onClick={() => setShowAdd(null)}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                              className="rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]">
                               Cancel
                             </button>
                             <button
                               onClick={addMeeting}
-                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:bg-[var(--hover-primary)]">
                               Save
                             </button>
                           </div>
@@ -863,7 +863,7 @@ export default function Calendar() {
 
                       <div className="mt-3 space-y-2">
                         {dayMeetings.length === 0 ? (
-                          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+                          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">
                             No meetings
                           </div>
                         ) : (
@@ -876,7 +876,7 @@ export default function Calendar() {
                               </div>
                               <button
                                 onClick={() => openDeleteMeetingModal(evt, iso)}
-                                className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                className="bg-red-500 hover:bg-red-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
                                 title="Delete">
                                 🗑
                               </button>
@@ -888,7 +888,7 @@ export default function Calendar() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-slate-900">
+                        <h4 className="text-sm font-bold text-[var(--text)]">
                           Assignments due
                         </h4>
                         <button
@@ -898,15 +898,15 @@ export default function Calendar() {
                             );
                             setDayError("");
                           }}
-                          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
+                          className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
                           + Add assignment
                         </button>
                       </div>
 
                       {showAdd === "assignment" ? (
-                        <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Course
                               <select
                                 value={assignmentForm.courseId}
@@ -916,7 +916,7 @@ export default function Calendar() {
                                     courseId: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm">
                                 {courses.map((c) => (
                                   <option key={c.id} value={c.id}>
                                     {c.code} — {c.name}
@@ -925,7 +925,7 @@ export default function Calendar() {
                               </select>
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Status
                               <select
                                 value={assignmentForm.status}
@@ -935,14 +935,14 @@ export default function Calendar() {
                                     status: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm">
                                 <option value="not-started">Not started</option>
                                 <option value="in-progress">In progress</option>
                                 <option value="done">Done</option>
                               </select>
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
+                            <label className="text-xs font-semibold text-[var(--text)] sm:col-span-2">
                               Title
                               <input
                                 value={assignmentForm.title}
@@ -952,12 +952,12 @@ export default function Calendar() {
                                     title: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm"
                                 placeholder="e.g., Lab 3"
                               />
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700">
+                            <label className="text-xs font-semibold text-[var(--text)]">
                               Est. minutes
                               <input
                                 type="number"
@@ -969,11 +969,11 @@ export default function Calendar() {
                                     estimatedMinutes: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm"
                               />
                             </label>
 
-                            <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
+                            <label className="text-xs font-semibold text-[var(--text)] sm:col-span-2">
                               Notes
                               <textarea
                                 value={assignmentForm.notes}
@@ -983,7 +983,7 @@ export default function Calendar() {
                                     notes: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm"
                                 rows={3}
                                 placeholder="Optional"
                               />
@@ -993,12 +993,12 @@ export default function Calendar() {
                           <div className="mt-4 flex items-center justify-end gap-2">
                             <button
                               onClick={() => setShowAdd(null)}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                              className="rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]">
                               Cancel
                             </button>
                             <button
                               onClick={addAssignment}
-                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)]">
                               Save
                             </button>
                           </div>
@@ -1007,7 +1007,7 @@ export default function Calendar() {
 
                       <div className="mt-3 space-y-2">
                         {dayAssignments.length === 0 ? (
-                          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+                          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">
                             No assignments due
                           </div>
                         ) : (
@@ -1058,13 +1058,13 @@ export default function Calendar() {
                   onDrop={(e) => onDropOnDay(e, iso)}
                   onClick={() => openDayModal(iso)}
                   className={[
-                    "cursor-pointer rounded-2xl border bg-white shadow-sm text-left overflow-hidden w-full",
-                    "transition hover:bg-blue-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                    isToday ? "border-blue-400" : "border-slate-200",
+                    "cursor-pointer rounded-2xl border bg-[var(--surface)] shadow-sm text-left overflow-hidden w-full",
+                    "transition hover:bg-[var(--surface-2)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    isToday ? "border-emerald-400" : "border-[var(--border)]",
                   ].join(" ")}>
-                  <div className="border-b border-slate-200 p-3">
+                  <div className="border-b border-[var(--border)] p-3">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-bold text-slate-900">
+                      <div className="text-sm font-bold text-[var(--text)]">
                         {date.toLocaleDateString(undefined, {
                           weekday: "short",
                           month: "short",
@@ -1072,17 +1072,21 @@ export default function Calendar() {
                         })}
                       </div>
                       {isToday ? (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        <span className="rounded-full bg-[var(--tertiary)] px-2 py-0.5 text-xs font-semibold text-[var(--tertiary-contrast)]">
                           Today
                         </span>
                       ) : null}
                     </div>
-                    <div className="mt-1 text-xs text-slate-500">{iso}</div>
+                    <div className="mt-1 text-xs text-[var(--muted-text)]">
+                      {iso}
+                    </div>
                   </div>
 
                   <div className="p-3 space-y-2">
                     {dayEvents.length === 0 ? (
-                      <div className="text-sm text-slate-500">No events</div>
+                      <div className="text-sm text-[var(--muted-text)]">
+                        No events
+                      </div>
                     ) : (
                       dayEvents
                         .slice(0, 6)
@@ -1095,7 +1099,7 @@ export default function Calendar() {
                         ))
                     )}
                     {dayEvents.length > 6 ? (
-                      <div className="text-xs font-semibold text-slate-500">
+                      <div className="text-xs font-semibold text-[var(--muted-text)]">
                         +{dayEvents.length - 6} more
                       </div>
                     ) : null}
@@ -1108,12 +1112,12 @@ export default function Calendar() {
 
         {viewMode === "month" ? (
           <div className="mt-6 w-full max-w-full overflow-hidden">
-            <div className="w-full max-w-full rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-              <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 min-w-0">
+            <div className="w-full max-w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] shadow-sm overflow-hidden">
+              <div className="grid grid-cols-7 border-b border-[var(--border)] bg-[var(--surface-2)] min-w-0">
                 {DAYS.map((d) => (
                   <div
                     key={d}
-                    className="p-2 sm:p-3 text-[11px] sm:text-xs font-bold text-slate-700 min-w-0">
+                    className="p-2 sm:p-3 text-[11px] sm:text-xs font-bold text-[var(--text)] min-w-0">
                     {d}
                   </div>
                 ))}
@@ -1140,22 +1144,23 @@ export default function Calendar() {
                       onDrop={(e) => onDropOnDay(e, iso)}
                       onClick={() => openDayModal(iso)}
                       className={[
-                        "cursor-pointer min-h-[86px] sm:min-h-[110px] w-full text-left border-b border-r border-slate-200 p-2 overflow-hidden min-w-0",
+                        "cursor-pointer min-h-[86px] sm:min-h-[110px] w-full text-left border-b border-r border-[var(--border)] p-2 overflow-hidden min-w-0",
                         "transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset",
-                        !inMonth
-                          ? "bg-slate-50/60 text-slate-400 hover:bg-slate-100/70"
-                          : "bg-white hover:bg-blue-50",
-                        isToday ? "bg-emerald-50 ring-2 ring-emerald-400" : "",
+                        isToday
+                          ? " bg-[var(--green-bg)] ring-2 ring-emerald-400"
+                          : !inMonth
+                            ? "bg-[var(--bg)] hover:bg-[var(--surface-2)]"
+                            : "bg-[var(--surface)] hover:bg-[var(--surface-2)]",
                       ].join(" ")}>
                       <div className="flex items-center justify-between min-w-0">
                         <div
                           className={[
                             "text-xs font-bold min-w-0 rounded px-2 py-1",
                             isToday
-                              ? "text-emerald-700 font-extrabold"
+                              ? "text-[var(--green-text)] font-extrabold"
                               : inMonth
-                                ? "text-slate-900"
-                                : "text-slate-400",
+                                ? "text-[var(--text)]"
+                                : "text-[var(--muted-text)]",
                           ].join(" ")}>
                           {date.getDate()}
                         </div>
@@ -1175,7 +1180,7 @@ export default function Calendar() {
                         ))}
 
                         {remaining > 0 ? (
-                          <div className="mt-1 w-full max-w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1 text-left text-xs font-semibold text-slate-600 overflow-hidden truncate">
+                          <div className="mt-1 w-full max-w-full min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-left text-xs font-semibold text-[var(--text)] overflow-hidden truncate">
                             +{remaining} more
                           </div>
                         ) : null}
@@ -1196,16 +1201,16 @@ export default function Calendar() {
             onClick={closeDayModal}
           />
 
-          <div className="relative w-full max-w-2xl max-h-[85vh] rounded-2xl bg-white shadow-xl overflow-hidden flex flex-col">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 p-5">
+          <div className="relative w-full max-w-2xl max-h-[85vh] rounded-2xl bg-[var(--surface)] shadow-xl overflow-hidden flex flex-col">
+            <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] p-5">
               <div className="min-w-0">
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-[var(--text)]">
                   {fmtDayLabel(dayModalISO)}
                 </h3>
               </div>
               <button
                 onClick={closeDayModal}
-                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-lg p-2 text-[var(--muted-text)] hover:bg-slate-100 hover:text-slate-700"
                 aria-label="Close">
                 ✕
               </button>
@@ -1214,27 +1219,29 @@ export default function Calendar() {
             <div className="p-5 space-y-6 overflow-y-auto">
               <div>
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-900">Meetings</h4>
+                  <h4 className="text-sm font-bold text-[var(--text)]">
+                    Meetings
+                  </h4>
                   <button
                     onClick={() => {
                       setShowAdd(showAdd === "meeting" ? null : "meeting");
                       setDayError("");
                     }}
-                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
+                    className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
                     + Add meeting
                   </button>
                 </div>
 
                 <div className="mt-3 space-y-2">
                   {dayMeetings.length === 0 ? (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+                    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">
                       No meetings.
                     </div>
                   ) : (
                     dayMeetings.map((m, idx) => (
                       <div
                         key={m.meetingId || `m-${idx}`}
-                        className="rounded-xl border border-slate-200 p-3">
+                        className="rounded-xl border border-[var(--border)] p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2 min-w-0">
                             <span
@@ -1242,17 +1249,17 @@ export default function Calendar() {
                               style={{ backgroundColor: m.color }}
                             />
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-slate-500">
+                              <div className="text-xs font-semibold text-[var(--muted-text)]">
                                 {m.courseCode}
                               </div>
-                              <div className="text-sm font-bold text-slate-900">
+                              <div className="text-sm font-bold text-[var(--text)]">
                                 {m.start}–{m.end}
                               </div>
-                              <div className="text-sm text-slate-700 truncate">
+                              <div className="text-sm text-[var(--muted-text) truncate">
                                 {m.courseName}
                               </div>
 
-                              <div className="mt-1 text-xs text-slate-500">
+                              <div className="mt-1 text-xs text-[var(--muted-text-2)">
                                 {m.date
                                   ? `One-off • ${m.date}`
                                   : m.day
@@ -1261,7 +1268,7 @@ export default function Calendar() {
                               </div>
 
                               {m.location ? (
-                                <div className="text-xs text-slate-500 truncate">
+                                <div className="text-xs text-[var(--muted-text-2) truncate">
                                   {m.location}
                                 </div>
                               ) : null}
@@ -1272,7 +1279,7 @@ export default function Calendar() {
                             <Link
                               to={`/courses/${m.courseId}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--bg)]">
                               Open course
                             </Link>
 
@@ -1282,7 +1289,7 @@ export default function Calendar() {
                                 e.stopPropagation();
                                 openDeleteMeetingModal(m, dayModalISO);
                               }}
-                              className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+                              className="rounded-lg border border-red-200 bg-[var(--surface)] px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
                               title="Delete meeting">
                               Delete
                             </button>
@@ -1296,7 +1303,7 @@ export default function Calendar() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-900">
+                  <h4 className="text-sm font-bold text-[var(--text)]">
                     Assignments due
                   </h4>
                   <button
@@ -1306,21 +1313,21 @@ export default function Calendar() {
                       );
                       setDayError("");
                     }}
-                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
+                    className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
                     + Add assignment
                   </button>
                 </div>
 
                 <div className="mt-3 space-y-2">
                   {dayAssignments.length === 0 ? (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+                    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--text)]">
                       No assignments due.
                     </div>
                   ) : (
                     dayAssignments.map((a, idx) => (
                       <div
                         key={a.id || `a-${idx}`}
-                        className="rounded-xl border border-slate-200 p-3">
+                        className="rounded-xl border border-[var(--border)] p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2 min-w-0">
                             <span
@@ -1328,14 +1335,14 @@ export default function Calendar() {
                               style={{ backgroundColor: a.color }}
                             />
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-slate-500">
+                              <div className="text-xs font-semibold text-[var(--muted-text-2)]">
                                 {a.courseCode}
                               </div>
-                              <div className="text-sm font-bold text-slate-900 truncate">
+                              <div className="text-sm font-bold text-[var(--text)] truncate">
                                 {a.title}
                               </div>
                               {a.estimatedMinutes != null ? (
-                                <div className="mt-1 text-xs text-slate-500">
+                                <div className="mt-1 text-xs text-[var(--muted-text-2)]">
                                   Est. {a.estimatedMinutes} min
                                 </div>
                               ) : null}
@@ -1372,35 +1379,35 @@ export default function Calendar() {
             className="absolute inset-0 bg-black/40"
             onClick={closeDeleteMeetingModal}
           />
-          <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
-            <div className="border-b border-slate-200 p-5">
-              <h3 className="text-lg font-bold text-slate-900">
+          <div className="relative w-full max-w-lg rounded-2xl bg-[var(--surface)] shadow-xl overflow-hidden">
+            <div className="border-b border-[var(--border)] p-5">
+              <h3 className="text-lg font-bold text-[var(--text)]">
                 Delete meeting
               </h3>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-[var(--muted-text)]">
                 Do you want to delete only this occurrence, or delete the whole
                 meeting rule?
               </p>
             </div>
 
             <div className="p-5 space-y-4">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-xl border border-[var(--muted-text)] bg-[var(--bg)] p-4">
                 <div className="flex items-start gap-2">
                   <span
                     className="mt-1 h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: deleteModal.meeting.color }}
                   />
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-slate-800 truncate">
+                    <div className="text-sm font-semibold text-[var(--text)] truncate">
                       {deleteModal.meeting.courseCode} •{" "}
                       {deleteModal.meeting.start}–{deleteModal.meeting.end}
                     </div>
                     {deleteModal.meeting.location ? (
-                      <div className="mt-1 text-xs text-slate-600 truncate">
+                      <div className="mt-1 text-xs text-[var(--muted-text)] truncate">
                         {deleteModal.meeting.location}
                       </div>
                     ) : null}
-                    <div className="mt-1 text-xs text-slate-600">
+                    <div className="mt-1 text-xs text-[var(--muted-text)]">
                       {deleteModal.meeting.date
                         ? `One-off on ${deleteModal.meeting.date}`
                         : deleteModal.meeting.day
@@ -1422,7 +1429,7 @@ export default function Calendar() {
                     );
                     closeDeleteMeetingModal();
                   }}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
                   Delete only this occurrence
                 </button>
 
@@ -1435,14 +1442,14 @@ export default function Calendar() {
                     );
                     closeDeleteMeetingModal();
                   }}
-                  className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
+                  className="rounded-lg border border-red-200 bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
                   Delete entire meeting rule
                 </button>
 
                 <button
                   type="button"
                   onClick={closeDeleteMeetingModal}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  className="rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface-2)]">
                   Cancel
                 </button>
               </div>
