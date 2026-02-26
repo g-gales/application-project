@@ -10,7 +10,20 @@ import courseRoutes from "./routes/courseRoutes.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = ["http://localhost:5173", process.env.FRONTEND_ORIGIN];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use("/api/v1/users", userRoutes);
@@ -19,11 +32,13 @@ app.use("/api/v1/courses", courseRoutes);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
+const port = process.env.PORT || 3001;
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(process.env.PORT || 3001, () =>
-      console.log("MongoDB connected, Server running at: " + process.env.PORT),
+    app.listen(port, () =>
+      console.log("MongoDB connected, Server running at: " + port),
     );
   })
   .catch((err) => console.error(err));

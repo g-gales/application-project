@@ -23,45 +23,47 @@ export default function AppLayout() {
   }, [mobileOpen]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] md:grid md:grid-cols-[280px_1fr]">
-      {/* Sidebar (desktop) */}
-      <aside className="hidden md:block bg-[var(--surface)] border-r border-[var(--border)]">
-        <Sidebar />
-      </aside>
+    <div className="min-h-screen min-w-screen max-w-[1495px] bg-[var(--bg)] text-[var(--text)]">
+      <div className="mx-auto w-full max-w-[1495px] min-h-screen md:grid md:grid-cols-[280px_1fr]">
+        {/* Sidebar (desktop) */}
+        <aside className="hidden md:block bg-[var(--surface)] border-r border-[var(--border)]">
+          <Sidebar />
+        </aside>
 
-      {/* Mobile drawer + backdrop */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/45 md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+        {/* Mobile drawer + backdrop */}
+        {mobileOpen && (
+          <div
+            className="fixed inset-0 z-20 bg-black/45 md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
 
-      <aside
-        id={drawerId}
-        className={[
-          "fixed top-0 left-0 z-30 h-screen w-[min(84vw,320px)] md:hidden",
-          "bg-[var(--surface)] border-r border-[var(--border)]",
-          "transform transition-transform duration-200 ease-out",
-          mobileOpen ? "translate-x-0" : "-translate-x-[105%]",
-        ].join(" ")}
-        aria-hidden={!mobileOpen}>
-        <Sidebar />
-      </aside>
+        <aside
+          id={drawerId}
+          className={[
+            "fixed top-0 left-0 z-30 h-screen w-[min(84vw,320px)] md:hidden",
+            "bg-[var(--surface)] border-r border-[var(--border)]",
+            "transform transition-transform duration-200 ease-out",
+            mobileOpen ? "translate-x-0" : "-translate-x-[105%]",
+          ].join(" ")}
+          aria-hidden={!mobileOpen}>
+          <Sidebar />
+        </aside>
 
-      {/* Main content */}
-      <div className="min-w-0">
-        <Topbar
-          drawerId={drawerId}
-          mobileOpen={mobileOpen}
-          onToggleMobile={() => setMobileOpen((v) => !v)}
-        />
+        {/* Main content */}
+        <div className="min-w-0 flex flex-col min-h-screen">
+          <Topbar
+            drawerId={drawerId}
+            mobileOpen={mobileOpen}
+            onToggleMobile={() => setMobileOpen((v) => !v)}
+          />
 
-        <main className="p-4 md:p-5">
-          <div className="mx-auto w-full max-w-[1175px]">
-            <Outlet />
-          </div>
-        </main>
+          <main className="flex-1 w-full p-4 md:p-5">
+            <div className="mx-auto w-full min-h-full">
+              <Outlet />
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

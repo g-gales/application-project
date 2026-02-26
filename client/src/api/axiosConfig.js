@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  // TODO: later this will be the Render.com URL
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/v1`,
 });
 
 // session management middleware

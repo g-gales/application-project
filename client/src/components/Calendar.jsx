@@ -2,7 +2,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const JS_TO_DAY = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 0: "Sun" };
+const JS_TO_DAY = {
+  1: "Mon",
+  2: "Tue",
+  3: "Wed",
+  4: "Thu",
+  5: "Fri",
+  6: "Sat",
+  0: "Sun",
+};
 
 function pad2(n) {
   return String(n).padStart(2, "0");
@@ -34,7 +42,11 @@ function isSameMonth(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 }
 function getMonthGridDates(anchorDate) {
-  const firstOfMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+  const firstOfMonth = new Date(
+    anchorDate.getFullYear(),
+    anchorDate.getMonth(),
+    1,
+  );
   const gridStart = startOfWeekMonday(firstOfMonth);
   return Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
 }
@@ -44,8 +56,14 @@ function fmtMonthTitle(date) {
 function fmtWeekLabel(weekStart) {
   const start = new Date(weekStart);
   const end = addDays(start, 6);
-  const startStr = start.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  const endStr = end.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const startStr = start.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+  const endStr = end.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
   return `${startStr} – ${endStr}, ${start.getFullYear()}`;
 }
 function fmtDayLabel(iso) {
@@ -80,7 +98,8 @@ const onDragStartEvent = (e, evt, sourceISO) => {
 };
 
 const parseDragPayload = (e) => {
-  const raw = e.dataTransfer.getData(DRAG_MIME) || e.dataTransfer.getData("text/plain");
+  const raw =
+    e.dataTransfer.getData(DRAG_MIME) || e.dataTransfer.getData("text/plain");
   if (!raw) return null;
   try {
     return JSON.parse(raw);
@@ -113,9 +132,11 @@ export default function Calendar() {
         prev.map((c) => {
           if (c.id !== courseId) return c;
           const existing = Array.isArray(c.assignments) ? c.assignments : [];
-          const updated = existing.map((a) => (a.id === assignmentId ? { ...a, dueDate: targetISO } : a));
+          const updated = existing.map((a) =>
+            a.id === assignmentId ? { ...a, dueDate: targetISO } : a,
+          );
           return { ...c, assignments: updated };
-        })
+        }),
       );
       return;
     }
@@ -129,9 +150,11 @@ export default function Calendar() {
           prev.map((c) => {
             if (c.id !== courseId) return c;
             const existing = Array.isArray(c.meetings) ? c.meetings : [];
-            const updated = existing.map((m) => (m.id === meetingId ? { ...m, date: targetISO } : m));
+            const updated = existing.map((m) =>
+              m.id === meetingId ? { ...m, date: targetISO } : m,
+            );
             return { ...c, meetings: updated };
-          })
+          }),
         );
         return;
       }
@@ -160,7 +183,7 @@ export default function Calendar() {
           };
 
           return { ...c, meetings: [...updated, oneOff] };
-        })
+        }),
       );
     }
   };
@@ -224,15 +247,21 @@ export default function Calendar() {
   const todayISO = toISODateLocal(new Date());
 
   const weekStart = useMemo(() => startOfWeekMonday(anchorDate), [anchorDate]);
-  const weekDates = useMemo(() => DAYS.map((_, i) => addDays(weekStart, i)), [weekStart]);
-  const monthGridDates = useMemo(() => getMonthGridDates(anchorDate), [anchorDate]);
+  const weekDates = useMemo(
+    () => DAYS.map((_, i) => addDays(weekStart, i)),
+    [weekStart],
+  );
+  const monthGridDates = useMemo(
+    () => getMonthGridDates(anchorDate),
+    [anchorDate],
+  );
 
   const headerLabel =
     viewMode === "week"
       ? fmtWeekLabel(weekStart)
       : viewMode === "day"
-      ? fmtDayLabel(toISODateLocal(anchorDate))
-      : fmtMonthTitle(anchorDate);
+        ? fmtDayLabel(toISODateLocal(anchorDate))
+        : fmtMonthTitle(anchorDate);
 
   const goToday = () => {
     const d = new Date();
@@ -260,9 +289,14 @@ export default function Calendar() {
     for (const course of courses) {
       const color = course.color || "#3B82F6";
       const meetings = Array.isArray(course.meetings) ? course.meetings : [];
-      const termStart = course.termStart ? fromISOToLocalDate(course.termStart) : null;
-      const termEnd = course.termEnd ? fromISOToLocalDate(course.termEnd) : null;
-      const isInTerm = (!termStart || date >= termStart) && (!termEnd || date <= termEnd);
+      const termStart = course.termStart
+        ? fromISOToLocalDate(course.termStart)
+        : null;
+      const termEnd = course.termEnd
+        ? fromISOToLocalDate(course.termEnd)
+        : null;
+      const isInTerm =
+        (!termStart || date >= termStart) && (!termEnd || date <= termEnd);
 
       for (const m of meetings) {
         const isOneOff = !!m.date && m.date === iso;
@@ -290,7 +324,9 @@ export default function Calendar() {
         });
       }
 
-      const assignments = Array.isArray(course.assignments) ? course.assignments : [];
+      const assignments = Array.isArray(course.assignments)
+        ? course.assignments
+        : [];
       for (const a of assignments) {
         if (!a?.dueDate) continue;
         if (a.dueDate !== iso) continue;
@@ -397,10 +433,12 @@ export default function Calendar() {
     if (!dayModalISO) return;
     const courseId = meetingForm.courseId;
     if (!courseId) return setDayError("Pick a course.");
-    if (!meetingForm.start || !meetingForm.end) return setDayError("Start/end time required.");
+    if (!meetingForm.start || !meetingForm.end)
+      return setDayError("Start/end time required.");
     setDayError("");
 
-    const clickedDay = JS_TO_DAY[fromISOToLocalDate(dayModalISO).getDay()] || "Mon";
+    const clickedDay =
+      JS_TO_DAY[fromISOToLocalDate(dayModalISO).getDay()] || "Mon";
     const location = meetingForm.location?.trim() || "";
 
     setCourses((prev) =>
@@ -420,7 +458,9 @@ export default function Calendar() {
         }
 
         const pickedDays =
-          Array.isArray(meetingForm.days) && meetingForm.days.length > 0 ? meetingForm.days : [clickedDay];
+          Array.isArray(meetingForm.days) && meetingForm.days.length > 0
+            ? meetingForm.days
+            : [clickedDay];
 
         const seriesId = makeId("s");
 
@@ -435,7 +475,7 @@ export default function Calendar() {
         }));
 
         return { ...c, meetings: [...existing, ...newMeetings] };
-      })
+      }),
     );
 
     setShowAdd(null);
@@ -463,7 +503,7 @@ export default function Calendar() {
           minutesCompleted: 0,
         };
         return { ...c, assignments: [...existing, newAssignment] };
-      })
+      }),
     );
 
     setShowAdd(null);
@@ -477,7 +517,7 @@ export default function Calendar() {
         if (c.id !== courseId) return c;
         const existing = Array.isArray(c.meetings) ? c.meetings : [];
         return { ...c, meetings: existing.filter((m) => m.id !== meetingId) };
-      })
+      }),
     );
   };
 
@@ -502,7 +542,7 @@ export default function Calendar() {
         });
 
         return { ...c, meetings: updated };
-      })
+      }),
     );
   };
 
@@ -519,27 +559,33 @@ export default function Calendar() {
     return (
       <div
         draggable={draggable}
-        onDragStart={(e) => (draggable ? onDragStartEvent(e, evt, sourceISO) : undefined)}
+        onDragStart={(e) =>
+          draggable ? onDragStartEvent(e, evt, sourceISO) : undefined
+        }
         onClick={(e) => e.stopPropagation()}
         className={[
-          "w-full max-w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1 overflow-hidden",
+          "w-full max-w-full min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 overflow-hidden",
           draggable ? "cursor-grab active:cursor-grabbing" : "",
         ].join(" ")}
         title={
           evt.type === "meeting"
             ? `${evt.courseCode} ${evt.start}-${evt.end} ${evt.courseName}`
             : `${evt.courseCode} Due ${evt.title}`
-        }
-      >
+        }>
         <div className="flex items-start gap-2 min-w-0">
-          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ backgroundColor: evt.color }} />
+          <span
+            className="mt-1 h-2.5 w-2.5 rounded-full"
+            style={{ backgroundColor: evt.color }}
+          />
           <div className="min-w-0">
-            <div className="truncate text-xs font-semibold text-slate-700">
+            <div className="truncate text-xs font-semibold text-[var(--text)]">
               {evt.courseCode}
-              <span className="text-slate-400"> • </span>
+              <span className="text-[var(--muted-text)]"> • </span>
               {evt.type === "meeting" ? `${evt.start}-${evt.end}` : "Due"}
             </div>
-            <div className="truncate text-xs text-slate-600">{evt.type === "meeting" ? evt.courseName : evt.title}</div>
+            <div className="truncate text-xs text-[var(--muted-text)]">
+              {evt.type === "meeting" ? evt.courseName : evt.title}
+            </div>
           </div>
         </div>
       </div>
@@ -559,11 +605,17 @@ export default function Calendar() {
             key={`${evt.type}-${evt.id || evt.meetingId || idx}`}
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: evt.color }}
-            title={evt.type === "meeting" ? `${evt.courseCode} meeting` : `${evt.courseCode} assignment`}
+            title={
+              evt.type === "meeting"
+                ? `${evt.courseCode} meeting`
+                : `${evt.courseCode} assignment`
+            }
           />
         ))}
         {remaining > 0 ? (
-          <span className="ml-0.5 text-[10px] font-semibold text-slate-500">+{remaining}</span>
+          <span className="ml-0.5 text-[10px] font-semibold text-[var(--text)]">
+            +{remaining}
+          </span>
         ) : null}
       </div>
     );
@@ -578,57 +630,59 @@ export default function Calendar() {
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Calendar</h1>
-            <p className="mt-1 text-sm text-slate-600">{headerLabel}</p>
+            <h1 className="text-2xl font-bold text-[var(--text)]">Calendar</h1>
+            <p className="mt-1 text-sm text-[var(--muted-text)]">
+              {headerLabel}
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div className="inline-flex overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-sm">
               <button
                 onClick={() => changeViewMode("month")}
                 className={[
                   "px-3 py-2 text-sm font-semibold",
-                  viewMode === "month" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
+                  viewMode === "month"
+                    ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
+                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                ].join(" ")}>
                 Month
               </button>
               <button
                 onClick={() => changeViewMode("week")}
                 className={[
                   "px-3 py-2 text-sm font-semibold",
-                  viewMode === "week" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
+                  viewMode === "week"
+                    ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
+                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                ].join(" ")}>
                 Week
               </button>
               <button
                 onClick={() => changeViewMode("day")}
                 className={[
                   "px-3 py-2 text-sm font-semibold",
-                  viewMode === "day" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
+                  viewMode === "day"
+                    ? "bg-[var(--primary)] text-[var(--primary-contrast)]"
+                    : "text-[var(--muted-text)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]",
+                ].join(" ")}>
                 Day
               </button>
             </div>
 
             <button
               onClick={goPrev}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
               ← Prev
             </button>
             <button
               onClick={goToday}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
               Today
             </button>
             <button
               onClick={goNext}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)]">
               Next →
             </button>
           </div>
@@ -643,13 +697,12 @@ export default function Calendar() {
               return (
                 <div
                   className={[
-                    "rounded-2xl border bg-white shadow-sm overflow-hidden",
-                    isToday ? "border-emerald-400" : "border-slate-200",
-                  ].join(" ")}
-                >
-                  <div className="border-b border-slate-200 p-4 flex items-center justify-between gap-3">
+                    "rounded-2xl border bg-[var(--bg)] shadow-sm overflow-hidden",
+                    isToday ? "border-emerald-400" : "border-[var(--border)]",
+                  ].join(" ")}>
+                  <div className="border-b border-[var(--border)]p-4 flex items-center justify-between gap-3">
                     <div>
-                      <div className="text-sm font-bold text-slate-900">
+                      <div className="text-sm font-bold text-[var(--text)]">
                         {fromISOToLocalDate(iso).toLocaleDateString(undefined, {
                           weekday: "long",
                           month: "short",
@@ -662,14 +715,17 @@ export default function Calendar() {
                   <div className="p-5 space-y-6">
                     <div>
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-slate-900">Meetings</h4>
+                        <h4 className="text-sm font-bold text-[var(--text)]">
+                          Meetings
+                        </h4>
                         <button
                           onClick={() => {
-                            setShowAdd(showAdd === "meeting" ? null : "meeting");
+                            setShowAdd(
+                              showAdd === "meeting" ? null : "meeting",
+                            );
                             setDayError("");
                           }}
-                          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                        >
+                          className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] hover:bg-[var(--hover-primary)]">
                           + Add meeting
                         </button>
                       </div>
@@ -681,9 +737,13 @@ export default function Calendar() {
                               Course
                               <select
                                 value={meetingForm.courseId}
-                                onChange={(e) => setMeetingForm((p) => ({ ...p, courseId: e.target.value }))}
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              >
+                                onChange={(e) =>
+                                  setMeetingForm((p) => ({
+                                    ...p,
+                                    courseId: e.target.value,
+                                  }))
+                                }
+                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                                 {courses.map((c) => (
                                   <option key={c.id} value={c.id}>
                                     {c.code} — {c.name}
@@ -696,7 +756,12 @@ export default function Calendar() {
                               Location
                               <input
                                 value={meetingForm.location}
-                                onChange={(e) => setMeetingForm((p) => ({ ...p, location: e.target.value }))}
+                                onChange={(e) =>
+                                  setMeetingForm((p) => ({
+                                    ...p,
+                                    location: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                                 placeholder="Optional"
                               />
@@ -707,7 +772,12 @@ export default function Calendar() {
                               <input
                                 type="time"
                                 value={meetingForm.start}
-                                onChange={(e) => setMeetingForm((p) => ({ ...p, start: e.target.value }))}
+                                onChange={(e) =>
+                                  setMeetingForm((p) => ({
+                                    ...p,
+                                    start: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                               />
                             </label>
@@ -717,7 +787,12 @@ export default function Calendar() {
                               <input
                                 type="time"
                                 value={meetingForm.end}
-                                onChange={(e) => setMeetingForm((p) => ({ ...p, end: e.target.value }))}
+                                onChange={(e) =>
+                                  setMeetingForm((p) => ({
+                                    ...p,
+                                    end: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                               />
                             </label>
@@ -728,14 +803,21 @@ export default function Calendar() {
                               <input
                                 type="checkbox"
                                 checked={meetingForm.repeatWeekly}
-                                onChange={(e) => setMeetingForm((p) => ({ ...p, repeatWeekly: e.target.checked }))}
+                                onChange={(e) =>
+                                  setMeetingForm((p) => ({
+                                    ...p,
+                                    repeatWeekly: e.target.checked,
+                                  }))
+                                }
                               />
                               Repeat weekly
                             </label>
 
                             {meetingForm.repeatWeekly ? (
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-xs font-semibold text-slate-600">Days:</span>
+                                <span className="text-xs font-semibold text-slate-600">
+                                  Days:
+                                </span>
                                 {DAYS.map((d) => {
                                   const active = meetingForm.days.includes(d);
                                   return (
@@ -745,7 +827,9 @@ export default function Calendar() {
                                       onClick={() =>
                                         setMeetingForm((p) => ({
                                           ...p,
-                                          days: active ? p.days.filter((x) => x !== d) : [...p.days, d],
+                                          days: active
+                                            ? p.days.filter((x) => x !== d)
+                                            : [...p.days, d],
                                         }))
                                       }
                                       className={[
@@ -753,8 +837,7 @@ export default function Calendar() {
                                         active
                                           ? "border-blue-600 bg-blue-600 text-white"
                                           : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                                      ].join(" ")}
-                                    >
+                                      ].join(" ")}>
                                       {d}
                                     </button>
                                   );
@@ -766,14 +849,12 @@ export default function Calendar() {
                           <div className="mt-4 flex items-center justify-end gap-2">
                             <button
                               onClick={() => setShowAdd(null)}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                            >
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                               Cancel
                             </button>
                             <button
                               onClick={addMeeting}
-                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                            >
+                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                               Save
                             </button>
                           </div>
@@ -787,15 +868,16 @@ export default function Calendar() {
                           </div>
                         ) : (
                           dayMeetings.map((evt, idx) => (
-                            <div key={`dm-${idx}`} className="flex items-center gap-2">
+                            <div
+                              key={`dm-${idx}`}
+                              className="flex items-center gap-2">
                               <div className="flex-1 min-w-0">
                                 <EventChip evt={evt} sourceISO={iso} />
                               </div>
                               <button
                                 onClick={() => openDeleteMeetingModal(evt, iso)}
                                 className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                title="Delete"
-                              >
+                                title="Delete">
                                 🗑
                               </button>
                             </div>
@@ -806,14 +888,17 @@ export default function Calendar() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-slate-900">Assignments due</h4>
+                        <h4 className="text-sm font-bold text-slate-900">
+                          Assignments due
+                        </h4>
                         <button
                           onClick={() => {
-                            setShowAdd(showAdd === "assignment" ? null : "assignment");
+                            setShowAdd(
+                              showAdd === "assignment" ? null : "assignment",
+                            );
                             setDayError("");
                           }}
-                          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                        >
+                          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
                           + Add assignment
                         </button>
                       </div>
@@ -825,9 +910,13 @@ export default function Calendar() {
                               Course
                               <select
                                 value={assignmentForm.courseId}
-                                onChange={(e) => setAssignmentForm((p) => ({ ...p, courseId: e.target.value }))}
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              >
+                                onChange={(e) =>
+                                  setAssignmentForm((p) => ({
+                                    ...p,
+                                    courseId: e.target.value,
+                                  }))
+                                }
+                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                                 {courses.map((c) => (
                                   <option key={c.id} value={c.id}>
                                     {c.code} — {c.name}
@@ -840,9 +929,13 @@ export default function Calendar() {
                               Status
                               <select
                                 value={assignmentForm.status}
-                                onChange={(e) => setAssignmentForm((p) => ({ ...p, status: e.target.value }))}
-                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              >
+                                onChange={(e) =>
+                                  setAssignmentForm((p) => ({
+                                    ...p,
+                                    status: e.target.value,
+                                  }))
+                                }
+                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                                 <option value="not-started">Not started</option>
                                 <option value="in-progress">In progress</option>
                                 <option value="done">Done</option>
@@ -853,7 +946,12 @@ export default function Calendar() {
                               Title
                               <input
                                 value={assignmentForm.title}
-                                onChange={(e) => setAssignmentForm((p) => ({ ...p, title: e.target.value }))}
+                                onChange={(e) =>
+                                  setAssignmentForm((p) => ({
+                                    ...p,
+                                    title: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                                 placeholder="e.g., Lab 3"
                               />
@@ -865,7 +963,12 @@ export default function Calendar() {
                                 type="number"
                                 min={0}
                                 value={assignmentForm.estimatedMinutes}
-                                onChange={(e) => setAssignmentForm((p) => ({ ...p, estimatedMinutes: e.target.value }))}
+                                onChange={(e) =>
+                                  setAssignmentForm((p) => ({
+                                    ...p,
+                                    estimatedMinutes: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                               />
                             </label>
@@ -874,7 +977,12 @@ export default function Calendar() {
                               Notes
                               <textarea
                                 value={assignmentForm.notes}
-                                onChange={(e) => setAssignmentForm((p) => ({ ...p, notes: e.target.value }))}
+                                onChange={(e) =>
+                                  setAssignmentForm((p) => ({
+                                    ...p,
+                                    notes: e.target.value,
+                                  }))
+                                }
                                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                                 rows={3}
                                 placeholder="Optional"
@@ -885,14 +993,12 @@ export default function Calendar() {
                           <div className="mt-4 flex items-center justify-end gap-2">
                             <button
                               onClick={() => setShowAdd(null)}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                            >
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                               Cancel
                             </button>
                             <button
                               onClick={addAssignment}
-                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                            >
+                              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                               Save
                             </button>
                           </div>
@@ -906,7 +1012,9 @@ export default function Calendar() {
                           </div>
                         ) : (
                           dayAssignments.map((evt, idx) => (
-                            <div key={`da-${idx}`} className="flex items-center gap-2">
+                            <div
+                              key={`da-${idx}`}
+                              className="flex items-center gap-2">
                               <div className="flex-1 min-w-0">
                                 <EventChip evt={evt} sourceISO={iso} />
                               </div>
@@ -914,8 +1022,7 @@ export default function Calendar() {
                                 className={[
                                   "shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold",
                                   statusBadgeClasses(evt.status),
-                                ].join(" ")}
-                              >
+                                ].join(" ")}>
                                 {evt.status}
                               </span>
                             </div>
@@ -954,12 +1061,15 @@ export default function Calendar() {
                     "cursor-pointer rounded-2xl border bg-white shadow-sm text-left overflow-hidden w-full",
                     "transition hover:bg-blue-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500",
                     isToday ? "border-blue-400" : "border-slate-200",
-                  ].join(" ")}
-                >
+                  ].join(" ")}>
                   <div className="border-b border-slate-200 p-3">
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-bold text-slate-900">
-                        {date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                        {date.toLocaleDateString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </div>
                       {isToday ? (
                         <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
@@ -974,12 +1084,20 @@ export default function Calendar() {
                     {dayEvents.length === 0 ? (
                       <div className="text-sm text-slate-500">No events</div>
                     ) : (
-                      dayEvents.slice(0, 6).map((evt, idx) => (
-                        <EventChip key={`${iso}-${idx}`} evt={evt} sourceISO={iso} />
-                      ))
+                      dayEvents
+                        .slice(0, 6)
+                        .map((evt, idx) => (
+                          <EventChip
+                            key={`${iso}-${idx}`}
+                            evt={evt}
+                            sourceISO={iso}
+                          />
+                        ))
                     )}
                     {dayEvents.length > 6 ? (
-                      <div className="text-xs font-semibold text-slate-500">+{dayEvents.length - 6} more</div>
+                      <div className="text-xs font-semibold text-slate-500">
+                        +{dayEvents.length - 6} more
+                      </div>
                     ) : null}
                   </div>
                 </button>
@@ -993,7 +1111,9 @@ export default function Calendar() {
             <div className="w-full max-w-full rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
               <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 min-w-0">
                 {DAYS.map((d) => (
-                  <div key={d} className="p-2 sm:p-3 text-[11px] sm:text-xs font-bold text-slate-700 min-w-0">
+                  <div
+                    key={d}
+                    className="p-2 sm:p-3 text-[11px] sm:text-xs font-bold text-slate-700 min-w-0">
                     {d}
                   </div>
                 ))}
@@ -1007,7 +1127,10 @@ export default function Calendar() {
                   const dayEvents = monthEventsMap.get(iso) || [];
 
                   const visible = dayEvents.slice(0, 3);
-                  const remaining = Math.max(0, dayEvents.length - visible.length);
+                  const remaining = Math.max(
+                    0,
+                    dayEvents.length - visible.length,
+                  );
 
                   return (
                     <button
@@ -1019,17 +1142,21 @@ export default function Calendar() {
                       className={[
                         "cursor-pointer min-h-[86px] sm:min-h-[110px] w-full text-left border-b border-r border-slate-200 p-2 overflow-hidden min-w-0",
                         "transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset",
-                        !inMonth ? "bg-slate-50/60 text-slate-400 hover:bg-slate-100/70" : "bg-white hover:bg-blue-50",
+                        !inMonth
+                          ? "bg-slate-50/60 text-slate-400 hover:bg-slate-100/70"
+                          : "bg-white hover:bg-blue-50",
                         isToday ? "bg-emerald-50 ring-2 ring-emerald-400" : "",
-                      ].join(" ")}
-                    >
+                      ].join(" ")}>
                       <div className="flex items-center justify-between min-w-0">
                         <div
                           className={[
                             "text-xs font-bold min-w-0 rounded px-2 py-1",
-                            isToday ? "text-emerald-700 font-extrabold" : inMonth ? "text-slate-900" : "text-slate-400",
-                          ].join(" ")}
-                        >
+                            isToday
+                              ? "text-emerald-700 font-extrabold"
+                              : inMonth
+                                ? "text-slate-900"
+                                : "text-slate-400",
+                          ].join(" ")}>
                           {date.getDate()}
                         </div>
                       </div>
@@ -1040,7 +1167,11 @@ export default function Calendar() {
 
                       <div className="mt-2 space-y-1 min-w-0 hidden sm:block">
                         {visible.map((evt, idx) => (
-                          <EventChip key={`${iso}-${idx}`} evt={evt} sourceISO={iso} />
+                          <EventChip
+                            key={`${iso}-${idx}`}
+                            evt={evt}
+                            sourceISO={iso}
+                          />
                         ))}
 
                         {remaining > 0 ? (
@@ -1060,18 +1191,22 @@ export default function Calendar() {
 
       {dayModalISO && viewMode !== "day" ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={closeDayModal} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={closeDayModal}
+          />
 
           <div className="relative w-full max-w-2xl max-h-[85vh] rounded-2xl bg-white shadow-xl overflow-hidden flex flex-col">
             <div className="flex items-start justify-between gap-4 border-b border-slate-200 p-5">
               <div className="min-w-0">
-                <h3 className="text-lg font-bold text-slate-900">{fmtDayLabel(dayModalISO)}</h3>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {fmtDayLabel(dayModalISO)}
+                </h3>
               </div>
               <button
                 onClick={closeDayModal}
                 className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Close"
-              >
+                aria-label="Close">
                 ✕
               </button>
             </div>
@@ -1085,8 +1220,7 @@ export default function Calendar() {
                       setShowAdd(showAdd === "meeting" ? null : "meeting");
                       setDayError("");
                     }}
-                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                  >
+                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
                     + Add meeting
                   </button>
                 </div>
@@ -1098,22 +1232,39 @@ export default function Calendar() {
                     </div>
                   ) : (
                     dayMeetings.map((m, idx) => (
-                      <div key={m.meetingId || `m-${idx}`} className="rounded-xl border border-slate-200 p-3">
+                      <div
+                        key={m.meetingId || `m-${idx}`}
+                        className="rounded-xl border border-slate-200 p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2 min-w-0">
-                            <span className="mt-1 h-3 w-3 rounded-full" style={{ backgroundColor: m.color }} />
+                            <span
+                              className="mt-1 h-3 w-3 rounded-full"
+                              style={{ backgroundColor: m.color }}
+                            />
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-slate-500">{m.courseCode}</div>
+                              <div className="text-xs font-semibold text-slate-500">
+                                {m.courseCode}
+                              </div>
                               <div className="text-sm font-bold text-slate-900">
                                 {m.start}–{m.end}
                               </div>
-                              <div className="text-sm text-slate-700 truncate">{m.courseName}</div>
-
-                              <div className="mt-1 text-xs text-slate-500">
-                                {m.date ? `One-off • ${m.date}` : m.day ? `Recurring • ${m.day}` : ""}
+                              <div className="text-sm text-slate-700 truncate">
+                                {m.courseName}
                               </div>
 
-                              {m.location ? <div className="text-xs text-slate-500 truncate">{m.location}</div> : null}
+                              <div className="mt-1 text-xs text-slate-500">
+                                {m.date
+                                  ? `One-off • ${m.date}`
+                                  : m.day
+                                    ? `Recurring • ${m.day}`
+                                    : ""}
+                              </div>
+
+                              {m.location ? (
+                                <div className="text-xs text-slate-500 truncate">
+                                  {m.location}
+                                </div>
+                              ) : null}
                             </div>
                           </div>
 
@@ -1121,8 +1272,7 @@ export default function Calendar() {
                             <Link
                               to={`/courses/${m.courseId}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                            >
+                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
                               Open course
                             </Link>
 
@@ -1133,8 +1283,7 @@ export default function Calendar() {
                                 openDeleteMeetingModal(m, dayModalISO);
                               }}
                               className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
-                              title="Delete meeting"
-                            >
+                              title="Delete meeting">
                               Delete
                             </button>
                           </div>
@@ -1147,14 +1296,17 @@ export default function Calendar() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-900">Assignments due</h4>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Assignments due
+                  </h4>
                   <button
                     onClick={() => {
-                      setShowAdd(showAdd === "assignment" ? null : "assignment");
+                      setShowAdd(
+                        showAdd === "assignment" ? null : "assignment",
+                      );
                       setDayError("");
                     }}
-                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                  >
+                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">
                     + Add assignment
                   </button>
                 </div>
@@ -1166,15 +1318,26 @@ export default function Calendar() {
                     </div>
                   ) : (
                     dayAssignments.map((a, idx) => (
-                      <div key={a.id || `a-${idx}`} className="rounded-xl border border-slate-200 p-3">
+                      <div
+                        key={a.id || `a-${idx}`}
+                        className="rounded-xl border border-slate-200 p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2 min-w-0">
-                            <span className="mt-1 h-3 w-3 rounded-full" style={{ backgroundColor: a.color }} />
+                            <span
+                              className="mt-1 h-3 w-3 rounded-full"
+                              style={{ backgroundColor: a.color }}
+                            />
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-slate-500">{a.courseCode}</div>
-                              <div className="text-sm font-bold text-slate-900 truncate">{a.title}</div>
+                              <div className="text-xs font-semibold text-slate-500">
+                                {a.courseCode}
+                              </div>
+                              <div className="text-sm font-bold text-slate-900 truncate">
+                                {a.title}
+                              </div>
                               {a.estimatedMinutes != null ? (
-                                <div className="mt-1 text-xs text-slate-500">Est. {a.estimatedMinutes} min</div>
+                                <div className="mt-1 text-xs text-slate-500">
+                                  Est. {a.estimatedMinutes} min
+                                </div>
                               ) : null}
                             </div>
                           </div>
@@ -1183,8 +1346,7 @@ export default function Calendar() {
                             className={[
                               "shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold",
                               statusBadgeClasses(a.status),
-                            ].join(" ")}
-                          >
+                            ].join(" ")}>
                             {a.status}
                           </span>
                         </div>
@@ -1206,32 +1368,44 @@ export default function Calendar() {
 
       {deleteModal.open && deleteModal.meeting ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={closeDeleteMeetingModal} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={closeDeleteMeetingModal}
+          />
           <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
             <div className="border-b border-slate-200 p-5">
-              <h3 className="text-lg font-bold text-slate-900">Delete meeting</h3>
+              <h3 className="text-lg font-bold text-slate-900">
+                Delete meeting
+              </h3>
               <p className="mt-1 text-sm text-slate-600">
-                Do you want to delete only this occurrence, or delete the whole meeting rule?
+                Do you want to delete only this occurrence, or delete the whole
+                meeting rule?
               </p>
             </div>
 
             <div className="p-5 space-y-4">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start gap-2">
-                  <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ backgroundColor: deleteModal.meeting.color }} />
+                  <span
+                    className="mt-1 h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: deleteModal.meeting.color }}
+                  />
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-slate-800 truncate">
-                      {deleteModal.meeting.courseCode} • {deleteModal.meeting.start}–{deleteModal.meeting.end}
+                      {deleteModal.meeting.courseCode} •{" "}
+                      {deleteModal.meeting.start}–{deleteModal.meeting.end}
                     </div>
                     {deleteModal.meeting.location ? (
-                      <div className="mt-1 text-xs text-slate-600 truncate">{deleteModal.meeting.location}</div>
+                      <div className="mt-1 text-xs text-slate-600 truncate">
+                        {deleteModal.meeting.location}
+                      </div>
                     ) : null}
                     <div className="mt-1 text-xs text-slate-600">
                       {deleteModal.meeting.date
                         ? `One-off on ${deleteModal.meeting.date}`
                         : deleteModal.meeting.day
-                        ? `Recurring on ${deleteModal.meeting.day}`
-                        : ""}
+                          ? `Recurring on ${deleteModal.meeting.day}`
+                          : ""}
                     </div>
                   </div>
                 </div>
@@ -1241,30 +1415,34 @@ export default function Calendar() {
                 <button
                   type="button"
                   onClick={() => {
-                    deleteMeetingOccurrence(deleteModal.meeting.courseId, deleteModal.meeting, deleteModal.iso);
+                    deleteMeetingOccurrence(
+                      deleteModal.meeting.courseId,
+                      deleteModal.meeting,
+                      deleteModal.iso,
+                    );
                     closeDeleteMeetingModal();
                   }}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                >
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                   Delete only this occurrence
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    deleteMeetingOneRule(deleteModal.meeting.courseId, deleteModal.meeting.meetingId);
+                    deleteMeetingOneRule(
+                      deleteModal.meeting.courseId,
+                      deleteModal.meeting.meetingId,
+                    );
                     closeDeleteMeetingModal();
                   }}
-                  className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
-                >
+                  className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
                   Delete entire meeting rule
                 </button>
 
                 <button
                   type="button"
                   onClick={closeDeleteMeetingModal}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                >
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                   Cancel
                 </button>
               </div>
