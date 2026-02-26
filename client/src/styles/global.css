@@ -13,6 +13,9 @@
   --primary: #2b59ff;
   --primary-contrast: #ffffff;
 
+  --hover-primary: #c9ccd5;
+  --hover-primary-contrast: #272831;
+
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 
   --radius: 14px;
@@ -34,6 +37,9 @@
 
   --primary: #7aa2ff;
   --primary-contrast: #0b0e14;
+
+  --hover-primary: #adb1c9;
+  --hover-primary-contrast: #1f2026;
 
   --shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
   --focus: 0 0 0 3px rgba(122, 162, 255, 0.45);
