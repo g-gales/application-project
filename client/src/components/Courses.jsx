@@ -280,13 +280,14 @@ const Courses = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-[var(--surface)]">
+    <div className="py-8 px-4 bg-[var(--surface)]">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
           <button
             onClick={openAddCourse}
-            className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg transition">
+            className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg transition"
+          >
             + Add Course
           </button>
         </div>
@@ -305,11 +306,13 @@ const Courses = () => {
             return (
               <div
                 key={course._id}
-                className="bg-[var(--surface)] rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300">
+                className="bg-[var(--surface)] rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300"
+              >
                 <Link
                   to={`/app/courses/${course._id}`}
                   className="block p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label={`Open ${course.code} ${course.name}`}>
+                  aria-label={`Open ${course.code} ${course.name}`}
+                >
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-start sm:items-center gap-3">
@@ -363,7 +366,8 @@ const Courses = () => {
 
                     <div
                       className="flex-shrink-0 flex gap-2 sm:flex-col sm:gap-3 sm:ml-4 ml-0 mt-4 sm:mt-0"
-                      onClick={(e) => e.preventDefault()}>
+                      onClick={(e) => e.preventDefault()}
+                    >
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -371,7 +375,8 @@ const Courses = () => {
                           openEditCourse(course);
                         }}
                         className="bg-green-500 hover:bg-green-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-green-600/40"
-                        title="Edit">
+                        title="Edit"
+                      >
                         ✎
                       </button>
 
@@ -382,7 +387,8 @@ const Courses = () => {
                           handleRemoveCourse(course._id);
                         }}
                         className="bg-red-500 hover:bg-red-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
-                        title="Remove">
+                        title="Remove"
+                      >
                         🗑
                       </button>
                     </div>
@@ -400,7 +406,8 @@ const Courses = () => {
             </p>
             <button
               onClick={openAddCourse}
-              className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg mt-4 transition">
+              className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg mt-4 transition"
+            >
               + Add Course
             </button>
           </div>
@@ -422,7 +429,8 @@ const Courses = () => {
               <button
                 onClick={closeModal}
                 className="rounded-lg p-2 text-[var(--muted-text)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-                aria-label="Close">
+                aria-label="Close"
+              >
                 ✕
               </button>
             </div>
@@ -450,7 +458,8 @@ const Courses = () => {
                   <select
                     value={form.termSelect}
                     onChange={(e) => onChangeTermSelect(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     {terms.length ? (
                       <>
                         {terms.map((t) => (
@@ -598,12 +607,14 @@ const Courses = () => {
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   onClick={closeModal}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--text)] shadow-sm hover:bg-[var(--surface)]">
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--text)] shadow-sm hover:bg-[var(--surface)]"
+                >
                   Cancel
                 </button>
                 <button
                   onClick={saveCourse}
-                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
+                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
+                >
                   {mode === "add" ? "Add" : "Save"}
                 </button>
               </div>
