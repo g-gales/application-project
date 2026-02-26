@@ -44,7 +44,7 @@ function App() {
             <Route path="/app" element={<AppLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="calendar" element={<Calendar />} />
+              <Route path="calendar" element={<SimpleCalendar />} />
               <Route path="courses" element={<Courses />} />
               <Route path="courses/:courseId" element={<CourseDetails />} />
               <Route path="wellness" element={<Wellness />} />
