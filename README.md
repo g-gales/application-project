@@ -39,13 +39,15 @@ cd ../client
 npm install
 ```
 ### 3. Environment variables
-Inside /server .env file must contain:
+Inside /server the .env file must contain:
 * PORT=3001
 * MONGODB_URI
 * GOOGLE_CLIENT_ID
+* FRONTEND_ORIGIN=http://localhost:5173
 
 Inside /client the .env file must contain:
 * VITE_GOOGLE_CLIENT_ID
+* VITE_API_BASE_URL=https://application-project-1.onrender.com
 
 ### 4. Run project on localhost
 
