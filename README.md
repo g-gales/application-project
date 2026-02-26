@@ -2,7 +2,7 @@
 
 A full-stack academic productivity application built with the MERN stack and Vite.
 
-## Live version: [replace this with the link](link.to.our.deployment)
+## Live version: https://application-project-1.onrender.com
 
 ## Project Structure
 
