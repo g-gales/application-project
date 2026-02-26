@@ -16,7 +16,7 @@ const Pomodoro = lazy(() => import("./pages/Pomodoro"));
 const Flashcards = lazy(() => import("./pages/Flashcards"));
 const Courses = lazy(() => import("./components/Courses"));
 const CourseDetails = lazy(() => import("./components/CourseDetails"));
-const Calendar = lazy(() => import("./components/Calendar"));
+const Calendar = lazy(() => import("./components/SimpleCalendar"));
 
 import { ThemeProvider } from "./components/theme/ThemeContext";
 
