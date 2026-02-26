@@ -30,6 +30,26 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/courses", courseRoutes);
 
+app.get("/debug/routes", (req, res) => {
+  const routes = [];
+
+  app._router.stack.forEach((layer) => {
+    if (layer.route?.path) {
+      const methods = Object.keys(layer.route.methods).join(",").toUpperCase();
+      routes.push(`${methods} ${layer.route.path}`);
+    } else if (layer.name === "router" && layer.handle?.stack) {
+      layer.handle.stack.forEach((h) => {
+        if (h.route?.path) {
+          const methods = Object.keys(h.route.methods).join(",").toUpperCase();
+          routes.push(`${methods} ${h.route.path}`);
+        }
+      });
+    }
+  });
+
+  res.json({ routes: routes.sort() });
+});
+
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 mongoose
