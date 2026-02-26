@@ -30,33 +30,15 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/courses", courseRoutes);
 
-app.get("/debug/routes", (req, res) => {
-  const routes = [];
-
-  app._router.stack.forEach((layer) => {
-    if (layer.route?.path) {
-      const methods = Object.keys(layer.route.methods).join(",").toUpperCase();
-      routes.push(`${methods} ${layer.route.path}`);
-    } else if (layer.name === "router" && layer.handle?.stack) {
-      layer.handle.stack.forEach((h) => {
-        if (h.route?.path) {
-          const methods = Object.keys(h.route.methods).join(",").toUpperCase();
-          routes.push(`${methods} ${h.route.path}`);
-        }
-      });
-    }
-  });
-
-  res.json({ routes: routes.sort() });
-});
-
 app.get("/health", (req, res) => res.json({ ok: true }));
+
+const port = process.env.PORT || 3001;
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(process.env.PORT || 3001, () =>
-      console.log("MongoDB connected, Server running at: " + process.env.PORT),
+    app.listen(port, () =>
+      console.log("MongoDB connected, Server running at: " + port),
     );
   })
   .catch((err) => console.error(err));
