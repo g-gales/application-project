@@ -31,7 +31,7 @@ app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/courses", courseRoutes);
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ ok: true, timestamp: new Date() });
+  res.status(200).json({ ok: true });
 });
 
 const port = process.env.PORT || 3001;

@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react"; // lazy loading to reduce initial package size
+import { lazy, Suspense } from "react"; // lazy loading to reduce initial package size
 import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
@@ -23,15 +23,6 @@ import "./styles/global.css";
 
 function App() {
   const { user } = useAuth();
-
-  // wake up backend on load
-  useEffect(() => {
-    const wakeUrl = `${import.meta.env.VITE_API_BASE_URL}/health?t=${Date.now()}`;
-
-    fetch(wakeUrl)
-      .then(() => console.log("Backend awake"))
-      .catch(() => console.log("Backend not reachable"));
-  }, []);
 
   return (
     <ThemeProvider>
