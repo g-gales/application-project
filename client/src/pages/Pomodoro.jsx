@@ -13,11 +13,9 @@ export default function Pomodoro() {
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  // times for work and break
+  // times for work mode and break
   const [times, setTimes] = useState({ work: 25, break: 5 });
   const [isWorkMode, setIsWorkMode] = useState(true);
-  const [totalSeconds, setTotalSeconds] = useState(25 * 60);
 
   // deconstructed useTimer hook - TODO: onExpire should add time to course db
   const { seconds, minutes, isRunning, pause, resume, restart } = useTimer({
@@ -26,13 +24,17 @@ export default function Pomodoro() {
     onExpire: () => alert(isWorkMode ? "Focus session done!" : "Break over!"),
   });
 
-  // refresh timer will
+  // refreshTimer will reset seconds with new minute value and resets the timer
   const refreshTimer = (mins) => {
-    const newSecs = mins * 60;
-    setTotalSeconds(newSecs);
     const time = new Date();
-    time.setSeconds(time.getSeconds() + newSecs);
+    time.setSeconds(time.getSeconds() + mins * 60);
     restart(time, false);
+  };
+
+  const toggleMode = () => {
+    const nextMode = !isWorkMode;
+    setIsWorkMode(nextMode);
+    refreshTimer(nextMode ? times.work : times.break);
   };
 
   // get list of courses
@@ -41,9 +43,21 @@ export default function Pomodoro() {
   }, []);
 
   // percentage for circularProgressBar
+  const currentTotalSecs = (isWorkMode ? times.work : times.break) * 60;
   const percentage = Math.round(
-    ((minutes * 60 + seconds) / totalSeconds) * 100,
+    ((minutes * 60 + seconds) / currentTotalSecs) * 100,
   );
+
+  // styles for circle progress bar
+  const timerStyles = {
+    path: {
+      stroke: isWorkMode ? "var(--primary)" : "var(--muted-text)",
+      strokeLinecap: "butt",
+      transition: "stroke-dashoffset 0.5s ease, stroke 0.3s ease",
+    },
+    trail: { stroke: "var(--border)", strokeLinecap: "butt" },
+    text: { fill: "var(--text)", fontSize: "20px", fontWeight: "900" },
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center bg-[var(--surface)] p-4 border border-[var(--border)] rounded-[var(--radius)] gap-4">
@@ -51,6 +65,7 @@ export default function Pomodoro() {
 
       {/* // select course  */}
       <select
+        required
         value={selectedCourseId}
         onChange={(e) => setSelectedCourseId(e.target.value)}
         className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)]"
@@ -71,32 +86,10 @@ export default function Pomodoro() {
         <CircularProgressbar
           value={percentage}
           text={`${minutes}:${seconds.toString().padStart(2, "0")}`}
-          styles={{
-            // circle styles
-            path: {
-              stroke: isWorkMode ? "var(--primary)" : "var(--muted-text)",
-              strokeLinecap: "butt",
-              transition: "stroke-dashoffset 0.5s ease 0s, stroke 0.3s ease",
-            },
-            // background circle
-            trail: {
-              stroke: "var(--border)",
-              strokeLinecap: "butt",
-            },
-            // text inside the circle
-            text: {
-              fill: "var(--text)",
-              fontSize: "20px",
-              fontWeight: "900",
-              fontFamily: "inherit",
-            },
-          }}
+          styles={timerStyles}
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-16">
-          <span className="text-[10px] uppercase font-black opacity-60">
-            {isWorkMode ? "Focus" : "Break"}
-          </span>
-          <span className="text-[9px] text-[var(--primary)] font-bold">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-16 hover:underline">
+          <span className="text-[9px] text-[var(--primary)] font-bold ">
             Edit Times
           </span>
         </div>
@@ -111,15 +104,7 @@ export default function Pomodoro() {
         >
           {isRunning ? "Pause" : "Start"}
         </Button>
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={() => {
-            const nextMode = !isWorkMode;
-            setIsWorkMode(nextMode);
-            refreshTimer(nextMode ? times.work : times.break);
-          }}
-        >
+        <Button variant="secondary" fullWidth onClick={toggleMode}>
           {isWorkMode ? "Break" : "Focus"}
         </Button>
         <Button
