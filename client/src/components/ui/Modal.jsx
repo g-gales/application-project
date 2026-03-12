@@ -1,3 +1,5 @@
+import Button from "./Button";
+
 export default function Modal({
   isOpen,
   onClose,
@@ -28,16 +30,20 @@ export default function Modal({
           </h2>
         )}
 
-        {/* This container ensures the content dictates the width */}
+        {/* // children live here */}
         <div className="h-full w-full">{children}</div>
 
         {showCloseButton && (
-          <button
-            onClick={onClose}
-            className="w-full mt-6 text-[14px] opacity-50 font-black uppercase tracking-tighter hover:opacity-100 transition-opacity"
-          >
-            Close
-          </button>
+          <div className="mt-4 border-t border-[var(--border)] pt-4">
+            <Button
+              variant="ghost"
+              fullWidth
+              onClick={onClose}
+              className="text-[10px]"
+            >
+              Close
+            </Button>
+          </div>
         )}
       </div>
     </div>
