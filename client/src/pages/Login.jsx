@@ -1,11 +1,17 @@
+import { useState } from "react";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+
 import { GoogleLogin } from "@react-oauth/google";
+
 import api from "../api/axiosConfig";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSuccess = async (credentialResponse) => {
+    setIsLoading(true);
     try {
       // sending the token to the backend for verification
       const response = await api.post("/users/google-login", {
@@ -19,11 +25,12 @@ const Login = () => {
       login(user, token);
     } catch (error) {
       console.error("Backend Login Error:", error);
-      alert("Login failed. Check if your server is running on port 3001!");
+      setIsLoading(false);
     }
   };
 
   const handleGuestLogin = async () => {
+    setIsLoading(true);
     // this mirrors google login, but doesn't handle the Google Token in the backend
     try {
       const response = await api.post("/users/guest-login");
@@ -35,7 +42,7 @@ const Login = () => {
       login(user, token);
     } catch (error) {
       console.error("Guest Login Error:", error);
-      alert("Guest login failed. Make sure the backend is updated!");
+      setIsLoading(false);
     }
   };
 
@@ -44,19 +51,27 @@ const Login = () => {
       <h1 className="text-4xl font-black text-center mb-8">Student PowerUp</h1>
 
       <div className="flex flex-col items-center bg-white p-8 rounded-2xl shadow-2xl ">
-        <GoogleLogin
-          onSuccess={handleSuccess}
-          onError={() => console.log("Login Failed")}
-          useOneTap={false}
-          shape="pill"
-          theme="filled_blue"
-        />
-        <button
-          onClick={handleGuestLogin}
-          className="h-10 w-48 p-2 mt-2 rounded-full text-sm text-white font-bold bg-blue-900 hover:bg-blue-800 transition-colors shadow-sm cursor-pointer"
-        >
-          Guest Sign-In
-        </button>
+        {isLoading ? (
+          <div className="flex flex-col items-center animate-pulse">
+            <LoadingSpinner size="small" text="Waking up server..." />
+          </div>
+        ) : (
+          <>
+            <GoogleLogin
+              onSuccess={handleSuccess}
+              onError={() => console.log("Login Failed")}
+              useOneTap={false}
+              shape="pill"
+              theme="filled_blue"
+            />
+            <button
+              onClick={handleGuestLogin}
+              className="h-10 w-48 p-2 mt-2 rounded-full text-sm text-white font-bold bg-blue-900 hover:bg-blue-800 transition-colors shadow-sm cursor-pointer"
+            >
+              Guest Sign-In
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

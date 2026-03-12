@@ -122,7 +122,7 @@ export default function CourseDetails() {
       .reduce((sum, a) => sum + Number(a.estimatedMinutes || 0), 0);
   }, [course]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner size={"small"} />;
 
   const openAdd = () => {
     setMode("add");
@@ -262,7 +262,8 @@ export default function CourseDetails() {
 
           <Link
             to="/app/courses"
-            className="mt-6 inline-flex rounded-lg bg-[var(--primary)] px-6 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)] transition">
+            className="mt-6 inline-flex rounded-lg bg-[var(--primary)] px-6 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)] transition"
+          >
             Return to Courses
           </Link>
         </div>
@@ -278,7 +279,7 @@ export default function CourseDetails() {
   const courseTerm = course.term || "—";
 
   return (
-    <div className="min-h-screen p-6 bg-[var(--surface)]">
+    <div className="p-6 bg-[var(--surface)]">
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
@@ -299,13 +300,15 @@ export default function CourseDetails() {
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Link
                   to="/app/courses"
-                  className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50">
+                  className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50"
+                >
                   ← Back to Courses
                 </Link>
 
                 <button
                   onClick={openAdd}
-                  className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
+                  className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
+                >
                   + Add Assignment
                 </button>
               </div>
@@ -442,7 +445,8 @@ export default function CourseDetails() {
                               isLate
                                 ? "bg-red-100 text-red-700"
                                 : "bg-[var(--bg)] text-[var(--muted-text)]",
-                            ].join(" ")}>
+                            ].join(" ")}
+                          >
                             {fmtDate(a.dueDate)} • {dueLabel(a.dueDate)}
                           </span>
 
@@ -480,14 +484,16 @@ export default function CourseDetails() {
                         <button
                           onClick={() => bumpProgress(a.id, -15)}
                           className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Minus 15 minutes">
+                          title="Minus 15 minutes"
+                        >
                           -15m
                         </button>
 
                         <button
                           onClick={() => bumpProgress(a.id, 15)}
                           className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Plus 15 minutes">
+                          title="Plus 15 minutes"
+                        >
                           +15m
                         </button>
 
@@ -498,19 +504,22 @@ export default function CourseDetails() {
                             a.status === "done"
                               ? "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                               : "border border-[var(--border)] bg-[var(--surface)] text-[var(--muted-text)] hover:bg-[var(--bg)]",
-                          ].join(" ")}>
+                          ].join(" ")}
+                        >
                           {a.status === "done" ? "Mark not done" : "Mark done"}
                         </button>
 
                         <button
                           onClick={() => openEdit(a)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
+                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
+                        >
                           Edit
                         </button>
 
                         <button
                           onClick={() => deleteAssignment(a.id)}
-                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100">
+                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100"
+                        >
                           Delete
                         </button>
                       </div>
@@ -541,7 +550,8 @@ export default function CourseDetails() {
                 <button
                   onClick={closeModal}
                   className="rounded-lg p-2 text-[var(--muted-text-2)] hover:bg-slate-100 hover:text-[var(--muted-text)]"
-                  aria-label="Close">
+                  aria-label="Close"
+                >
                   ✕
                 </button>
               </div>
@@ -585,7 +595,8 @@ export default function CourseDetails() {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, status: e.target.value }))
                       }
-                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                    >
                       <option value="not-started">Not started</option>
                       <option value="in-progress">In progress</option>
                       <option value="done">Done</option>
@@ -658,12 +669,14 @@ export default function CourseDetails() {
                 <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     onClick={closeModal}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
+                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
+                  >
                     Cancel
                   </button>
                   <button
                     onClick={saveAssignment}
-                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
+                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
+                  >
                     {mode === "add" ? "Add" : "Save"}
                   </button>
                 </div>
