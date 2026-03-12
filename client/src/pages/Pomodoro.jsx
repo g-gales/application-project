@@ -7,6 +7,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 import Modal from "../components/ui/Modal";
+import Button from "../components/ui/Button";
 
 export default function Pomodoro() {
   const [courses, setCourses] = useState([]);
@@ -89,27 +90,30 @@ export default function Pomodoro() {
 
       {/* buttons for controls */}
       <div className="flex gap-3 w-full mt-auto max-w-[400px]">
-        <button
+        <Button
+          variant={isRunning ? "secondary" : "primary"}
+          fullWidth
           onClick={isRunning ? pause : resume}
-          className="flex-1 py-3 rounded-[var(--radius)] bg-[var(--primary)] text-white font-bold uppercase text-xs active:scale-95 hover:bg-[var(--hover-primary)]"
         >
           {isRunning ? "Pause" : "Start"}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="secondary"
+          fullWidth
           onClick={() => {
-            setIsWorkMode(!isWorkMode);
-            refreshTimer(!isWorkMode ? times.work : times.break);
+            const nextMode = !isWorkMode;
+            setIsWorkMode(nextMode);
+            refreshTimer(nextMode ? times.work : times.break);
           }}
-          className="flex-1 py-3 rounded-[var(--radius)] border border-[var(--border)] text-xs font-bold uppercase active:scale-95"
         >
           {isWorkMode ? "Break" : "Focus"}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="danger"
           onClick={() => refreshTimer(isWorkMode ? times.work : times.break)}
-          className="px-4 text-red-500 text-xs font-bold uppercase active:scale-95"
         >
           Reset
-        </button>
+        </Button>
       </div>
 
       {/* // modal to edit the time for work and break */}

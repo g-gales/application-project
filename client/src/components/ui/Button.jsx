@@ -1,6 +1,6 @@
 /**
  * Reusable button
- * * @param {Object} props
+ * @param {Object} props
  * @param {React.ReactNode} props.children - children in the button
  * @param {Function} [props.onClick] - onClick handler functions
  * @param {'primary' | 'secondary' | 'tertiary' | 'ghost' | 'danger'} [props.variant='primary'] - presets based on /styles/global.css
@@ -9,7 +9,6 @@
  * @param {boolean} [props.disabled=false] - boolean disabled
  * @param {boolean} [props.fullWidth=false] - boolean width
  */
-
 const Button = ({
   children,
   onClick,
