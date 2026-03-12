@@ -3,7 +3,7 @@ import api from "../api/axiosConfig";
 
 // timer and progress bar: https://www.npmjs.com/package/react-circular-progressbar
 import { useTimer } from "react-timer-hook";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 import Modal from "../components/ui/Modal";
@@ -71,12 +71,26 @@ export default function Pomodoro() {
         <CircularProgressbar
           value={percentage}
           text={`${minutes}:${seconds.toString().padStart(2, "0")}`}
-          styles={buildStyles({
-            pathColor: isWorkMode ? "var(--primary)" : "var(--green-text)",
-            textColor: "var(--text)",
-            trailColor: "var(--border)",
-            textSize: "20px",
-          })}
+          styles={{
+            // circle styles
+            path: {
+              stroke: isWorkMode ? "var(--primary)" : "var(--muted-text)",
+              strokeLinecap: "butt",
+              transition: "stroke-dashoffset 0.5s ease 0s, stroke 0.3s ease",
+            },
+            // background circle
+            trail: {
+              stroke: "var(--border)",
+              strokeLinecap: "butt",
+            },
+            // text inside the circle
+            text: {
+              fill: "var(--text)",
+              fontSize: "20px",
+              fontWeight: "900",
+              fontFamily: "inherit",
+            },
+          }}
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center pt-16">
           <span className="text-[10px] uppercase font-black opacity-60">
@@ -110,6 +124,7 @@ export default function Pomodoro() {
         </Button>
         <Button
           variant="danger"
+          fullWidth
           onClick={() => refreshTimer(isWorkMode ? times.work : times.break)}
         >
           Reset
