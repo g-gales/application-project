@@ -5,7 +5,7 @@ export default function Modal({
   onClose,
   title,
   children,
-  showCloseButton = true,
+  showCloseButton = true, // this is the close button at the bottom
 }) {
   if (!isOpen) return null;
 

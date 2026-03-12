@@ -121,8 +121,9 @@ export default function Pomodoro() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         title="Timer Settings"
+        showCloseButton={false}
       >
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-[240px]">
           {["work", "break"].map((type) => (
             <div key={type}>
               <label className="text-[10px] uppercase font-bold opacity-60 block mb-1">
@@ -134,20 +135,29 @@ export default function Pomodoro() {
                 onChange={(e) =>
                   setTimes({ ...times, [type]: Number(e.target.value) })
                 }
-                className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none"
               />
             </div>
           ))}
 
-          <button
-            onClick={() => {
-              refreshTimer(isWorkMode ? times.work : times.break);
-              setIsSettingsOpen(false);
-            }}
-            className="w-full mt-2 py-3 bg-[var(--primary)] text-[var(--primary-contrast)] rounded-[var(--radius)] font-bold text-xs uppercase shadow-lg active:scale-95 transition-transform"
-          >
-            Apply Changes
-          </button>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              fullWidth
+              onClick={() => {
+                refreshTimer(isWorkMode ? times.work : times.break);
+                setIsSettingsOpen(false);
+              }}
+            >
+              Apply Changes
+            </Button>
+            <Button
+              variant="ghost"
+              fullWidth
+              onClick={() => setIsSettingsOpen(false)}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>
