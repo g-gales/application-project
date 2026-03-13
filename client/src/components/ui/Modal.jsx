@@ -25,7 +25,7 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <h2 className="text-center font-black uppercase text-[10px] tracking-widest text-[var(--muted-text)] mb-4">
+          <h2 className="text-center font-black uppercase text-[16px] tracking-widest text-[var(--muted-text)] mb-4">
             {title}
           </h2>
         )}

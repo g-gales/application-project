@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-// FIXME: modifying model to fit the Courses component, might need to change this later
-
 const courseSchema = new mongoose.Schema(
   {
     userId: {
@@ -26,16 +24,6 @@ const courseSchema = new mongoose.Schema(
     // stats for analysis and querying from the frontend
     weeklyGoalMinutes: { type: Number, default: 120 },
     credits: { type: Number, default: 3 },
-
-    // optional fields
-    // semester: {
-    //   type: String,
-    //   enum: ["Fall", "Spring", "Summer", "Winter"],
-    // },
-    // year: {
-    //   type: Number,
-    //   default: new Date().getFullYear(),
-    // },
   },
   { timestamps: true },
 );

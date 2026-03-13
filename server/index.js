@@ -27,6 +27,7 @@ app.use(
 );
 app.use(express.json());
 
+// TODO: NEED TO ADD ROUTE FOR STUDY SESSIONS
 app.use("/api/v1/ping-db", pingDbRoute);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
