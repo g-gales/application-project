@@ -25,14 +25,13 @@ import "./styles/global.css";
 function App() {
   const { user } = useAuth();
 
+  // this use effect attempts to wake the server up on app load
   useEffect(() => {
     const wakeServer = async () => {
       try {
-        // This hits /api/v1/ping-db (adjust if your baseURL differs)
         await api.get("/ping-db");
-        console.log("Server wake-up signal sent.");
       } catch (err) {
-        console.log("Server is warming up...", "Error:", err);
+        console.log("Error:", err);
       }
     };
 
