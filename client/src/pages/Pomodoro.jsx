@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/axiosConfig";
 
 // timer and progress bar: https://www.npmjs.com/package/react-circular-progressbar
@@ -60,12 +60,22 @@ export default function Pomodoro() {
 
   // --- HANDLERS ---
 
-  const refreshTimer = (mins) => {
-    const time = new Date();
-    time.setSeconds(time.getSeconds() + mins * 60);
-    restart(time, false); // false for no autostart
-  };
+  const refreshTimer = useCallback(
+    (mins) => {
+      const time = new Date();
+      time.setSeconds(time.getSeconds() + mins * 60);
+      restart(time, false);
+    },
+    [restart],
+  );
+  // on change of course, set default times
+  useEffect(() => {
+    if (selectedCourseId) {
+      refreshTimer(times.work);
+    }
+  }, [selectedCourseId, refreshTimer, times.work]);
 
+  //
   const handleLogAndNext = async (nextAction) => {
     try {
       // TODO: this route is not created yet
@@ -75,11 +85,10 @@ export default function Pomodoro() {
         type: "pomodoro",
       });
 
-      // 2. Handle what's next
+      // either start a break or a new session
       if (nextAction === "BREAK") {
         setIsWorkMode(false);
         refreshTimer(times.break);
-        // We don't auto-start the break so the user can stand up/stretch first
       } else if (nextAction === "WORK") {
         setIsWorkMode(true);
         refreshTimer(times.work);
@@ -206,10 +215,13 @@ export default function Pomodoro() {
               </label>
               <input
                 type="number"
-                value={times[type]}
-                onChange={(e) =>
-                  setTimes({ ...times, [type]: Number(e.target.value) })
-                }
+                // set value to empty string if it is 0
+                value={times[type] === 0 ? "" : times[type]}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // set state to 0 if value is empty string
+                  setTimes({ ...times, [type]: val === "" ? 0 : Number(val) });
+                }}
                 className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none"
               />
             </div>
