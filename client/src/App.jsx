@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react"; // lazy loading to reduce initial package size
+import { lazy, Suspense, useEffect } from "react"; // lazy loading to reduce initial package size
+import api from "./api/axiosConfig";
 import { useAuth } from "./hooks/useAuth";
 
 import Login from "./pages/Login";
@@ -23,6 +24,20 @@ import "./styles/global.css";
 
 function App() {
   const { user } = useAuth();
+
+  useEffect(() => {
+    const wakeServer = async () => {
+      try {
+        // This hits /api/v1/ping-db (adjust if your baseURL differs)
+        await api.get("/ping-db");
+        console.log("Server wake-up signal sent.");
+      } catch (err) {
+        console.log("Server is warming up...", "Error:", err);
+      }
+    };
+
+    wakeServer();
+  }, []);
 
   return (
     <ThemeProvider>
