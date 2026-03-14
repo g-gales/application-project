@@ -12,14 +12,14 @@ const studySessionSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    durationMinutes: {
+      type: Number,
+      required: true,
+    },
     type: {
       type: String,
       enum: ["pomodoro", "flashcards", "reading"],
       default: "pomodoro",
-    },
-    durationMinutes: {
-      type: Number,
-      required: true,
     },
   },
   { timestamps: true },

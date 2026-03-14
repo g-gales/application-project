@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   firstName: String,
   lastName: String,
-  // FIXME: Optional Profile Picture provided by Google as URL
   picture: String,
   settings: {
     darkMode: { type: Boolean, default: false },

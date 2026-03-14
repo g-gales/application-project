@@ -25,9 +25,10 @@ export default function Pomodoro() {
     api.get("/courses").then((res) => setCourses(res.data || []));
   }, []);
 
-  // deconstructed useTimer hook - TODO: onExpire should add time to course db
+  // deconstructed useTimer hook
   const { seconds, minutes, isRunning, pause, resume, restart } = useTimer({
-    expiryTimestamp: new Date(),
+    // set time to 25 minutes on first load
+    expiryTimestamp: new Date(Date.now() + 25 * 60 * 1000),
     autoStart: false,
     onExpire: () => {
       if (isWorkMode) {
@@ -46,8 +47,6 @@ export default function Pomodoro() {
     ((minutes * 60 + seconds) / currentTotalSecs) * 100,
   );
 
-  // --- VALUES ---
-
   // styles for circle progress bar
   const timerStyles = {
     path: {
@@ -58,8 +57,6 @@ export default function Pomodoro() {
     trail: { stroke: "var(--border)", strokeLinecap: "butt" },
     text: { fill: "var(--text)", fontSize: "20px", fontWeight: "900" },
   };
-
-  // --- HANDLERS ---
 
   const refreshTimer = useCallback(
     (mins) => {
@@ -158,7 +155,10 @@ export default function Pomodoro() {
         <Button
           variant="danger"
           fullWidth
-          onClick={() => refreshTimer(isWorkMode ? times.work : times.break)}
+          onClick={() => {
+            setIsWorkMode(true);
+            refreshTimer(times.work);
+          }}
           disabled={!selectedCourseId}
         >
           Reset
@@ -199,7 +199,7 @@ export default function Pomodoro() {
               variant="ghost"
               fullWidth
               disabled={isSaving}
-              onClick={() => setIsSummaryOpen(false)}
+              onClick={() => handleLogAndNext("FINISH")}
             >
               Save Session
             </Button>

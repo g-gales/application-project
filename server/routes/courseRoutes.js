@@ -63,7 +63,6 @@ router.get("/:id", protect, async (req, res) => {
 });
 
 /**
- * FIXME: this might not work yet
  * PATCH /api/v1/courses/:id
  */
 router.patch("/:id", protect, async (req, res) => {
@@ -87,7 +86,6 @@ router.patch("/:id", protect, async (req, res) => {
 });
 
 /**
- * FIXME: this might not work yet
  * DELETE /api/v1/courses/:id
  */
 router.delete("/:id", protect, async (req, res) => {

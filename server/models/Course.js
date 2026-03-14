@@ -23,6 +23,7 @@ const courseSchema = new mongoose.Schema(
     description: String,
     // stats for analysis and querying from the frontend
     weeklyGoalMinutes: { type: Number, default: 120 },
+    pomodoroStudyTime: { type: Number, default: 0 }, // pomodoro study time
     credits: { type: Number, default: 3 },
   },
   { timestamps: true },
