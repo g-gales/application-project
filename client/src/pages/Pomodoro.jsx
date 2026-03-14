@@ -16,8 +16,9 @@ export default function Pomodoro() {
   // times for work mode and break
   const [times, setTimes] = useState({ work: 25, break: 5 });
   const [isWorkMode, setIsWorkMode] = useState(true);
-
+  // state for finished session modal
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // get list of courses
   useEffect(() => {
@@ -75,17 +76,18 @@ export default function Pomodoro() {
     }
   }, [selectedCourseId, refreshTimer, times.work]);
 
-  //
+  // send completed sessions to the backend to save
   const handleLogAndNext = async (nextAction) => {
+    if (isSaving) return;
+
+    setIsSaving(true);
     try {
-      // TODO: this route is not created yet
       await api.post("/study-sessions", {
         courseId: selectedCourseId,
         durationMinutes: times.work,
         type: "pomodoro",
       });
 
-      // either start a break or a new session
       if (nextAction === "BREAK") {
         setIsWorkMode(false);
         refreshTimer(times.break);
@@ -94,10 +96,12 @@ export default function Pomodoro() {
         refreshTimer(times.work);
         resume();
       }
-
       setIsSummaryOpen(false);
     } catch (err) {
       console.error("Failed to log session", err);
+      alert("Could not save your session. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -178,6 +182,7 @@ export default function Pomodoro() {
             <Button
               variant="primary"
               fullWidth
+              disabled={isSaving}
               onClick={() => handleLogAndNext("BREAK")}
             >
               Take a Break
@@ -185,6 +190,7 @@ export default function Pomodoro() {
             <Button
               variant="secondary"
               fullWidth
+              disabled={isSaving}
               onClick={() => handleLogAndNext("WORK")}
             >
               New Session
@@ -192,9 +198,10 @@ export default function Pomodoro() {
             <Button
               variant="ghost"
               fullWidth
+              disabled={isSaving}
               onClick={() => setIsSummaryOpen(false)}
             >
-              Finish Session
+              Save Session
             </Button>
           </div>
         </div>
