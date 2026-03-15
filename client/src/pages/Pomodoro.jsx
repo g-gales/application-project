@@ -8,6 +8,7 @@ import "react-circular-progressbar/dist/styles.css";
 
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 export default function Pomodoro() {
   const [courses, setCourses] = useState([]);
@@ -102,158 +103,163 @@ export default function Pomodoro() {
     }
   };
 
-  return (
-    <div className="w-full h-full flex flex-col items-center bg-[var(--surface)] p-4 border border-[var(--border)] rounded-[var(--radius)] gap-4">
-      <h1 className="text-lg font-bold ">What are we working on?</h1>
-
-      {/* // select course  */}
-      <select
-        required
-        value={selectedCourseId}
-        onChange={(e) => setSelectedCourseId(e.target.value)}
-        className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] cursor-pointer"
+  // Card footer elements
+  const footerControls = (
+    <div className="flex mx-auto max-w-[400px]">
+      <Button
+        variant={isRunning ? "secondary" : "primary"}
+        fullWidth
+        onClick={isRunning ? pause : resume}
+        disabled={!selectedCourseId}
       >
-        <option value="">-- Select a Course --</option>
-        {courses.map((c) => (
-          <option key={c._id} value={c._id}>
-            {c.code}: {c.name}
-          </option>
-        ))}
-      </select>
-
-      {/* timer circle */}
-      <div
-        onClick={() => setIsSettingsOpen(true)}
-        className="w-48 h-48  relative cursor-pointer hover:scale-105 transition-transform mb-4"
+        {!selectedCourseId
+          ? "Select a Course"
+          : isRunning
+            ? "Pause"
+            : "Start Focus"}
+      </Button>
+      <Button
+        variant="danger"
+        fullWidth
+        onClick={() => {
+          setIsWorkMode(true);
+          refreshTimer(times.work);
+        }}
+        disabled={!selectedCourseId}
       >
-        <CircularProgressbar
-          value={percentage}
-          text={`${minutes}:${seconds.toString().padStart(2, "0")}`}
-          styles={timerStyles}
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-16 hover:underline">
-          <span className="text-[9px] text-[var(--primary)] font-bold ">
-            Edit Times
-          </span>
-        </div>
-      </div>
-
-      {/* buttons for controls */}
-      <div className="flex gap-3 w-full mt-auto max-w-[400px]">
-        <Button
-          variant={isRunning ? "secondary" : "primary"}
-          fullWidth
-          onClick={isRunning ? pause : resume}
-          disabled={!selectedCourseId}
-        >
-          {!selectedCourseId
-            ? "Select a Course"
-            : isRunning
-              ? "Pause"
-              : "Start"}
-        </Button>
-        <Button
-          variant="danger"
-          fullWidth
-          onClick={() => {
-            setIsWorkMode(true);
-            refreshTimer(times.work);
-          }}
-          disabled={!selectedCourseId}
-        >
-          Reset
-        </Button>
-      </div>
-
-      {/* // MODALS  */}
-
-      {/* // SUMMARY OF SESSION MODAL  */}
-      <Modal
-        isOpen={isSummaryOpen}
-        onClose={() => setIsSummaryOpen(false)}
-        title="Session Complete!"
-      >
-        <div className="space-y-4 text-center">
-          <p className="text-[var(--text)]">
-            Nice work! You've completed <strong>{times.work} minutes</strong> of
-            focus.
-          </p>
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="primary"
-              fullWidth
-              disabled={isSaving}
-              onClick={() => handleLogAndNext("BREAK")}
-            >
-              Take a Break
-            </Button>
-            <Button
-              variant="secondary"
-              fullWidth
-              disabled={isSaving}
-              onClick={() => handleLogAndNext("WORK")}
-            >
-              New Session
-            </Button>
-            <Button
-              variant="ghost"
-              fullWidth
-              disabled={isSaving}
-              onClick={() => handleLogAndNext("FINISH")}
-            >
-              Save Session
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* // EDIT TIMES MODAL  */}
-      <Modal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        title="Timer Settings"
-        showCloseButton={false}
-      >
-        <div className="space-y-4 min-w-[240px]">
-          {["work", "break"].map((type) => (
-            <div key={type}>
-              <label className="text-[10px] uppercase font-bold opacity-60 block mb-1">
-                {type} Minutes
-              </label>
-              <input
-                type="number"
-                // set value to empty string if it is 0
-                value={times[type] === 0 ? "" : times[type]}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  // set state to 0 if value is empty string
-                  setTimes({ ...times, [type]: val === "" ? 0 : Number(val) });
-                }}
-                className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none"
-              />
-            </div>
-          ))}
-
-          <div className="flex flex-col gap-2 pt-2">
-            <Button
-              fullWidth
-              onClick={() => {
-                refreshTimer(isWorkMode ? times.work : times.break);
-                setIsSettingsOpen(false);
-              }}
-            >
-              Apply Changes
-            </Button>
-            <Button
-              variant="ghost"
-              fullWidth
-              onClick={() => setIsSettingsOpen(false)}
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        Reset
+      </Button>
     </div>
+  );
+
+  return (
+    <Card title="What are we working on?" footer={footerControls}>
+      <div className="flex flex-col items-center">
+        {/* // select course  */}
+        <select
+          required
+          value={selectedCourseId}
+          onChange={(e) => setSelectedCourseId(e.target.value)}
+          className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] cursor-pointer"
+        >
+          <option value="">-- Select a Course --</option>
+          {courses.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.code}: {c.name}
+            </option>
+          ))}
+        </select>
+
+        {/* timer circle */}
+        <div
+          onClick={() => setIsSettingsOpen(true)}
+          className="w-48 h-48  relative cursor-pointer hover:scale-105 transition-transform mb-4"
+        >
+          <CircularProgressbar
+            value={percentage}
+            text={`${minutes}:${seconds.toString().padStart(2, "0")}`}
+            styles={timerStyles}
+          />
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-16 hover:underline">
+            <span className="text-[9px] text-[var(--primary)] font-bold ">
+              Edit Times
+            </span>
+          </div>
+        </div>
+
+        {/* // MODALS  */}
+
+        {/* // SUMMARY OF SESSION MODAL  */}
+        <Modal
+          isOpen={isSummaryOpen}
+          onClose={() => setIsSummaryOpen(false)}
+          title="Session Complete!"
+        >
+          <div className="space-y-4 text-center">
+            <p className="text-[var(--text)]">
+              Nice work! You've completed <strong>{times.work} minutes</strong>{" "}
+              of focus.
+            </p>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="primary"
+                fullWidth
+                disabled={isSaving}
+                onClick={() => handleLogAndNext("BREAK")}
+              >
+                Take a Break
+              </Button>
+              <Button
+                variant="secondary"
+                fullWidth
+                disabled={isSaving}
+                onClick={() => handleLogAndNext("WORK")}
+              >
+                New Session
+              </Button>
+              <Button
+                variant="ghost"
+                fullWidth
+                disabled={isSaving}
+                onClick={() => handleLogAndNext("FINISH")}
+              >
+                Save Session
+              </Button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* // EDIT TIMES MODAL  */}
+        <Modal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          title="Timer Settings"
+          showCloseButton={false}
+        >
+          <div className="space-y-4 min-w-[240px]">
+            {["work", "break"].map((type) => (
+              <div key={type}>
+                <label className="text-[10px] uppercase font-bold opacity-60 block mb-1">
+                  {type} Minutes
+                </label>
+                <input
+                  type="number"
+                  // set value to empty string if it is 0
+                  value={times[type] === 0 ? "" : times[type]}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // set state to 0 if value is empty string
+                    setTimes({
+                      ...times,
+                      [type]: val === "" ? 0 : Number(val),
+                    });
+                  }}
+                  className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none"
+                />
+              </div>
+            ))}
+
+            <div className="flex flex-col gap-2 pt-2">
+              <Button
+                fullWidth
+                onClick={() => {
+                  refreshTimer(isWorkMode ? times.work : times.break);
+                  setIsSettingsOpen(false);
+                }}
+              >
+                Apply Changes
+              </Button>
+              <Button
+                variant="ghost"
+                fullWidth
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      </div>
+    </Card>
   );
 }
