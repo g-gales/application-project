@@ -297,7 +297,7 @@ const Courses = () => {
             const pct = Math.min(
               100,
               Math.round(
-                (Number(course.studyMinutesThisWeek || 0) /
+                (Number(course.pomodoroStudyTime || 0) /
                   Number(course.weeklyGoalMinutes || 1)) *
                   100,
               ),
@@ -342,7 +342,7 @@ const Courses = () => {
                           <div className="text-sm text-[var(--muted-text-2)]">
                             Study This Week:{" "}
                             <span className="font-medium text-[var(--muted-text)]">
-                              {minutesToHhMm(course.studyMinutesThisWeek)}
+                              {minutesToHhMm(course.pomodoroStudyTime)}
                             </span>{" "}
                             / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                           </div>
@@ -353,7 +353,10 @@ const Courses = () => {
                         <div className="w-full bg-[var(--tertiary)] rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
                           <div
                             className="h-2 sm:h-3 rounded-full bg-[var(--primary)]"
-                            style={{ width: `${pct}%` }}
+                            style={{
+                              width: `${pct}%`,
+                              backgroundColor: course.color,
+                            }}
                           />
                         </div>
                       </div>

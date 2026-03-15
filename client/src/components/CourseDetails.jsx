@@ -112,7 +112,7 @@ export default function CourseDetails() {
   }, [course]);
 
   const weeklyStudyPct = course
-    ? progressPct(course.studyMinutesThisWeek, course.weeklyGoalMinutes)
+    ? progressPct(course.pomodoroStudyTime, course.weeklyGoalMinutes)
     : 0;
 
   const totalUpcomingMinutes = useMemo(() => {
@@ -323,7 +323,7 @@ export default function CourseDetails() {
             </p>
             <div className="mt-2 flex items-end justify-between">
               <p className="text-lg font-bold text-[var(--text)]">
-                {minutesToHhMm(course.studyMinutesThisWeek)}{" "}
+                {minutesToHhMm(course.pomodoroStudyTime)}{" "}
                 <span className="text-sm font-medium text-[var(--muted-text-2)]">
                   / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                 </span>
