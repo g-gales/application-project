@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axiosConfig"; // axios
 
+import Card from "../components/ui/Card";
+
 const NEW_TERM_VALUE = "__new__";
 
 const Courses = () => {
@@ -280,7 +282,7 @@ const Courses = () => {
   };
 
   return (
-    <div className="py-8 px-4 bg-[var(--surface)]">
+    <Card>
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
@@ -622,7 +624,7 @@ const Courses = () => {
           </div>
         </div>
       ) : null}
-    </div>
+    </Card>
   );
 };
 

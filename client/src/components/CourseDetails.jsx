@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
 import LoadingSpinner from "./ui/LoadingSpinner";
+import Card from "../components/ui/Card";
 
 // helper functions
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -279,7 +280,7 @@ export default function CourseDetails() {
   const courseTerm = course.term || "—";
 
   return (
-    <div className="p-6 bg-[var(--surface)]">
+    <Card>
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
@@ -685,6 +686,6 @@ export default function CourseDetails() {
           </div>
         ) : null}
       </div>
-    </div>
+    </Card>
   );
 }
