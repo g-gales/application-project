@@ -1,8 +1,13 @@
+import api from "../api/axiosConfig";
+import Card from "../components/ui/Card";
+
 export default function Wellness() {
   return (
     <div className="stack gap-md">
-      <h2 className="section-title">Wellness</h2>
-      <p className="muted">Placeholder page for Sprint 1.</p>
+      <Card title="Wellness Overview" />
+      <Card title="Daily Check-In" />
+      <Card title="Wellness Trends" />
+      <Card title="Insights & Actions" />
     </div>
   );
 }
