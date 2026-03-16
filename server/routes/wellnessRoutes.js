@@ -8,6 +8,6 @@ import {
 const router = express.Router();
 
 router.post("/", protect, saveWellnessEntry);
-router.get("/:userId", protect, getWellnessEntries);
+router.get("/", protect, getWellnessEntries);
 
 export default router;

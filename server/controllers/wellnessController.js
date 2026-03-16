@@ -2,23 +2,17 @@ import WellnessEntry from "../models/WellnessEntry.js";
 
 export const saveWellnessEntry = async (req, res) => {
   try {
-    const { userId, mood, stress, sleepHours, focus } = req.body;
-
-    if (!userId || !mood || !stress || sleepHours === undefined || !focus) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
-
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date();
 
     const updatedEntry = await WellnessEntry.findOneAndUpdate(
-      { userId, date: today },
       {
-        userId,
+        userId: req.user._id,
         date: today,
-        mood,
-        stress,
-        sleepHours,
-        focus,
+      },
+      {
+        ...req.body,
+        userId: req.user._id,
+        date: today,
       },
       {
         new: true,
@@ -26,8 +20,7 @@ export const saveWellnessEntry = async (req, res) => {
         runValidators: true,
       },
     );
-
-    res.status(200).json(updatedEntry);
+    res.status(201).json(updatedEntry);
   } catch (error) {
     console.error("Error saving wellness entry:", error);
     res
@@ -38,9 +31,9 @@ export const saveWellnessEntry = async (req, res) => {
 
 export const getWellnessEntries = async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    const entries = await WellnessEntry.find({ userId })
+    const entries = await WellnessEntry.find({
+      userId: req.user._id,
+    })
       .sort({ date: -1 })
       .limit(14);
 
