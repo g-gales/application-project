@@ -1,6 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import Course from "../models/Course.js";
+import Assignment from "../models/Assignment.js";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 router.post("/", protect, async (req, res) => {
   try {
     const newCourse = await Course.create({
-      ...req.body, // modifying for the Courses component
+      ...req.body,
       userId: req.user._id,
     });
 
@@ -43,18 +44,22 @@ router.get("/", protect, async (req, res) => {
  */
 router.get("/:id", protect, async (req, res) => {
   try {
-    // ownership verification
-
+    // find Course object
     const course = await Course.findOne({
       _id: req.params.id,
       userId: req.user._id,
-    });
+    }).lean();
 
     if (!course) {
       return res
         .status(404)
         .json({ status: "fail", message: "Course not found" });
     }
+
+    // find all assignments where the courseId === course
+    const assignments = await Assignment.find({ courseId: req.params.id });
+
+    course.assignments = assignments;
 
     res.status(200).json(course);
   } catch (error) {

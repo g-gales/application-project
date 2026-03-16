@@ -57,7 +57,6 @@ const toInputDate = (date) => {
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 };
-const makeId = () => `id-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 
 // *** COMPONENT ***
 export default function CourseDetails() {
@@ -84,6 +83,7 @@ export default function CourseDetails() {
       try {
         setLoading(true);
         const res = await api.get(`/courses/${courseId}`);
+        console.log("Assignment Data:", res.data.assignments[0]);
         setCourse(res.data);
       } catch (error) {
         console.log("Error loading course:", error);
@@ -145,10 +145,9 @@ export default function CourseDetails() {
     setError("");
   };
 
-  // FIXME: assignments are only local
-  const saveAssignment = () => {
-    if (!form.title.trim()) return setError("Title is required.");
-    if (!form.dueDate) return setError("Due date is required.");
+  const saveAssignment = async () => {
+    if (!form.title.trim() || !form.dueDate)
+      return setError("Required fields missing.");
 
     const est = Number(form.estimatedMinutes);
     const done = Number(form.minutesCompleted);
@@ -160,91 +159,73 @@ export default function CourseDetails() {
 
     setError("");
 
-    setCourse((prev) => {
-      if (!prev) return prev;
-      const assignments = Array.isArray(prev.assignments)
-        ? prev.assignments
-        : [];
+    try {
+      const payload = {
+        ...form,
+        courseId,
+        estimatedMinutes: est,
+        minutesCompleted: clamp(done, 0, est || done),
+      };
 
       if (mode === "add") {
-        const newA = {
-          ...form,
-          id: makeId(),
-          estimatedMinutes: est,
-          minutesCompleted: clamp(done, 0, est || done),
-        };
-        return { ...prev, assignments: [newA, ...assignments] };
+        await api.post("/assignments", payload);
+      } else {
+        await api.put(`/assignments/${form._id}`, payload);
       }
 
-      const updated = assignments.map((a) =>
-        a.id === form.id
-          ? {
-              ...a,
-              ...form,
-              estimatedMinutes: est,
-              minutesCompleted: clamp(done, 0, est || done),
-            }
-          : a,
-      );
-
-      return { ...prev, assignments: updated };
-    });
+      // get course data
+      const res = await api.get(`/courses/${courseId}`);
+      setCourse(res.data);
+      closeModal();
+    } catch (err) {
+      console.error("Save failed:", err);
+      setError("Failed to save assignment to database.");
+    }
 
     closeModal();
   };
 
-  const deleteAssignment = (id) => {
+  const deleteAssignment = async (id) => {
     const ok = window.confirm("Delete this assignment? This can't be undone.");
     if (!ok) return;
 
-    setCourse((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        assignments: (prev.assignments ?? []).filter((a) => a.id !== id),
-      };
-    });
+    try {
+      await api.delete(`/assignments/${id}`);
+      const res = await api.get(`/courses/${courseId}`);
+      setCourse(res.data);
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
-  const toggleDone = (id) => {
-    setCourse((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        assignments: (prev.assignments ?? []).map((a) => {
-          if (a.id !== id) return a;
-          return { ...a, status: a.status === "done" ? "not-started" : "done" };
-        }),
-      };
-    });
+  const toggleDone = async (id) => {
+    // find current assignment to flip its status
+    const current = course.assignments.find((a) => a._id === id);
+    if (!current) return;
+
+    const newStatus = current.status === "done" ? "not-started" : "done";
+
+    try {
+      await api.put(`/assignments/${id}`, { ...current, status: newStatus });
+      const res = await api.get(`/courses/${courseId}`);
+      setCourse(res.data);
+    } catch (err) {
+      console.error("Toggle failed:", err);
+    }
   };
 
-  const bumpProgress = (id, delta) => {
-    setCourse((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        assignments: (prev.assignments ?? []).map((a) => {
-          if (a.id !== id) return a;
+  const bumpProgress = async (id, delta) => {
+    try {
+      // send the delta to the backend
+      await api.put(`/assignments/${id}/progress`, { minutes: delta });
 
-          const est = Number(a.estimatedMinutes || 0);
-          const next = clamp(
-            Number(a.minutesCompleted || 0) + delta,
-            0,
-            est || Number.MAX_SAFE_INTEGER,
-          );
-
-          let status = a.status;
-          if (status !== "done") {
-            if (next === 0) status = "not-started";
-            else if (est > 0 && next >= est) status = "done";
-            else status = "in-progress";
-          }
-
-          return { ...a, minutesCompleted: next, status };
-        }),
-      };
-    });
+      // refrtesh data so the progress bar and status pills update
+      const res = await api.get(`/courses/${courseId}`);
+      setCourse(res.data);
+    } catch (err) {
+      console.error("Failed to update progress:", err);
+      alert("Could not update. Please try again.");
+    }
   };
 
   if (course === null) {
@@ -424,7 +405,7 @@ export default function CourseDetails() {
                   })();
 
                 return (
-                  <li key={a.id} className="p-4">
+                  <li key={a._id} className="p-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -483,7 +464,7 @@ export default function CourseDetails() {
 
                       <div className="flex flex-wrap items-center gap-2 md:justify-end">
                         <button
-                          onClick={() => bumpProgress(a.id, -15)}
+                          onClick={() => bumpProgress(a._id, -15)}
                           className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
                           title="Minus 15 minutes"
                         >
@@ -491,7 +472,7 @@ export default function CourseDetails() {
                         </button>
 
                         <button
-                          onClick={() => bumpProgress(a.id, 15)}
+                          onClick={() => bumpProgress(a._id, 15)}
                           className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
                           title="Plus 15 minutes"
                         >
@@ -499,7 +480,7 @@ export default function CourseDetails() {
                         </button>
 
                         <button
-                          onClick={() => toggleDone(a.id)}
+                          onClick={() => toggleDone(a._id)}
                           className={[
                             "rounded-lg px-3 py-2 text-sm font-semibold shadow-sm transition",
                             a.status === "done"
@@ -518,7 +499,7 @@ export default function CourseDetails() {
                         </button>
 
                         <button
-                          onClick={() => deleteAssignment(a.id)}
+                          onClick={() => deleteAssignment(a._id)}
                           className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100"
                         >
                           Delete

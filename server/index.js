@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import studySessionRoutes from "./routes/studySessionRoutes.js";
+import assignmentsRoutes from "./routes/assignmentsRoutes.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/courses", courseRoutes);
 app.use("/api/v1/study-sessions", studySessionRoutes);
+app.use("/api/v1/assignments", assignmentsRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ ok: true });

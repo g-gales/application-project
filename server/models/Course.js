@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import Assignment from "./Assignment.js";
+
 const courseSchema = new mongoose.Schema(
   {
     userId: {
@@ -28,5 +30,14 @@ const courseSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// if course is deleted, delete assignments too
+courseSchema.pre("findOneAndDelete", async function (next) {
+  const doc = await this.model.findOne(this.getQuery());
+  if (doc) {
+    await Assignment.deleteMany({ courseId: doc._id });
+  }
+  next();
+});
 
 export default mongoose.model("Course", courseSchema);

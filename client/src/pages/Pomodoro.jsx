@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import api from "../api/axiosConfig";
 
 // timer and progress bar: https://www.npmjs.com/package/react-circular-progressbar
@@ -21,9 +21,25 @@ export default function Pomodoro() {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // get list of courses
+  // optional assignments
+  const [assignments, setAssignments] = useState([]);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState("");
+  const filteredAssignments = useMemo(() => {
+    if (!selectedCourseId) return [];
+    // Filter the master assignments list by the selected course
+    return assignments.filter(
+      (a) => a.courseId === selectedCourseId && a.status !== "done",
+    );
+  }, [selectedCourseId, assignments]);
+
+  // get list of courses and assignments
   useEffect(() => {
-    api.get("/courses").then((res) => setCourses(res.data || []));
+    Promise.all([api.get("/courses"), api.get("/assignments")])
+      .then(([courseRes, assignRes]) => {
+        setCourses(courseRes.data || []);
+        setAssignments(assignRes.data || []);
+      })
+      .catch((err) => console.error("Error fetching data", err));
   }, []);
 
   // deconstructed useTimer hook
@@ -67,24 +83,33 @@ export default function Pomodoro() {
     },
     [restart],
   );
-  // on change of course, set default times
+  // on change of course, set default times, reset assignments
   useEffect(() => {
     if (selectedCourseId) {
       refreshTimer(times.work);
+      setSelectedAssignmentId("");
     }
   }, [selectedCourseId, refreshTimer, times.work]);
 
   // send completed sessions to the backend to save
   const handleLogAndNext = async (nextAction) => {
     if (isSaving) return;
-
     setIsSaving(true);
+
     try {
+      // save study session
       await api.post("/study-sessions", {
         courseId: selectedCourseId,
         durationMinutes: times.work,
         type: "pomodoro",
       });
+
+      // save assignment progress if any
+      if (selectedAssignmentId) {
+        await api.put(`/assignments/${selectedAssignmentId}/progress`, {
+          minutes: times.work,
+        });
+      }
 
       if (nextAction === "BREAK") {
         setIsWorkMode(false);
@@ -105,7 +130,7 @@ export default function Pomodoro() {
 
   // Card footer elements
   const footerControls = (
-    <div className="flex mx-auto max-w-[400px]">
+    <div className="flex mx-auto max-w-128">
       <Button
         variant={isRunning ? "secondary" : "primary"}
         fullWidth
@@ -140,7 +165,7 @@ export default function Pomodoro() {
           required
           value={selectedCourseId}
           onChange={(e) => setSelectedCourseId(e.target.value)}
-          className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] cursor-pointer"
+          className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] max-w-128 cursor-pointer"
         >
           <option value="">-- Select a Course --</option>
           {courses.map((c) => (
@@ -149,6 +174,22 @@ export default function Pomodoro() {
             </option>
           ))}
         </select>
+
+        {/* // optional assignment selection */}
+        {filteredAssignments.length > 0 && (
+          <select
+            value={selectedAssignmentId}
+            onChange={(e) => setSelectedAssignmentId(e.target.value)}
+            className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] max-w-128 cursor-pointer outline-none focus:ring-2 focus:ring-[var(--primary)]"
+          >
+            <option value="">-- Select an Assignment (Optional) --</option>
+            {filteredAssignments.map((a) => (
+              <option key={a._id} value={a._id}>
+                {a.title}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* timer circle */}
         <div
