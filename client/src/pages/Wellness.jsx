@@ -2,6 +2,10 @@ import { useEffect, useState, useMemo } from "react";
 
 import api from "../api/axiosConfig";
 import WellnessCheckIn from "../components/wellness/WellnessCheckIn";
+import WellnessOverview from "../components/wellness/WellnessOverview";
+import BurnoutActions from "../components/wellness/BurnoutActions";
+import BurnoutInsights from "../components/wellness/BurnoutInsights";
+import { calculateBurnoutRisk } from "../utils/wellnessUtils";
 import Card from "../components/ui/Card";
 
 const Wellness = () => {
@@ -21,6 +25,20 @@ const Wellness = () => {
   useEffect(() => {
     fetchWellnessEntries();
   }, []);
+
+  //   For when workload and capacity hours can be calculated
+  //   const burnoutRisk = useMemo(() => {
+  //   return calculateBurnoutRisk({
+  //     wellnessEntries,
+  //     weeklyWorkloadHours: 24,
+  //     weeklyCapacityHours: 18,
+  //     overdueCount: 2,
+  //     heavyLoadDays: 4,
+  //   });
+  // }, [wellnessEntries]);
+  const burnoutRisk = calculateBurnoutRisk({
+    wellnessEntries,
+  });
 
   //Checks if a Wellness Entry was already submitted by this user today
   const today = useMemo(() => {
@@ -45,20 +63,19 @@ const Wellness = () => {
   //----------------------------------
   return (
     <div className="stack gap-md">
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-4">
+        <WellnessOverview burnoutRisk={burnoutRisk} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
           onSuccess={fetchWellnessEntries}
           wellnessEntries={wellnessEntries}
         />
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <BurnoutInsights burnoutRisk={burnoutRisk} />
+          <BurnoutActions burnoutRisk={burnoutRisk} />
+        </div>
       </section>
-      <Card title="Wellness Overview" /> {/* TBD*/}
       <Card title="Wellness Trends" /> {/* TBD*/}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Card title="Insights" className="p-6"></Card>
-        <Card title="Actions" className="p-6"></Card>
-      </div>{" "}
-      {/* TBD*/}
     </div>
   );
 };
