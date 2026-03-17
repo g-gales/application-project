@@ -26,7 +26,7 @@ export default function AppLayout() {
     <div className="min-h-screen min-w-screen max-w-[1495px] bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto w-full max-w-[1495px] min-h-screen md:grid md:grid-cols-[280px_1fr]">
         {/* Sidebar (desktop) */}
-        <aside className="hidden md:block bg-[var(--surface)] border-r border-[var(--border)]">
+        <aside className="hidden md:block md:sticky md:top-0 md:self-start md:h-screen bg-[var(--surface)] border-r border-[var(--border)]">
           <Sidebar />
         </aside>
 
