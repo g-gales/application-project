@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import api from "../../api/axiosConfig";
 
 import Card from "../ui/Card";
+import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 
 const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
@@ -18,6 +19,7 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
   const [message, setMessage] = useState("");
   const [selectedDate, setSelectedDate] = useState(today);
   const [justSubmitted, setJustSubmitted] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   //Handle Form Changes
   const handleChange = (e) => {
@@ -267,12 +269,16 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
             {message}
           </p>
         )}
-
-        <section className="flex flex-col gap-4">
+        <Button variant="secondary" onClick={() => setIsHistoryOpen(true)}>
+          View Recent Check-Ins
+        </Button>
+      </div>
+      <Modal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        title="Recent Check-Ins">
+        <section className="flex flex-col gap-4 w-full md:w-[680px]">
           <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-extrabold text-[var(--text)]">
-              Recent Check-ins
-            </h2>
             <p className="text-sm text-[var(--muted-text)]">
               Your most recent wellness entries.
             </p>
@@ -318,7 +324,7 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
             </ul>
           )}
         </section>
-      </div>
+      </Modal>
     </Card>
   );
 };
