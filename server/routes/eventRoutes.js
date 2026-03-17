@@ -60,7 +60,7 @@ router.put("/:id", protect, async (req, res) => {
     const updated = await Event.findOneAndUpdate(
       { _id: id, userId },
       req.body,
-      { returnDocument: "after" } // ✅ updated option
+      { returnDocument: "after" }, // ✅ updated option
     );
 
     if (!updated) {
