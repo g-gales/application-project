@@ -75,23 +75,26 @@ export default function Pomodoro() {
     text: { fill: "var(--text)", fontSize: "20px", fontWeight: "900" },
   };
 
+  // on change of course, set default times, reset assignments
   const refreshTimer = useCallback(
     (mins) => {
       const time = new Date();
-      time.setSeconds(time.getSeconds() + mins * 60);
+      const totalSeconds = mins > 0 ? mins * 60 : 1;
+      time.setSeconds(time.getSeconds() + totalSeconds);
       restart(time, false);
     },
     [restart],
   );
-  // on change of course, set default times, reset assignments
   useEffect(() => {
     if (selectedCourseId) {
-      refreshTimer(times.work);
       setSelectedAssignmentId("");
     }
-  }, [selectedCourseId, refreshTimer, times.work]);
+  }, [selectedCourseId]);
+  useEffect(() => {
+    refreshTimer(isWorkMode ? times.work : times.break);
+  }, [isWorkMode, refreshTimer]);
 
-  // send completed sessions to the backend to save
+  // completed sessions handler
   const handleLogAndNext = async (nextAction) => {
     if (isSaving) return;
     setIsSaving(true);
@@ -116,8 +119,11 @@ export default function Pomodoro() {
         refreshTimer(times.break);
       } else if (nextAction === "WORK") {
         setIsWorkMode(true);
-        refreshTimer(times.work);
-        resume();
+
+        const newTime = new Date();
+        newTime.setSeconds(newTime.getSeconds() + times.work * 60);
+
+        restart(newTime, true);
       }
       setIsSummaryOpen(false);
     } catch (err) {
@@ -128,20 +134,16 @@ export default function Pomodoro() {
     }
   };
 
-  // Card footer elements
+  // Card footer buttons
   const footerControls = (
-    <div className="flex mx-auto max-w-128">
+    <div className="flex mx-auto max-w-lg">
       <Button
         variant={isRunning ? "secondary" : "primary"}
         fullWidth
         onClick={isRunning ? pause : resume}
         disabled={!selectedCourseId}
       >
-        {!selectedCourseId
-          ? "Select a Course"
-          : isRunning
-            ? "Pause"
-            : "Start Focus"}
+        {!selectedCourseId ? "Select a Course" : isRunning ? "Pause" : "Start"}
       </Button>
       <Button
         variant="danger"
