@@ -2,17 +2,25 @@ import WellnessEntry from "../models/WellnessEntry.js";
 
 export const saveWellnessEntry = async (req, res) => {
   try {
-    const today = new Date();
+    const today = new Date().toISOString().split("T")[0];
+    const entryDate = req.body.date || today;
+
+    if (entryDate > today) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Future dates are not allowed.",
+      });
+    }
 
     const updatedEntry = await WellnessEntry.findOneAndUpdate(
       {
         userId: req.user._id,
-        date: today,
+        date: entryDate,
       },
       {
         ...req.body,
         userId: req.user._id,
-        date: today,
+        date: entryDate,
       },
       {
         new: true,
