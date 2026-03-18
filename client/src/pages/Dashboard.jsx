@@ -1,4 +1,5 @@
 import Card from "../components/ui/Card";
+import PomodoroMini from "../components/ui/PomodoroMini";
 
 export default function Dashboard() {
   return (
@@ -15,6 +16,10 @@ export default function Dashboard() {
               assigned.
             </p>
           </Card>
+        </div>
+        {/* TODO: finish Pomodoro Widget */}
+        <div className="col-span-12 lg:col-span-4">
+          <PomodoroMini />
         </div>
         <div className="col-span-12 lg:col-span-4">
           <Card title="Burnout Risk">

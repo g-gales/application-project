@@ -4,6 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import api from "../api/axiosConfig";
+import Card from "../components/ui/Card";
 
 const TYPES = ["meeting", "study", "assignment", "event"];
 
@@ -12,7 +13,7 @@ function toLocalInput(value) {
   const d = new Date(value);
   const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
+    d.getHours(),
   )}:${pad(d.getMinutes())}`;
 }
 
@@ -30,7 +31,9 @@ function Modal({ open, title, children, onClose }) {
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div className="w-full max-w-lg rounded-xl bg-[var(--surface)] p-4 border border-[var(--border)] shadow-lg">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-semibold text-[var(--text)]">{title}</h3>
+            <h3 className="text-lg font-semibold text-[var(--text)]">
+              {title}
+            </h3>
             <button
               onClick={onClose}
               className="px-2 py-1 rounded border border-[var(--border)] text-[var(--text)]"
@@ -88,7 +91,7 @@ function SimpleCalendar() {
         id: c._id,
         label: `${c.code} - ${c.name}`,
       })),
-    [courses]
+    [courses],
   );
 
   const refetchCalendar = () => {
@@ -121,7 +124,7 @@ function SimpleCalendar() {
             backgroundColor: color,
             borderColor: color,
           };
-        })
+        }),
       );
     } catch (e) {
       failure(e);
@@ -195,7 +198,7 @@ function SimpleCalendar() {
     "w-full rounded-lg px-3 py-2 border border-[var(--border)] bg-[var(--bg)] text-[var(--text)]";
 
   return (
-    <div className="max-w-5xl mx-auto bg-[var(--surface)] p-4 rounded-xl border border-[var(--border)]">
+    <Card>
       <FullCalendar
         ref={calRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -226,17 +229,13 @@ function SimpleCalendar() {
             className={input}
             placeholder="Title"
             value={form.title}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, title: e.target.value }))
-            }
+            onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
           />
 
           <select
             className={input}
             value={form.type}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, type: e.target.value }))
-            }
+            onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
           >
             {TYPES.map((t) => (
               <option key={t}>{t}</option>
@@ -287,9 +286,7 @@ function SimpleCalendar() {
             className={input}
             placeholder="Notes"
             value={form.notes}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, notes: e.target.value }))
-            }
+            onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
           />
 
           <div className="flex justify-end gap-2">
@@ -316,7 +313,7 @@ function SimpleCalendar() {
           </div>
         </div>
       </Modal>
-    </div>
+    </Card>
   );
 }
 

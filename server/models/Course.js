@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// FIXME: modifying model to fit the Courses component, might need to change this later
+import Assignment from "./Assignment.js";
 
 const courseSchema = new mongoose.Schema(
   {
@@ -25,19 +25,19 @@ const courseSchema = new mongoose.Schema(
     description: String,
     // stats for analysis and querying from the frontend
     weeklyGoalMinutes: { type: Number, default: 120 },
+    pomodoroStudyTime: { type: Number, default: 0 }, // pomodoro study time
     credits: { type: Number, default: 3 },
-
-    // optional fields
-    // semester: {
-    //   type: String,
-    //   enum: ["Fall", "Spring", "Summer", "Winter"],
-    // },
-    // year: {
-    //   type: Number,
-    //   default: new Date().getFullYear(),
-    // },
   },
   { timestamps: true },
 );
+
+// if course is deleted, delete assignments too
+courseSchema.pre("findOneAndDelete", async function (next) {
+  const doc = await this.model.findOne(this.getQuery());
+  if (doc) {
+    await Assignment.deleteMany({ courseId: doc._id });
+  }
+  next();
+});
 
 export default mongoose.model("Course", courseSchema);

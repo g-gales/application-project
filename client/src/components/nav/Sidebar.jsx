@@ -13,7 +13,7 @@ const links = [
 export default function Sidebar() {
   const { user, logout } = useAuth();
   return (
-    <div className="h-full p-4 md:p-5 grid gap-4">
+    <div className="h-full p-4 md:p-5 grid gap-4 overflow-y-auto">
       <div className="flex items-center gap-3 p-3 rounded-[14px] border border-[var(--border)] bg-[var(--surface-2)]">
         <div className="w-10 h-10 grid place-items-center rounded-xl bg-[var(--primary)] text-[var(--primary-contrast)] font-extrabold">
           &lt;/&gt;
@@ -40,8 +40,7 @@ export default function Sidebar() {
                   ? "border-[var(--border)] bg-[var(--surface-2)] font-bold"
                   : "border-transparent hover:bg-[var(--surface-2)]",
               ].join(" ")
-            }
-          >
+            }>
             {l.label}
           </NavLink>
         ))}
@@ -50,12 +49,11 @@ export default function Sidebar() {
       <div className="mt-auto pt-3 border-t border-[var(--border)]">
         <button
           onClick={logout}
-          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium cursor-pointer"
-        >
+          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium cursor-pointer">
           Logout
         </button>
         <div className="text-xs text-[var(--muted-text)]">
-          v0.1 • Sprint 1 shell
+          v0.2 • Sprint 2 shell
         </div>
       </div>
     </div>
