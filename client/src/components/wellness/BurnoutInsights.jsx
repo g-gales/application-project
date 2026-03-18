@@ -28,6 +28,8 @@ export default function BurnoutInsights({ burnoutRisk }) {
               const percent =
                 item.max > 0 ? Math.round((item.impact / item.max) * 100) : 0;
 
+              const strengthLabel =
+                percent >= 75 ? "High" : percent >= 40 ? "Moderate" : "Low";
               return (
                 <li
                   key={item.key}
@@ -44,6 +46,9 @@ export default function BurnoutInsights({ burnoutRisk }) {
                       </div>
                     </div>
                     <div className="flex flex-row items-center gap-3">
+                      <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[var(--muted-text)]">
+                        {strengthLabel}
+                      </span>
                       <div className="flex flex-col gap-1">
                         <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--surface)]">
                           <div
