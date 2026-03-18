@@ -20,8 +20,10 @@
     "react": "^19.2.0",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.2.0",
+    "react-icons": "^5.6.0",
     "react-router-dom": "^7.13.1",
-    "react-timer-hook": "^4.0.5"
+    "react-timer-hook": "^4.0.5",
+    "canvas-confetti": "^1.9.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

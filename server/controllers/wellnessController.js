@@ -23,7 +23,7 @@ export const saveWellnessEntry = async (req, res) => {
         date: entryDate,
       },
       {
-        new: true,
+        returnDocument: "after",
         upsert: true,
         runValidators: true,
       },
