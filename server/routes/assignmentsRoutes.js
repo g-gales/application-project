@@ -44,7 +44,7 @@ router.put("/:id", async (req, res) => {
     const updated = await Assignment.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
       req.body,
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
     if (!updated)
       return res.status(404).json({ message: "Assignment not found" });

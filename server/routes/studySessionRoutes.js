@@ -1,7 +1,7 @@
 import express from "express";
 import StudySession from "../models/StudySession.js";
 import Course from "../models/Course.js";
-import { protect } from "../middleware/authMiddleware.js"; // Adjust path if needed
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.post("/", protect, async (req, res) => {
       type,
     });
 
-    // 2. Increment the total time in the Course model (Atomic update)
+    // increment the total time in the Course model
     await Course.findOneAndUpdate(
       { _id: courseId, userId: req.user._id },
       { $inc: { pomodoroStudyTime: durationMinutes } },

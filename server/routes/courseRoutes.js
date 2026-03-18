@@ -75,7 +75,7 @@ router.patch("/:id", protect, async (req, res) => {
     const updatedCourse = await Course.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
       req.body,
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
 
     if (!updatedCourse) {
@@ -108,7 +108,7 @@ router.delete("/:id", protect, async (req, res) => {
       });
     }
 
-    res.status(204).json({ status: "success", data: null });
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ status: "fails", message: error.message });
   }

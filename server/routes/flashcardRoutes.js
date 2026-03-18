@@ -53,7 +53,7 @@ router.patch("/:id", protect, async (req, res) => {
     const updatedDeck = await FlashcardDeck.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
       req.body,
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
 
     if (!updatedDeck) {
