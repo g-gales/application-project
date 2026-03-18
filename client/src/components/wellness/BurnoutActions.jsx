@@ -28,7 +28,7 @@ export default function BurnoutActions({ burnoutRisk }) {
             {actions.map((action, index) => (
               <li
                 key={index}
-                className="flex items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4">
+                className="flex items-center  gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4">
                 <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-xs font-extrabold text-[var(--primary-contrast)]">
                   {index + 1}
                 </span>

@@ -1,17 +1,22 @@
 import { useEffect, useState, useMemo } from "react";
-
 import api from "../api/axiosConfig";
+
 import WellnessCheckIn from "../components/wellness/WellnessCheckIn";
 import WellnessOverview from "../components/wellness/WellnessOverview";
 import BurnoutActions from "../components/wellness/BurnoutActions";
 import BurnoutInsights from "../components/wellness/BurnoutInsights";
-import { calculateBurnoutRisk } from "../utils/wellnessUtils";
+
+import { calculateBurnoutRisk } from "../utils/burnoutUtils";
+import { calculateWorkloadMetrics } from "../utils/workloadUtils";
+import { calculateStudySummary } from "../utils/courseWorkloadUtils";
+
 import Card from "../components/ui/Card";
 
 const Wellness = () => {
   const [wellnessEntries, setWellnessEntries] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [courses, setCourses] = useState([]);
 
-  //Only fetches data once instead of on every render
   const fetchWellnessEntries = async () => {
     try {
       const res = await api.get("/wellness");
@@ -22,23 +27,50 @@ const Wellness = () => {
     }
   };
 
+  const fetchAssignments = async () => {
+    try {
+      const res = await api.get("/assignments");
+      setAssignments(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch assignments", error);
+      setAssignments([]);
+    }
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const res = await api.get("/courses");
+      setCourses(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch courses", error);
+      setCourses([]);
+    }
+  };
+
+  //Only fetches data once instead of on every render
   useEffect(() => {
     fetchWellnessEntries();
+    fetchAssignments();
+    fetchCourses();
   }, []);
 
-  //   For when workload and capacity hours can be calculated
-  //   const burnoutRisk = useMemo(() => {
-  //   return calculateBurnoutRisk({
-  //     wellnessEntries,
-  //     weeklyWorkloadHours: 24,
-  //     weeklyCapacityHours: 18,
-  //     overdueCount: 2,
-  //     heavyLoadDays: 4,
-  //   });
-  // }, [wellnessEntries]);
-  const burnoutRisk = calculateBurnoutRisk({
-    wellnessEntries,
-  });
+  const studySummary = useMemo(() => {
+    return calculateStudySummary(courses);
+  }, [courses]);
+
+  const workloadMetrics = useMemo(() => {
+    return calculateWorkloadMetrics({
+      assignments,
+      studySummary,
+    });
+  }, [assignments, studySummary]);
+
+  const burnoutRisk = useMemo(() => {
+    return calculateBurnoutRisk({
+      wellnessEntries,
+      workloadMetrics,
+    });
+  }, [wellnessEntries, workloadMetrics]);
 
   //Checks if a Wellness Entry was already submitted by this user today
   const today = useMemo(() => {
