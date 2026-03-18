@@ -37,7 +37,6 @@ courseSchema.pre("findOneAndDelete", async function (next) {
   if (doc) {
     await Assignment.deleteMany({ courseId: doc._id });
   }
-  next();
 });
 
 export default mongoose.model("Course", courseSchema);

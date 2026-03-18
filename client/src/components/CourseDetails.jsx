@@ -83,7 +83,6 @@ export default function CourseDetails() {
       try {
         setLoading(true);
         const res = await api.get(`/courses/${courseId}`);
-        console.log("Assignment Data:", res.data.assignments[0]);
         setCourse(res.data);
       } catch (error) {
         console.log("Error loading course:", error);
@@ -214,17 +213,27 @@ export default function CourseDetails() {
     }
   };
 
-  const bumpProgress = async (id, delta) => {
+  const bumpProgress = async (assignmentId, delta) => {
     try {
-      // send the delta to the backend
-      await api.put(`/assignments/${id}/progress`, { minutes: delta });
+      // get the latest pomodoroStudyTime
+      const latest = await api.get(`/courses/${courseId}`);
+      const latestTotal = latest.data.pomodoroStudyTime || 0;
 
-      // refrtesh data so the progress bar and status pills update
-      const res = await api.get(`/courses/${courseId}`);
-      setCourse(res.data);
+      // update progress on assignment
+      await api.put(`/assignments/${assignmentId}/progress`, {
+        minutes: delta,
+      });
+
+      // add the time to course total
+      const newTotal = Math.max(0, latestTotal + delta);
+      await api.patch(`/courses/${courseId}`, {
+        pomodoroStudyTime: newTotal,
+      });
+
+      const refresh = await api.get(`/courses/${courseId}`);
+      setCourse(refresh.data);
     } catch (err) {
-      console.error("Failed to update progress:", err);
-      alert("Could not update. Please try again.");
+      console.error("Bump failed:", err);
     }
   };
 
