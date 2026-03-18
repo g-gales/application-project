@@ -53,7 +53,7 @@ export default function Sidebar() {
           Logout
         </button>
         <div className="text-xs text-[var(--muted-text)]">
-          v0.1 • Sprint 1 shell
+          v0.2 • Sprint 2 shell
         </div>
       </div>
     </div>

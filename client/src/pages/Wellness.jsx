@@ -1,13 +1,22 @@
 import { useEffect, useState, useMemo } from "react";
-
 import api from "../api/axiosConfig";
+
 import WellnessCheckIn from "../components/wellness/WellnessCheckIn";
+import WellnessOverview from "../components/wellness/WellnessOverview";
+import BurnoutActions from "../components/wellness/BurnoutActions";
+import BurnoutInsights from "../components/wellness/BurnoutInsights";
+
+import { calculateBurnoutRisk } from "../utils/burnoutUtils";
+import { calculateWorkloadMetrics } from "../utils/workloadUtils";
+import { calculateStudySummary } from "../utils/courseWorkloadUtils";
+
 import Card from "../components/ui/Card";
 
 const Wellness = () => {
   const [wellnessEntries, setWellnessEntries] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [courses, setCourses] = useState([]);
 
-  //Only fetches data once instead of on every render
   const fetchWellnessEntries = async () => {
     try {
       const res = await api.get("/wellness");
@@ -18,9 +27,50 @@ const Wellness = () => {
     }
   };
 
+  const fetchAssignments = async () => {
+    try {
+      const res = await api.get("/assignments");
+      setAssignments(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch assignments", error);
+      setAssignments([]);
+    }
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const res = await api.get("/courses");
+      setCourses(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch courses", error);
+      setCourses([]);
+    }
+  };
+
+  //Only fetches data once instead of on every render
   useEffect(() => {
     fetchWellnessEntries();
+    fetchAssignments();
+    fetchCourses();
   }, []);
+
+  const studySummary = useMemo(() => {
+    return calculateStudySummary(courses);
+  }, [courses]);
+
+  const workloadMetrics = useMemo(() => {
+    return calculateWorkloadMetrics({
+      assignments,
+      studySummary,
+    });
+  }, [assignments, studySummary]);
+
+  const burnoutRisk = useMemo(() => {
+    return calculateBurnoutRisk({
+      wellnessEntries,
+      workloadMetrics,
+    });
+  }, [wellnessEntries, workloadMetrics]);
 
   //Checks if a Wellness Entry was already submitted by this user today
   const today = useMemo(() => {
@@ -45,20 +95,19 @@ const Wellness = () => {
   //----------------------------------
   return (
     <div className="stack gap-md">
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-4">
+        <WellnessOverview burnoutRisk={burnoutRisk} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
           onSuccess={fetchWellnessEntries}
           wellnessEntries={wellnessEntries}
         />
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <BurnoutInsights burnoutRisk={burnoutRisk} />
+          <BurnoutActions burnoutRisk={burnoutRisk} />
+        </div>
       </section>
-      <Card title="Wellness Overview" /> {/* TBD*/}
       <Card title="Wellness Trends" /> {/* TBD*/}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Card title="Insights" className="p-6"></Card>
-        <Card title="Actions" className="p-6"></Card>
-      </div>{" "}
-      {/* TBD*/}
     </div>
   );
 };

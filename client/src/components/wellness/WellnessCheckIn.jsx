@@ -105,7 +105,7 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
               </p>
             </div>
           </div>
-          {hasSubmittedToday && (
+          {/* {hasSubmittedToday && (
             <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--green-bg)] px-4 py-3">
               <p className="text-sm font-bold text-[var(--green-text)]">
                 Today’s check-in is already complete.
@@ -114,36 +114,49 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
                 You can still add an entry for a previous day if you missed one.
               </p>
             </div>
-          )}
+          )} */}
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 mb-6 gap-8 md:self-end md:flex-row md:items-center md:justify-between md:max-w-[560px]">
-            <div className="flex flex-col">
-              <label
-                htmlFor="entryDate"
-                className="text-sm font-bold text-[var(--text)]">
-                Entry Date
-              </label>
-              <p className="text-xs text-[var(--muted-text-2)]">
-                Defaults to today. Previous dates only.
-              </p>
-            </div>
-            <div>
-              <input
-                id="entryDate"
-                type="date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                max={today}
-                className="w-full rounded-[calc(var(--radius)-6px)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] md:w-auto md:min-w-[250px]"
-              />
-
-              {showSelectedDateWarning && (
-                <p className="mt-2 text-xs font-medium text-red-500">
-                  A wellness check-in already exists for this date.
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mb-6">
+            {hasSubmittedToday && (
+              <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--green-bg)] px-4 py-3">
+                <p className="text-sm font-bold text-[var(--green-text)]">
+                  Today’s check-in is already complete.
                 </p>
-              )}
+                <p className="mt-1 text-sm text-[var(--green-text)]/90">
+                  You can still add an entry for a previous day if you missed
+                  one.
+                </p>
+              </div>
+            )}
+            <div className="flex flex-col gap-2 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 gap-8 md:self-end md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="entryDate"
+                  className="text-sm font-bold text-[var(--text)]">
+                  Entry Date
+                </label>
+                <p className="text-xs text-[var(--muted-text-2)]">
+                  Defaults to today. Previous dates only.
+                </p>
+              </div>
+              <div>
+                <input
+                  id="entryDate"
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  max={today}
+                  className="w-full rounded-[calc(var(--radius)-6px)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] md:w-auto md:min-w-[250px]"
+                />
+
+                {showSelectedDateWarning && (
+                  <p className="mt-2 text-xs font-medium text-red-500">
+                    A wellness check-in already exists for this date.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
