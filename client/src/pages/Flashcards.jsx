@@ -268,7 +268,9 @@ export default function Flashcards() {
 
     try {
       setDeletingCardId(cardId);
-      const res = await api.delete(`/flashcards/${selectedDeckId}/cards/${cardId}`);
+      const res = await api.delete(
+        `/flashcards/${selectedDeckId}/cards/${cardId}`,
+      );
 
       setDecks((prev) =>
         prev.map((deck) => (deck._id === selectedDeckId ? res.data : deck)),
@@ -385,14 +387,14 @@ export default function Flashcards() {
     filteredDecks.length === 1 ? "1 deck" : `${filteredDecks.length} decks`;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] p-4 text-[var(--text)] md:p-6">
+    <div className="bg-[var(--bg)] text-[var(--text)] md:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)] md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="mt-1 text-2xl font-black">Flashcards</h1>
             <p className="mt-2 text-sm text-[var(--muted-text)]">
-              Build decks by course, filter by semester or course, and study them
-              in learn mode.
+              Build decks by course, filter by semester or course, and study
+              them in learn mode.
             </p>
           </div>
 
