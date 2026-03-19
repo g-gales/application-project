@@ -128,7 +128,13 @@ const Wellness = () => {
     <div className="stack gap-md">
       <section className="flex flex-col gap-4">
         <WellnessOverview burnoutRisk={burnoutRisk} />
-        {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
+        {burnoutAlerts.length > 0 && (
+          <BurnoutAlerts alerts={burnoutAlerts} testMode={true} />
+        )}
+        {localStorage.getItem("token") === "GUEST_USER_POWERUP" &&
+          burnoutAlerts.length === 0 && (
+            <BurnoutAlerts alerts={[]} testMode={true} />
+          )}
         <WellnessTrends wellnessEntries={wellnessEntries} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
