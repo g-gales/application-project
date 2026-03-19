@@ -5,10 +5,13 @@ import WellnessCheckIn from "../components/wellness/WellnessCheckIn";
 import WellnessOverview from "../components/wellness/WellnessOverview";
 import BurnoutActions from "../components/wellness/BurnoutActions";
 import BurnoutInsights from "../components/wellness/BurnoutInsights";
+import BurnoutAlerts from "../components/wellness/BurnoutAlerts";
+import WellnessTrends from "../components/wellness/WellnessTrends";
 
 import { calculateBurnoutRisk } from "../utils/burnoutUtils";
 import { calculateWorkloadMetrics } from "../utils/workloadUtils";
 import { calculateStudySummary } from "../utils/courseWorkloadUtils";
+import { generateBurnoutAlerts } from "../utils/alertUtils";
 
 import Card from "../components/ui/Card";
 
@@ -65,12 +68,40 @@ const Wellness = () => {
     });
   }, [assignments, studySummary]);
 
+  const previousBurnoutScore = useMemo(() => {
+    if (wellnessEntries.length < 6) return null;
+
+    const sortedEntries = [...wellnessEntries].sort(
+      (a, b) => new Date(a.date) - new Date(b.date),
+    );
+
+    const previousSlice = sortedEntries.slice(0, -3);
+
+    if (!previousSlice.length) return null;
+
+    const previousRisk = calculateBurnoutRisk({
+      wellnessEntries: previousSlice,
+      workloadMetrics,
+    });
+
+    return previousRisk.score;
+  }, [wellnessEntries, workloadMetrics]);
+
   const burnoutRisk = useMemo(() => {
     return calculateBurnoutRisk({
       wellnessEntries,
       workloadMetrics,
     });
   }, [wellnessEntries, workloadMetrics]);
+
+  const burnoutAlerts = useMemo(() => {
+    return generateBurnoutAlerts({
+      wellnessEntries,
+      burnoutRisk,
+      workloadMetrics,
+      previousBurnoutScore,
+    });
+  }, [wellnessEntries, burnoutRisk, workloadMetrics, previousBurnoutScore]);
 
   //Checks if a Wellness Entry was already submitted by this user today
   const today = useMemo(() => {
@@ -97,17 +128,19 @@ const Wellness = () => {
     <div className="stack gap-md">
       <section className="flex flex-col gap-4">
         <WellnessOverview burnoutRisk={burnoutRisk} />
+        {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
+        <WellnessTrends wellnessEntries={wellnessEntries} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
           onSuccess={fetchWellnessEntries}
           wellnessEntries={wellnessEntries}
         />
+
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <BurnoutInsights burnoutRisk={burnoutRisk} />
           <BurnoutActions burnoutRisk={burnoutRisk} />
         </div>
       </section>
-      <Card title="Wellness Trends" /> {/* TBD*/}
     </div>
   );
 };

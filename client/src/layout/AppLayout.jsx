@@ -26,8 +26,10 @@ export default function AppLayout() {
     <div className="h-screen min-w-screen max-w-[1495px] bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto w-full max-w-[1495px] min-h-screen md:grid md:grid-cols-[280px_1fr]">
         {/* Sidebar (desktop) */}
-        <aside className="hidden min-h-screen h-full md:block md:sticky md:top-0 md:self-start md:h-screen bg-[var(--surface)] border-r border-[var(--border)] overflow-hidden">
-          <Sidebar />
+        <aside className="hidden md:block">
+          <div className="fixed top-0 left-0 h-screen w-[280px] bg-[var(--surface)] border-r border-[var(--border)]">
+            <Sidebar />
+          </div>
         </aside>
 
         {/* Mobile drawer + backdrop */}
