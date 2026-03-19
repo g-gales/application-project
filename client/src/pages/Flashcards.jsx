@@ -268,7 +268,9 @@ export default function Flashcards() {
 
     try {
       setDeletingCardId(cardId);
-      const res = await api.delete(`/flashcards/${selectedDeckId}/cards/${cardId}`);
+      const res = await api.delete(
+        `/flashcards/${selectedDeckId}/cards/${cardId}`,
+      );
 
       setDecks((prev) =>
         prev.map((deck) => (deck._id === selectedDeckId ? res.data : deck)),
@@ -385,14 +387,14 @@ export default function Flashcards() {
     filteredDecks.length === 1 ? "1 deck" : `${filteredDecks.length} decks`;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] p-4 text-[var(--text)] md:p-6">
+    <div className="bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)] md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="mt-1 text-2xl font-black">Flashcards</h1>
             <p className="mt-2 text-sm text-[var(--muted-text)]">
-              Build decks by course, filter by semester or course, and study them
-              in learn mode.
+              Build decks by course, filter by semester or course, and study
+              them in learn mode.
             </p>
           </div>
 
@@ -639,7 +641,9 @@ export default function Flashcards() {
           setViewModalOpen(false);
           resetCardForm();
         }}
-        title={selectedDeck ? `Deck Details · ${selectedDeck.title}` : "Deck Details"}
+        title={
+          selectedDeck ? `Deck Details · ${selectedDeck.title}` : "Deck Details"
+        }
       >
         {selectedDeck ? (
           <div className="min-w-[300px] space-y-5 sm:min-w-[720px]">
@@ -729,7 +733,9 @@ export default function Flashcards() {
                                 disabled={deletingCardId === card._id}
                                 onClick={() => handleDeleteCard(card._id)}
                               >
-                                {deletingCardId === card._id ? "Deleting..." : "Delete"}
+                                {deletingCardId === card._id
+                                  ? "Deleting..."
+                                  : "Delete"}
                               </Button>
                             </>
                           ) : (
@@ -828,7 +834,8 @@ export default function Flashcards() {
             <div>
               <div className="mb-2 flex items-center justify-between text-xs font-bold text-[var(--muted-text)]">
                 <span>
-                  Mastered: {studyStats.completed} / {studyDeck?.cards?.length || 0}
+                  Mastered: {studyStats.completed} /{" "}
+                  {studyDeck?.cards?.length || 0}
                 </span>
                 <span>{progressPercent}%</span>
               </div>
@@ -902,7 +909,9 @@ export default function Flashcards() {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted-text)]">No study cards available.</p>
+          <p className="text-sm text-[var(--muted-text)]">
+            No study cards available.
+          </p>
         )}
       </Modal>
     </div>

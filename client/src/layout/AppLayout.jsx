@@ -23,7 +23,7 @@ export default function AppLayout() {
   }, [mobileOpen]);
 
   return (
-    <div className="min-h-screen min-w-screen max-w-[1495px] bg-[var(--bg)] text-[var(--text)]">
+    <div className="h-screen min-w-screen max-w-[1495px] bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto w-full max-w-[1495px] min-h-screen md:grid md:grid-cols-[280px_1fr]">
         {/* Sidebar (desktop) */}
         <aside className="hidden md:block">
@@ -48,7 +48,8 @@ export default function AppLayout() {
             "transform transition-transform duration-200 ease-out",
             mobileOpen ? "translate-x-0" : "-translate-x-[105%]",
           ].join(" ")}
-          aria-hidden={!mobileOpen}>
+          aria-hidden={!mobileOpen}
+        >
           <Sidebar />
         </aside>
 
@@ -60,7 +61,7 @@ export default function AppLayout() {
             onToggleMobile={() => setMobileOpen((v) => !v)}
           />
 
-          <main className="flex-1 w-full p-4 md:p-5">
+          <main className="flex-1 w-full h-screen p-4 md:p-5 overflow-y-auto">
             <div className="mx-auto w-full min-h-full">
               <Outlet />
             </div>
