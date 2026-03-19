@@ -18,7 +18,7 @@ function formatDetailValue(value) {
 export default function BurnoutAlerts({
   alerts = [],
   compact = false,
-  testMode = true,
+  testMode = false,
 }) {
   const testAlerts = [
     {

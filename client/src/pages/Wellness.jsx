@@ -6,6 +6,7 @@ import WellnessOverview from "../components/wellness/WellnessOverview";
 import BurnoutActions from "../components/wellness/BurnoutActions";
 import BurnoutInsights from "../components/wellness/BurnoutInsights";
 import BurnoutAlerts from "../components/wellness/BurnoutAlerts";
+import WellnessTrends from "../components/wellness/WellnessTrends";
 
 import { calculateBurnoutRisk } from "../utils/burnoutUtils";
 import { calculateWorkloadMetrics } from "../utils/workloadUtils";
@@ -128,18 +129,18 @@ const Wellness = () => {
       <section className="flex flex-col gap-4">
         <WellnessOverview burnoutRisk={burnoutRisk} />
         {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
-        <BurnoutAlerts alerts={burnoutAlerts} />
+        <WellnessTrends wellnessEntries={wellnessEntries} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
           onSuccess={fetchWellnessEntries}
           wellnessEntries={wellnessEntries}
         />
+
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <BurnoutInsights burnoutRisk={burnoutRisk} />
           <BurnoutActions burnoutRisk={burnoutRisk} />
         </div>
       </section>
-      <Card title="Wellness Trends" /> {/* TBD*/}
     </div>
   );
 };
