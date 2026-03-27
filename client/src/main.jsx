@@ -5,6 +5,7 @@ import App from "./App";
 // user login imports
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthProvider.jsx";
+import { TimerProvider } from "./context/TimerContext.jsx";
 
 // routing imports
 import { BrowserRouter } from "react-router-dom";
@@ -19,7 +20,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId={clientId}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <TimerProvider>
+            <App />
+          </TimerProvider>
         </AuthProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>

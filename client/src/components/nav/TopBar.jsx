@@ -1,4 +1,5 @@
 import ThemeToggle from "../theme/ThemeToggle";
+import MiniTimer from "../ui/MiniTimer";
 import { useLocation } from "react-router-dom";
 
 function titleFromPath(pathname) {
@@ -37,7 +38,8 @@ export default function Topbar({ drawerId, mobileOpen, onToggleMobile }) {
         "px-4 py-3 md:px-5",
         "border-b border-[var(--border)]",
         "bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur",
-      ].join(" ")}>
+      ].join(" ")}
+    >
       <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
@@ -47,7 +49,8 @@ export default function Topbar({ drawerId, mobileOpen, onToggleMobile }) {
             mobileOpen ? "Close navigation menu" : "Open navigation menu"
           }
           aria-controls={drawerId}
-          aria-expanded={mobileOpen}>
+          aria-expanded={mobileOpen}
+        >
           ☰
         </button>
 
@@ -60,6 +63,7 @@ export default function Topbar({ drawerId, mobileOpen, onToggleMobile }) {
       </div>
 
       <div className="flex items-center gap-2">
+        <MiniTimer />
         <ThemeToggle />
       </div>
     </header>

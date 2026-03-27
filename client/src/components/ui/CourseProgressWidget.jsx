@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosConfig";
-import Card from "../ui/Card";
-import Button from "../ui/Button";
+import Card from "./Card";
+import Button from "./Button";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
-const PomodoroMini = () => {
+const CourseProgressWidget = () => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -20,9 +20,9 @@ const PomodoroMini = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const navigateToPomodoro = (
-    <Button variant="secondary" onClick={() => navigate("/app/pomodoro")}>
-      Pomodoro
+  const navigateToCourses = (
+    <Button variant="secondary" onClick={() => navigate("/app/courses")}>
+      Courses
       <FaExternalLinkAlt />
     </Button>
   );
@@ -40,7 +40,7 @@ const PomodoroMini = () => {
   };
 
   return (
-    <Card title="Weekly Study Goals" footer={navigateToPomodoro}>
+    <Card title="Weekly Study Goals" footer={navigateToCourses}>
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="space-y-3 animate-pulse">
@@ -84,4 +84,4 @@ const PomodoroMini = () => {
   );
 };
 
-export default PomodoroMini;
+export default CourseProgressWidget;

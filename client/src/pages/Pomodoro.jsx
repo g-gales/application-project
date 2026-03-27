@@ -1,38 +1,42 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api from "../api/axiosConfig";
-
-// timer and progress bar: https://www.npmjs.com/package/react-circular-progressbar
-import { useTimer } from "react-timer-hook";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+import { useGlobalTimer } from "../context/TimerContext";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
 export default function Pomodoro() {
   const [courses, setCourses] = useState([]);
-  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [assignments, setAssignments] = useState([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // times for work mode and break
-  const [times, setTimes] = useState({ work: 25, break: 5 });
-  const [isWorkMode, setIsWorkMode] = useState(true);
-  // state for finished session modal
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // optional assignments
-  const [assignments, setAssignments] = useState([]);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState("");
-  const filteredAssignments = useMemo(() => {
-    if (!selectedCourseId) return [];
-    // Filter the master assignments list by the selected course
-    return assignments.filter(
-      (a) => a.courseId === selectedCourseId && a.status !== "done",
-    );
-  }, [selectedCourseId, assignments]);
+  // get timer values from context
+  const {
+    seconds,
+    minutes,
+    isRunning,
+    isWorkMode,
+    percentage,
+    times,
+    setTimes,
+    selectedCourseId,
+    setSelectedCourseId,
+    selectedAssignmentId,
+    setSelectedAssignmentId,
+    isSummaryOpen,
+    setIsSummaryOpen,
+    pause,
+    resume,
+    restart,
+    refreshTimer,
+    setIsWorkMode,
+  } = useGlobalTimer();
 
-  // get list of courses and assignments
+  // Fetch data
   useEffect(() => {
     Promise.all([api.get("/courses"), api.get("/assignments")])
       .then(([courseRes, assignRes]) => {
@@ -42,29 +46,44 @@ export default function Pomodoro() {
       .catch((err) => console.error("Error fetching data", err));
   }, []);
 
-  // deconstructed useTimer hook
-  const { seconds, minutes, isRunning, pause, resume, restart } = useTimer({
-    // set time to 25 minutes on first load
-    expiryTimestamp: new Date(Date.now() + 25 * 60 * 1000),
-    autoStart: false,
-    onExpire: () => {
-      if (isWorkMode) {
-        setIsSummaryOpen(true);
-      } else {
-        alert("Break is over! Time to get back to it.");
-        setIsWorkMode(true);
-        refreshTimer(times.work);
+  const filteredAssignments = useMemo(() => {
+    if (!selectedCourseId) return [];
+    return assignments.filter(
+      (a) => a.courseId === selectedCourseId && a.status !== "done",
+    );
+  }, [selectedCourseId, assignments]);
+
+  const handleLogAndNext = async (nextAction) => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      await api.post("/study-sessions", {
+        courseId: selectedCourseId,
+        durationMinutes: times.work,
+        type: "pomodoro",
+      });
+      if (selectedAssignmentId) {
+        await api.put(`/assignments/${selectedAssignmentId}/progress`, {
+          minutes: times.work,
+        });
       }
-    },
-  });
+      if (nextAction === "BREAK") {
+        setIsWorkMode(false);
+        refreshTimer(times.break);
+      } else if (nextAction === "WORK") {
+        setIsWorkMode(true);
+        const newTime = new Date();
+        newTime.setSeconds(newTime.getSeconds() + times.work * 60);
+        restart(newTime, true);
+      }
+      setIsSummaryOpen(false);
+    } catch (err) {
+      console.error("Failed to log", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-  // percentage for circularProgressBar
-  const currentTotalSecs = (isWorkMode ? times.work : times.break) * 60;
-  const percentage = Math.round(
-    ((minutes * 60 + seconds) / currentTotalSecs) * 100,
-  );
-
-  // styles for circle progress bar
   const timerStyles = {
     path: {
       stroke: isWorkMode ? "var(--primary)" : "var(--muted-text)",
@@ -75,68 +94,8 @@ export default function Pomodoro() {
     text: { fill: "var(--text)", fontSize: "20px", fontWeight: "900" },
   };
 
-  // on change of course, set default times, reset assignments
-  const refreshTimer = useCallback(
-    (mins) => {
-      const time = new Date();
-      const totalSeconds = mins > 0 ? mins * 60 : 1;
-      time.setSeconds(time.getSeconds() + totalSeconds);
-      restart(time, false);
-    },
-    [restart],
-  );
-  useEffect(() => {
-    if (selectedCourseId) {
-      setSelectedAssignmentId("");
-    }
-  }, [selectedCourseId]);
-  useEffect(() => {
-    refreshTimer(isWorkMode ? times.work : times.break);
-  }, [isWorkMode, refreshTimer]);
-
-  // completed sessions handler
-  const handleLogAndNext = async (nextAction) => {
-    if (isSaving) return;
-    setIsSaving(true);
-
-    try {
-      // save study session
-      await api.post("/study-sessions", {
-        courseId: selectedCourseId,
-        durationMinutes: times.work,
-        type: "pomodoro",
-      });
-
-      // save assignment progress if any
-      if (selectedAssignmentId) {
-        await api.put(`/assignments/${selectedAssignmentId}/progress`, {
-          minutes: times.work,
-        });
-      }
-
-      if (nextAction === "BREAK") {
-        setIsWorkMode(false);
-        refreshTimer(times.break);
-      } else if (nextAction === "WORK") {
-        setIsWorkMode(true);
-
-        const newTime = new Date();
-        newTime.setSeconds(newTime.getSeconds() + times.work * 60);
-
-        restart(newTime, true);
-      }
-      setIsSummaryOpen(false);
-    } catch (err) {
-      console.error("Failed to log session", err);
-      alert("Could not save your session. Please try again.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Card footer buttons
   const footerControls = (
-    <div className="flex mx-auto max-w-lg">
+    <div className="flex mx-auto max-w-lg gap-2 w-full">
       <Button
         variant={isRunning ? "secondary" : "primary"}
         fullWidth
@@ -162,9 +121,7 @@ export default function Pomodoro() {
   return (
     <Card title="What are we working on?" footer={footerControls}>
       <div className="flex flex-col items-center">
-        {/* // select course  */}
         <select
-          required
           value={selectedCourseId}
           onChange={(e) => setSelectedCourseId(e.target.value)}
           className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] max-w-128 cursor-pointer"
@@ -177,12 +134,11 @@ export default function Pomodoro() {
           ))}
         </select>
 
-        {/* // optional assignment selection */}
         {filteredAssignments.length > 0 && (
           <select
             value={selectedAssignmentId}
             onChange={(e) => setSelectedAssignmentId(e.target.value)}
-            className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] max-w-128 cursor-pointer outline-none focus:ring-2 focus:ring-[var(--primary)]"
+            className="w-full p-2 mb-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] max-w-128 cursor-pointer"
           >
             <option value="">-- Select an Assignment (Optional) --</option>
             {filteredAssignments.map((a) => (
@@ -193,41 +149,36 @@ export default function Pomodoro() {
           </select>
         )}
 
-        {/* timer circle */}
         <div
           onClick={() => setIsSettingsOpen(true)}
-          className="w-48 h-48  relative cursor-pointer hover:scale-105 transition-transform mb-4"
+          className="w-48 h-48 relative cursor-pointer hover:scale-105 transition-transform mb-4"
         >
           <CircularProgressbar
             value={percentage}
             text={`${minutes}:${seconds.toString().padStart(2, "0")}`}
             styles={timerStyles}
           />
-          <div className="absolute inset-0 flex flex-col items-center justify-center pt-16 hover:underline">
-            <span className="text-[9px] text-[var(--primary)] font-bold ">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-16">
+            <span className="text-[9px] text-[var(--primary)] font-bold hover:underline">
               Edit Times
             </span>
           </div>
         </div>
 
-        {/* // MODALS  */}
-
-        {/* // SUMMARY OF SESSION MODAL  */}
+        {/* Modals */}
         <Modal
           isOpen={isSummaryOpen}
           onClose={() => setIsSummaryOpen(false)}
           title="Session Complete!"
         >
           <div className="space-y-4 text-center">
-            <p className="text-[var(--text)]">
-              Nice work! You've completed <strong>{times.work} minutes</strong>{" "}
-              of focus.
+            <p>
+              Nice work! You've completed <strong>{times.work} minutes</strong>.
             </p>
             <div className="flex flex-col gap-2">
               <Button
                 variant="primary"
                 fullWidth
-                disabled={isSaving}
                 onClick={() => handleLogAndNext("BREAK")}
               >
                 Take a Break
@@ -235,7 +186,6 @@ export default function Pomodoro() {
               <Button
                 variant="secondary"
                 fullWidth
-                disabled={isSaving}
                 onClick={() => handleLogAndNext("WORK")}
               >
                 New Session
@@ -243,7 +193,6 @@ export default function Pomodoro() {
               <Button
                 variant="ghost"
                 fullWidth
-                disabled={isSaving}
                 onClick={() => handleLogAndNext("FINISH")}
               >
                 Save Session
@@ -252,14 +201,12 @@ export default function Pomodoro() {
           </div>
         </Modal>
 
-        {/* // EDIT TIMES MODAL  */}
         <Modal
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
           title="Timer Settings"
-          showCloseButton={false}
         >
-          <div className="space-y-4 min-w-[240px]">
+          <div className="space-y-4">
             {["work", "break"].map((type) => (
               <div key={type}>
                 <label className="text-[10px] uppercase font-bold opacity-60 block mb-1">
@@ -267,39 +214,23 @@ export default function Pomodoro() {
                 </label>
                 <input
                   type="number"
-                  // set value to empty string if it is 0
-                  value={times[type] === 0 ? "" : times[type]}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    // set state to 0 if value is empty string
-                    setTimes({
-                      ...times,
-                      [type]: val === "" ? 0 : Number(val),
-                    });
-                  }}
-                  className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)] font-bold outline-none"
+                  value={times[type]}
+                  onChange={(e) =>
+                    setTimes({ ...times, [type]: Number(e.target.value) })
+                  }
+                  className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)]"
                 />
               </div>
             ))}
-
-            <div className="flex flex-col gap-2 pt-2">
-              <Button
-                fullWidth
-                onClick={() => {
-                  refreshTimer(isWorkMode ? times.work : times.break);
-                  setIsSettingsOpen(false);
-                }}
-              >
-                Apply Changes
-              </Button>
-              <Button
-                variant="ghost"
-                fullWidth
-                onClick={() => setIsSettingsOpen(false)}
-              >
-                Cancel
-              </Button>
-            </div>
+            <Button
+              fullWidth
+              onClick={() => {
+                refreshTimer(isWorkMode ? times.work : times.break);
+                setIsSettingsOpen(false);
+              }}
+            >
+              Apply
+            </Button>
           </div>
         </Modal>
       </div>
