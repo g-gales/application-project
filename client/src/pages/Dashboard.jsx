@@ -1,7 +1,5 @@
-import React, { useMemo } from "react";
-
 import Card from "../components/ui/Card";
-import PomodoroMini from "../components/ui/PomodoroMini";
+import CourseProgressWidget from "../components/ui/CourseProgressWidget";
 
 export default function Dashboard() {
   return (
@@ -27,9 +25,9 @@ export default function Dashboard() {
             </p>
           </Card>
         </div>
-        {/* TODO: finish Pomodoro Widget */}
+        {/* TODO: finish Course Progress Widget */}
         <div className="col-span-12 lg:col-span-4">
-          <PomodoroMini />
+          <CourseProgressWidget />
         </div>
 
         <div className="col-span-12 lg:col-span-4">
