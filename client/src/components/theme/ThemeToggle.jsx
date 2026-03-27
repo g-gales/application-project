@@ -1,18 +1,19 @@
 import { useTheme } from "./ThemeContext";
+import Button from "../ui/Button";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
   return (
-    <button
-      type="button"
-      className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-[var(--border)] hover:bg-[var(--surface-2)] cursor-pointer"
+    <Button
+      className={"h-12 border-0"}
+      variant="secondary"
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
-      {isDark ? "Dark" : "Light"}
-    </button>
+      <div className="text-xl">{isDark ? "🌒" : "☀️"}</div>
+    </Button>
   );
 }
