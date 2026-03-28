@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import Button from "../ui/Button";
 
 const links = [
   { to: "/app/dashboard", label: "Dashboard" },
@@ -8,6 +9,7 @@ const links = [
   { to: "/app/wellness", label: "Wellness" },
   { to: "/app/pomodoro", label: "Pomodoro" },
   { to: "/app/flashcards", label: "Flashcards" },
+  { to: "/app/settings", label: "Settings" },
 ];
 
 export default function Sidebar() {
@@ -40,18 +42,17 @@ export default function Sidebar() {
                   ? "border-[var(--border)] bg-[var(--surface-2)] font-bold"
                   : "border-transparent hover:bg-[var(--surface-2)]",
               ].join(" ")
-            }>
+            }
+          >
             {l.label}
           </NavLink>
         ))}
       </nav>
 
-      <div className="mt-auto pt-3 border-t border-[var(--border)]">
-        <button
-          onClick={logout}
-          className=" mt-2 mb-2 w-full text-left block rounded-xl px-3 py-2 border border-transparent text-red-500 hover:bg-red-50 hover:border-red-100 transition-colors font-medium cursor-pointer">
+      <div className="mt-auto flex flex-col gap-2 pt-3 border-t border-[var(--border)]">
+        <Button onClick={logout} variant="danger" fullWidth={true}>
           Logout
-        </button>
+        </Button>
         <div className="text-xs text-[var(--muted-text)]">
           v0.2 • Sprint 2 shell
         </div>
