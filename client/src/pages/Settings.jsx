@@ -5,7 +5,7 @@ import api from "../api/axiosConfig";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import toast from "react-hot-toast";
-import SummaryModal from "../components/SummaryModal";
+// import SummaryModal from "../components/SummaryModal";
 
 function Settings() {
   const { user, setUser } = useAuth();
@@ -69,8 +69,7 @@ function Settings() {
 
   return (
     <div className="space-y-6">
-      {/* Theme Card */}
-      <Card title="Display">
+      <Card title="Theme Selection">
         <div className="flex items-center justify-between">
           <p className="text-sm text-[var(--muted-text)]">
             Switch between light and dark mode.
@@ -106,16 +105,15 @@ function Settings() {
         </div>
       </Card>
 
-      {/* Course Goals Card */}
       <Card title="Course Study Goals">
         {loading.courses ? (
           <p className="text-sm animate-pulse">Loading your courses...</p>
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-col min-[900px]:flex-row gap-4 w-full items-stretch min-[900px]:items-center">
             <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
-              className="w-full p-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full min-[900px]:flex-[1] p-2 h-[66px] rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-sm outline-none focus:ring-2 focus:ring-[var(--primary)] h-full my-auto"
             >
               {courses.map((c) => (
                 <option key={c._id} value={c._id}>
@@ -144,7 +142,7 @@ function Settings() {
                       ),
                     )
                   }
-                  className="w-20 p-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-center text-sm"
+                  className="w-20 p-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-center text-sm "
                 />
                 <Button onClick={updateCourseGoal} disabled={loading.saving}>
                   Save
@@ -170,12 +168,12 @@ function Settings() {
         </div>
       </Card>
 
-      <SummaryModal
+      {/* <SummaryModal
         isOpen={isSummaryOpen}
         onClose={() => setIsSummaryOpen(false)}
         user={user}
         courses={courses}
-      />
+      /> */}
     </div>
   );
 }
