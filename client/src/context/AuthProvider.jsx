@@ -6,6 +6,26 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // FIXME: not sure if keeping this
+  //  weekly or daily summary to show when user hasn't checked the app for long
+  const [showSummary, setShowSummary] = useState(false);
+  useEffect(() => {
+    if (user) {
+      const lastViewed = new Date(user.lastSummaryViewedAt || 0);
+      const now = new Date();
+      const daysSince = (now - lastViewed) / (1000 * 60 * 60 * 24);
+
+      if (user.settings?.summaryFrequency === "weekly" && daysSince >= 7) {
+        setShowSummary(true);
+      } else if (
+        user.settings?.summaryFrequency === "daily" &&
+        daysSince >= 1
+      ) {
+        setShowSummary(true);
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");

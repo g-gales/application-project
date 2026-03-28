@@ -35,12 +35,7 @@ export default function Modal({
 
         {showCloseButton && (
           <div className="mt-4 border-t border-[var(--border)] pt-4">
-            <Button
-              variant="ghost"
-              fullWidth
-              onClick={onClose}
-              className="text-[10px]"
-            >
+            <Button variant="danger" fullWidth onClick={onClose}>
               Close
             </Button>
           </div>

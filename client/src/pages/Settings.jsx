@@ -5,10 +5,12 @@ import api from "../api/axiosConfig";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import toast from "react-hot-toast";
+import SummaryModal from "../components/SummaryModal";
 
 function Settings() {
   const { user, setUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
   const [courses, setCourses] = useState([]);
   const [selectedId, setSelectedId] = useState("");
@@ -52,7 +54,7 @@ function Settings() {
       });
       toast.success(`${currentCourse.code} goal updated!`);
     } catch (e) {
-      toast.error("Failed to update course goal.");
+      toast.error("Failed to update course goal.", e);
     } finally {
       setLoading((p) => ({ ...p, saving: false }));
     }
@@ -152,6 +154,28 @@ function Settings() {
           </div>
         )}
       </Card>
+
+      <Card
+        title="Summary History"
+        footer={
+          <Button onClick={() => setIsSummaryOpen(true)}>
+            View Summary History
+          </Button>
+        }
+      >
+        <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
+          <p className="text-sm text-[var(--muted-text)]">
+            Review your past study performance and goals.
+          </p>
+        </div>
+      </Card>
+
+      <SummaryModal
+        isOpen={isSummaryOpen}
+        onClose={() => setIsSummaryOpen(false)}
+        user={user}
+        courses={courses}
+      />
     </div>
   );
 }
