@@ -30,7 +30,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
   });
   const [loading, setLoading] = useState(false);
 
-  // 1. Fetch live data from backend
+  // fetch summary data whenever modal opens or offset changes
   useEffect(() => {
     if (!isOpen) return;
 
@@ -53,7 +53,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     fetchSummary();
   }, [isOpen, offset]);
 
-  // 2. Cached sort for most and least effort courses
+  // get min and most minutes courses for highlights
   const { mostEffort, leastEffort } = useMemo(() => {
     const list = summaryData.courseSummary;
     if (list.length === 0) return { mostEffort: null, leastEffort: null };
@@ -69,7 +69,6 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     };
   }, [summaryData.courseSummary]);
 
-  // 3. Map real DB response to the standard 7 days of the week
   const mappedWeeklyData = useMemo(() => {
     const baseWeek = [
       { day: "Su", id: 1, minutes: 0 },
@@ -81,7 +80,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       { day: "Sa", id: 7, minutes: 0 },
     ];
 
-    // Read the database array directly (Zero fallback dummy data)
+    // set minutes from baseWeek for each day based on fetched data
     summaryData.dailyBreakdown.forEach((item) => {
       const dayRef = baseWeek.find((b) => String(b.id) === String(item._id));
       if (dayRef) {
@@ -102,7 +101,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     }));
   }, [summaryData.dailyBreakdown]);
 
-  // 4. Date range calculation for title
+  // data range for card pagination
   const dateRange = useMemo(() => {
     const today = new Date();
 
@@ -128,7 +127,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     }
   }, [offset, frequency]);
 
-  // Pagination Controls
+  // controls for card pagination
   const datePagination = (
     <div className="flex items-center justify-between p-2 mb-6 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
       <button
@@ -161,12 +160,11 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       ) : (
         <div className="space-y-6">
           {/* DAILY WORKLOAD RINGS */}
-          <div className="daily-workload p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
-            <h3 className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)] mb-4 text-center">
+          <div className="flex flex-col gap-2 p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+            <h3 className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)]  text-center">
               Daily Activity
             </h3>
-
-            <div className="flex justify-between items-center gap-2 max-w-md mx-auto">
+            <div className="flex gap-1 sm:gap-2 justify-between items-center  max-w-md mx-auto">
               {mappedWeeklyData.map((item, index) => (
                 <div key={index} className="flex flex-col items-center gap-2">
                   <div className="w-8 h-8 sm:w-10 sm:h-10">
@@ -174,7 +172,6 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
                       value={item.percentage}
                       strokeWidth={12}
                       styles={buildStyles({
-                        // Resolves active hex colors automatically from your theme tokens!
                         pathColor: item.isPeakDay
                           ? getCSSVariableColor("--primary", "#2b59ff")
                           : getCSSVariableColor("--hover-primary", "#8da4e1"),
@@ -200,25 +197,25 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
                   style={{
-                    backgroundColor:
-                      mostEffort.courseDetails.color || "var(--primary)",
+                    backgroundColor: "var(--green-bg)",
+                    color: "var(--green-text)",
                   }}
                 >
                   <FiTrendingUp size={20} />
                 </div>
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)]">
-                    Top Focus This Week
+                    Top Course This Week
                   </span>
                   <h3 className="text-base font-bold text-[var(--text)]">
                     {mostEffort.courseDetails.name}
                   </h3>
                   <p className="text-xs text-[var(--muted-text)]">
-                    You've crushed it with{" "}
+                    You've crushed it with&nbsp;
                     <span className="font-bold text-[var(--text)]">
                       {mostEffort.totalMinutes} minutes
-                    </span>{" "}
-                    of study. Keep it up!
+                    </span>
+                    &nbsp;of study. Keep it up!
                   </p>
                 </div>
               </div>
@@ -232,11 +229,11 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
                   style={{
-                    backgroundColor:
-                      leastEffort.courseDetails.color || "var(--muted-text)",
+                    backgroundColor: "var(--danger-bg)",
+                    color: "var(--danger-text)",
                   }}
                 >
-                  <FiAlertCircle size={20} />
+                  <FiAlertCircle size={0} />
                 </div>
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)]">
@@ -246,11 +243,11 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
                     {leastEffort.courseDetails.name}
                   </h3>
                   <p className="text-xs text-[var(--muted-text)]">
-                    Only{" "}
+                    Only&nbsp;
                     <span className="font-bold text-[var(--text)]">
                       {leastEffort.totalMinutes} minutes
-                    </span>{" "}
-                    recorded. Consider focusing here next!
+                    </span>
+                    &nbsp;recorded. Consider focusing here next!
                   </p>
                 </div>
               </div>

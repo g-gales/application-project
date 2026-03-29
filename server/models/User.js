@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   picture: String,
+  lastSummaryViewedAt: {
+    type: Date,
+    default: Date.now,
+  },
   settings: {
     // added workload limits for calculating % of work being done for summary/burnout alerts
     darkMode: { type: Boolean, default: false },

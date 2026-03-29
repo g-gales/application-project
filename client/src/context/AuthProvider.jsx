@@ -1,28 +1,37 @@
 import { useState, useEffect } from "react";
 import api from "../api/axiosConfig";
 import { AuthContext } from "./authContext";
+import toast from "react-hot-toast";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSummary, setShowSummary] = useState(false);
+  const [hasCheckedSummary, setHasCheckedSummary] = useState(false);
 
+  // show summary modal based on user settings and last viewed timestamp
   useEffect(() => {
-    if (user) {
-      const lastViewed = new Date(user.lastSummaryViewedAt || 0);
+    if (user && !hasCheckedSummary) {
+      const lastViewed = user.lastSummaryViewedAt
+        ? new Date(user.lastSummaryViewedAt)
+        : new Date();
       const now = new Date();
-      const daysSince = (now - lastViewed) / (1000 * 60 * 60 * 24);
 
-      if (user.settings?.summaryFrequency === "weekly" && daysSince >= 7) {
+      const frequency = user.settings?.summaryFrequency || "weekly";
+
+      // difference in days between now and last viewed
+      const diffInMs = now - lastViewed;
+      const daysSince = diffInMs / (1000 * 60 * 60 * 24);
+
+      if (frequency === "daily" && daysSince >= 1) {
         setShowSummary(true);
-      } else if (
-        user.settings?.summaryFrequency === "daily" &&
-        daysSince >= 1
-      ) {
+      } else if (frequency === "weekly" && daysSince >= 7) {
         setShowSummary(true);
       }
+
+      setHasCheckedSummary(true);
     }
-  }, [user]);
+  }, [user, hasCheckedSummary]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -59,9 +68,21 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const closeSummary = () => {
+  const closeSummary = async () => {
     setShowSummary(false);
-    // TODO:  could fire an api.patch('/users/me', { lastSummaryViewedAt: new Date() }) here
+
+    try {
+      // save lastviewd timestamp to user settings in backend
+      const res = await api.patch("/users/settings", {
+        lastSummaryViewedAt: new Date().toISOString(),
+      });
+
+      // update user data so state is fresh
+      setUser(res.data?.data?.user || res.data);
+    } catch (e) {
+      console.error("Failed to save summary viewed timestamp", e);
+      toast.error("Couldn't save read receipt.");
+    }
   };
   const openSummary = () => {
     setShowSummary(true);

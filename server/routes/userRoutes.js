@@ -15,7 +15,10 @@ router.get("/me", protect, getMe);
 
 router.patch("/settings", protect, async (req, res) => {
   try {
-    const allowedFields = [
+    const updates = {};
+
+    // 1. Handle nested settings fields
+    const allowedSettings = [
       "summaryFrequency",
       "darkMode",
       "dailyWorkloadLimit",
@@ -23,19 +26,13 @@ router.patch("/settings", protect, async (req, res) => {
       "defaultPomodoroTime",
     ];
 
-    const updates = {};
-    allowedFields.forEach((field) => {
+    allowedSettings.forEach((field) => {
       if (Object.prototype.hasOwnProperty.call(req.body, field)) {
         updates[`settings.${field}`] = req.body[field];
       }
     });
 
-    if (Object.keys(updates).length === 0) {
-      return res
-        .status(400)
-        .json({ status: "fail", message: "No valid settings provided" });
-    }
-
+    // validate summaryFrequency specifically if it's being updated
     if (
       Object.prototype.hasOwnProperty.call(req.body, "summaryFrequency") &&
       !["daily", "weekly"].includes(req.body.summaryFrequency)
@@ -46,6 +43,23 @@ router.patch("/settings", protect, async (req, res) => {
       });
     }
 
+    // 2. Handle root-level User fields (like our new timestamp!)
+    const allowedRootFields = ["lastSummaryViewedAt"];
+
+    allowedRootFields.forEach((field) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    // Guard rail: Ensure at least something was valid and passed through
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ status: "fail", message: "No valid settings provided" });
+    }
+
+    // Perform the update
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { $set: updates },
