@@ -56,9 +56,10 @@ function getDateLabel(date) {
 }
 
 function getDangerLabel(hours) {
-  if (hours >= 6) return "High Workload";
-  if (hours >= 3) return "Medium Workload";
-  return "Low Workload";
+  if (hours >= 6) return "High";
+  if (hours >= 4) return "Medium";
+  if (hours >= 2) return "Medium-Low";
+  return "Low";
 }
 
 function getHeatIndex(hours) {

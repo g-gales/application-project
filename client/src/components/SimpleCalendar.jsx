@@ -8,18 +8,27 @@ import Card from "../components/ui/Card";
 
 const TYPES = ["meeting", "study", "assignment", "event"];
 
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
+
 function toLocalInput(value) {
   if (!value) return "";
-  const d = new Date(value);
-  const pad = (n) => String(n).padStart(2, "0");
+
+  const d = value instanceof Date ? value : new Date(value);
+
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
     d.getHours(),
   )}:${pad(d.getMinutes())}`;
 }
 
 function fromLocalInput(value) {
-  if (!value) return "";
-  return new Date(value).toISOString();
+  if (!value) return null;
+
+  // Keep this as a real Date -> ISO conversion from local input
+  // so the DB stores a proper UTC timestamp.
+  const d = new Date(value);
+  return d.toISOString();
 }
 
 function Modal({ open, title, children, onClose }) {
@@ -118,8 +127,8 @@ function SimpleCalendar() {
             id: ev._id,
             title: ev.title,
             start: ev.start,
-            end: ev.end,
-            allDay: !!ev.allDay,
+            end: ev.end || null,
+            allDay: Boolean(ev.allDay),
             extendedProps: ev.extendedProps || {},
             backgroundColor: color,
             borderColor: color,
@@ -133,32 +142,36 @@ function SimpleCalendar() {
 
   const openCreate = (info) => {
     setMode("create");
+
     setForm({
       id: "",
       title: "",
-      start: info.startStr,
-      end: info.endStr,
+      start: info.start ? toLocalInput(info.start) : "",
+      end: info.end ? toLocalInput(info.end) : "",
       allDay: !!info.allDay,
       courseId: "",
       type: "event",
       notes: "",
     });
+
     setModalOpen(true);
   };
 
   const openEdit = (event) => {
     const ext = event.extendedProps || {};
+
     setMode("edit");
     setForm({
       id: event.id,
       title: event.title || "",
-      start: event.start?.toISOString() || "",
-      end: event.end?.toISOString() || "",
+      start: event.start ? toLocalInput(event.start) : "",
+      end: event.end ? toLocalInput(event.end) : "",
       allDay: !!event.allDay,
       courseId: ext.courseId || "",
       type: ext.type || "event",
       notes: ext.notes || "",
     });
+
     setModalOpen(true);
   };
 
@@ -167,8 +180,8 @@ function SimpleCalendar() {
 
     const payload = {
       title: form.title.trim(),
-      start: form.start,
-      end: form.end || null,
+      start: form.allDay ? form.start : fromLocalInput(form.start),
+      end: form.end ? (form.allDay ? form.end : fromLocalInput(form.end)) : null,
       allDay: !!form.allDay,
       extendedProps: {
         courseId: form.courseId || undefined,
@@ -209,9 +222,16 @@ function SimpleCalendar() {
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
         height="70vh"
+        timeZone="local"
         selectable
         editable
         events={fetchEvents}
+        displayEventTime={true}
+        eventTimeFormat={{
+          hour: "numeric",
+          minute: "2-digit",
+          meridiem: "short",
+        }}
         select={(info) => {
           info.view.calendar.unselect();
           openCreate(info);
@@ -238,7 +258,9 @@ function SimpleCalendar() {
             onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
           >
             {TYPES.map((t) => (
-              <option key={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
 
@@ -257,26 +279,37 @@ function SimpleCalendar() {
             ))}
           </select>
 
+          <label className="flex items-center gap-2 text-[var(--text)]">
+            <input
+              type="checkbox"
+              checked={form.allDay}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, allDay: e.target.checked }))
+              }
+            />
+            All day
+          </label>
+
           <input
-            type="datetime-local"
+            type={form.allDay ? "date" : "datetime-local"}
             className={input}
-            value={toLocalInput(form.start)}
+            value={form.start || ""}
             onChange={(e) =>
               setForm((p) => ({
                 ...p,
-                start: fromLocalInput(e.target.value),
+                start: e.target.value,
               }))
             }
           />
 
           <input
-            type="datetime-local"
+            type={form.allDay ? "date" : "datetime-local"}
             className={input}
-            value={toLocalInput(form.end)}
+            value={form.end || ""}
             onChange={(e) =>
               setForm((p) => ({
                 ...p,
-                end: fromLocalInput(e.target.value),
+                end: e.target.value,
               }))
             }
           />
@@ -298,12 +331,14 @@ function SimpleCalendar() {
                 Delete
               </button>
             )}
+
             <button
               onClick={() => setModalOpen(false)}
               className="px-3 py-2 rounded-lg border border-[var(--border)] text-[var(--text)]"
             >
               Cancel
             </button>
+
             <button
               onClick={handleSave}
               className="px-3 py-2 rounded-lg bg-[var(--primary)] text-[var(--primaryText)]"
