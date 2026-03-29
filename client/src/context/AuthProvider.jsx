@@ -5,10 +5,8 @@ import { AuthContext } from "./authContext";
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // FIXME: not sure if keeping this
-  //  weekly or daily summary to show when user hasn't checked the app for long
   const [showSummary, setShowSummary] = useState(false);
+
   useEffect(() => {
     if (user) {
       const lastViewed = new Date(user.lastSummaryViewedAt || 0);
@@ -61,8 +59,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const closeSummary = () => {
+    setShowSummary(false);
+    // TODO:  could fire an api.patch('/users/me', { lastSummaryViewedAt: new Date() }) here
+  };
+  const openSummary = () => {
+    setShowSummary(true);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        login,
+        logout,
+        loading,
+        showSummary,
+        closeSummary,
+        openSummary,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
