@@ -1,5 +1,6 @@
 import Card from "../components/ui/Card";
 import CourseProgressWidget from "../components/ui/CourseProgressWidget";
+import HeatMapDangerZones from "../components/HeatMapDangerZones";
 
 export default function Dashboard() {
   return (
@@ -38,11 +39,7 @@ export default function Dashboard() {
           </Card>
         </div>
         <div className="col-span-12">
-          <Card title="Heatmap Danger Zones">
-            <p className="text-[var(--muted-text)]">
-              Placeholder: next 7 days heatmap highlight
-            </p>
-          </Card>
+          <HeatMapDangerZones />
         </div>
         <div className="col-span-12 lg:col-span-6">
           <Card title="Burnout Contributors">
