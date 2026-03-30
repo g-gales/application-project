@@ -45,40 +45,33 @@ router.post("/", protect, async (req, res) => {
 // - GET ROUTE FOR WEEKLY SUMMARY
 router.get("/summary", protect, async (req, res) => {
   try {
-    // pagination offset from frontend, default to 0 if not provided
     const offset = Number(req.query.offset) || 0;
-    // sunday midnight is start of week
+
     const startOfWeek = new Date();
     const dayOfWeek = startOfWeek.getDay();
-    startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
-    startOfWeek.setHours(0, 0, 0, 0);
 
     startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek + offset * 7);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    // saturday night is end of week
+    // Saturday night is end of week
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
 
-    // aggregation query to get total study time per course for the week, along with course details
     const summary = await StudySession.aggregate([
       {
-        // filter sessions by user and date range
         $match: {
           userId: req.user._id,
           createdAt: { $gte: startOfWeek, $lte: endOfWeek },
         },
       },
       {
-        // total minutes per courseID grouping
         $group: {
           _id: "$courseId",
           totalMinutes: { $sum: "$durationMinutes" },
         },
       },
       {
-        // get the course name & color from the Course collection
         $lookup: {
           from: "courses",
           localField: "_id",
@@ -87,12 +80,11 @@ router.get("/summary", protect, async (req, res) => {
         },
       },
       {
-        // put all in a joined array
         $unwind: "$courseDetails",
       },
     ]);
 
-    // get minutes per day
+    // Get minutes per day
     const dailyBreakdown = await StudySession.aggregate([
       {
         $match: {
@@ -103,13 +95,17 @@ router.get("/summary", protect, async (req, res) => {
       {
         $group: {
           // Extracts day of week (1 = Sunday, 2 = Monday ... 7 = Saturday)
-          _id: { $dayOfWeek: "$createdAt" },
+          _id: {
+            $dayOfWeek: {
+              date: "$createdAt",
+              timezone: "America/Toronto",
+            },
+          },
           minutes: { $sum: "$durationMinutes" },
         },
       },
     ]);
 
-    // return aggregated data
     res.status(200).json({
       dateRange: { start: startOfWeek, end: endOfWeek },
       courseSummary: summary,

@@ -11,7 +11,7 @@ import "react-circular-progressbar/dist/styles.css";
 import api from "../api/axiosConfig";
 import toast from "react-hot-toast";
 
-// Helper to pull active CSS variables as raw color strings for SVGs
+// fallback helper for inputting correct theme color into circular progress bars
 const getCSSVariableColor = (variableName, fallbackColor) => {
   if (typeof window === "undefined") return fallbackColor;
   const color = getComputedStyle(document.documentElement)
@@ -38,6 +38,11 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       setLoading(true);
       try {
         const res = await api.get(`/study-sessions/summary?offset=${offset}`);
+        console.log("SummaryModal fetched summary", {
+          courseSummary: res.data.courseSummary,
+          dailyBreakdown: res.data.dailyBreakdown,
+          offset,
+        });
         setSummaryData({
           courseSummary: res.data.courseSummary || [],
           dailyBreakdown: res.data.dailyBreakdown || [],
@@ -91,7 +96,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     const maxMinutes = Math.max(...baseWeek.map((b) => b.minutes));
     const weeklyMaxGoal = maxMinutes > 0 ? maxMinutes : 60;
 
-    return baseWeek.map((dayObj) => ({
+    const mapped = baseWeek.map((dayObj) => ({
       ...dayObj,
       percentage: Math.min(
         Math.round((dayObj.minutes / weeklyMaxGoal) * 100),
@@ -99,6 +104,15 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       ),
       isPeakDay: dayObj.minutes === maxMinutes && maxMinutes > 0,
     }));
+
+    console.log("SummaryModal mappedWeeklyData computed", {
+      dailyBreakdown: summaryData.dailyBreakdown,
+      baseWeek,
+      weeklyMaxGoal,
+      mapped,
+    });
+
+    return mapped;
   }, [summaryData.dailyBreakdown]);
 
   // data range for card pagination

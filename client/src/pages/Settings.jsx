@@ -55,7 +55,7 @@ function Settings() {
       });
       toast.success(`${currentCourse.code} goal updated!`);
     } catch (e) {
-      toast.error("Failed to update course goal.");
+      toast.error("Failed to update course goal.", e);
     } finally {
       setLoading((p) => ({ ...p, saving: false }));
     }
