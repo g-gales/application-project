@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useCourses } from "../hooks/useCourses";
 import confetti from "canvas-confetti";
 import api from "../api/axiosConfig";
 import Modal from "../components/ui/Modal";
@@ -21,7 +22,7 @@ const emptyCardForm = {
 };
 
 export default function Flashcards() {
-  const [courses, setCourses] = useState([]);
+  const { courses } = useCourses();
   const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -55,19 +56,8 @@ export default function Flashcards() {
   });
 
   useEffect(() => {
-    fetchCourses();
     fetchDecks();
   }, []);
-
-  const fetchCourses = async () => {
-    try {
-      const res = await api.get("/courses");
-      setCourses(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error("Failed to fetch courses", err);
-      setCourses([]);
-    }
-  };
 
   const fetchDecks = async () => {
     try {

@@ -1,24 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCourses } from "../../hooks/useCourses";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axiosConfig";
 import Card from "./Card";
 import Button from "./Button";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
 const CourseProgressWidget = () => {
-  const [courses, setCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { courses, isLoading: isLoadingCourses } = useCourses();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    api
-      .get("/courses")
-      .then((res) => {
-        setCourses(res.data || []);
-      })
-      .catch((err) => console.error("Error fetching courses for widget:", err))
-      .finally(() => setIsLoading(false));
-  }, []);
 
   const navigateToCourses = (
     <Button variant="secondary" onClick={() => navigate("/app/courses")}>
@@ -42,7 +30,7 @@ const CourseProgressWidget = () => {
   return (
     <Card title="Weekly Study Goals" footer={navigateToCourses}>
       <div className="flex flex-col gap-4">
-        {isLoading ? (
+        {isLoadingCourses ? (
           <div className="space-y-3 animate-pulse">
             <div className="h-4 bg-[var(--surface-2)] rounded w-3/4"></div>
             <div className="h-4 bg-[var(--surface-2)] rounded w-full"></div>

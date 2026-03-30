@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useCourses } from "../hooks/useCourses";
 import api from "../api/axiosConfig";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -9,7 +10,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
 export default function Pomodoro() {
-  const [courses, setCourses] = useState([]);
+  const { courses } = useCourses();
   const [assignments, setAssignments] = useState([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -36,14 +37,14 @@ export default function Pomodoro() {
     setIsWorkMode,
   } = useGlobalTimer();
 
-  // Fetch data
+  // Fetch assignments
   useEffect(() => {
-    Promise.all([api.get("/courses"), api.get("/assignments")])
-      .then(([courseRes, assignRes]) => {
-        setCourses(courseRes.data || []);
+    api
+      .get("/assignments")
+      .then((assignRes) => {
         setAssignments(assignRes.data || []);
       })
-      .catch((err) => console.error("Error fetching data", err));
+      .catch((err) => console.error("Error fetching assignments", err));
   }, []);
 
   const filteredAssignments = useMemo(() => {
