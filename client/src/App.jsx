@@ -14,6 +14,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Wellness = lazy(() => import("./pages/Wellness"));
 const Pomodoro = lazy(() => import("./pages/Pomodoro"));
 const Flashcards = lazy(() => import("./pages/Flashcards"));
+const Settings = lazy(() => import("./pages/Settings"));
 const Courses = lazy(() => import("./components/Courses"));
 const CourseDetails = lazy(() => import("./components/CourseDetails"));
 const SimpleCalendar = lazy(() => import("./components/SimpleCalendar"));
@@ -63,6 +64,7 @@ function App() {
               <Route path="wellness" element={<Wellness />} />
               <Route path="pomodoro" element={<Pomodoro />} />
               <Route path="flashcards" element={<Flashcards />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
             {/* <Route path="/test-component" element={<TestComponent />} /> */}
           </Route>

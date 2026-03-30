@@ -1,12 +1,17 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, useContext } from "react";
 import Sidebar from "../components/nav/Sidebar";
 import Topbar from "../components/nav/TopBar";
+import SummaryModal from "../components/SummaryModal";
+import { AuthContext } from "../context/authContext";
 
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const drawerId = useId();
   const location = useLocation();
+
+  // values for weekly summary
+  const { user, showSummary, closeSummary } = useContext(AuthContext);
 
   // Close mobile drawer on navigation
   useEffect(() => {
@@ -68,6 +73,12 @@ export default function AppLayout() {
           </main>
         </div>
       </div>
+      <SummaryModal
+        isOpen={showSummary}
+        onClose={closeSummary}
+        user={user}
+        courses={[]}
+      />
     </div>
   );
 }
