@@ -1,6 +1,6 @@
 import Card from "../components/ui/Card";
 import CourseProgressWidget from "../components/ui/CourseProgressWidget";
-import HeatMapDangerZones from "../components/HeatMapDangerZones";
+import HeatmapDangerZones from "../components/HeatmapDangerZones";
 
 export default function Dashboard() {
   return (
