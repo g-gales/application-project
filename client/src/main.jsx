@@ -6,6 +6,7 @@ import App from "./App";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { TimerProvider } from "./context/TimerContext.jsx";
+import { CourseProvider } from "./context/CourseContext.jsx";
 
 // routing imports
 import { BrowserRouter } from "react-router-dom";
@@ -24,23 +25,25 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <AuthProvider>
           <TimerProvider>
-            <Toaster
-              toastOptions={{
-                style: {
-                  background: "var(--surface-2)",
-                  color: "var(--text)",
-                  border: "1px border var(--border)",
-                  borderRadius: "var(--radius)",
-                },
-                success: {
-                  iconTheme: {
-                    primary: "var(--primary)",
-                    secondary: "var(--primary-contrast)",
+            <CourseProvider>
+              <Toaster
+                toastOptions={{
+                  style: {
+                    background: "var(--surface-2)",
+                    color: "var(--text)",
+                    border: "1px border var(--border)",
+                    borderRadius: "var(--radius)",
                   },
-                },
-              }}
-            />
-            <App />
+                  success: {
+                    iconTheme: {
+                      primary: "var(--primary)",
+                      secondary: "var(--primary-contrast)",
+                    },
+                  },
+                }}
+              />
+              <App />
+            </CourseProvider>
           </TimerProvider>
         </AuthProvider>
       </BrowserRouter>
