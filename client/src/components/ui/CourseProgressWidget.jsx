@@ -35,7 +35,7 @@ const CourseProgressWidget = () => {
     const minutes = totalMinutes % 60;
 
     return hours > 0
-      ? `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`
+      ? `${hours}h ${minutes > 0 ? ` ${minutes}m` : ""}`
       : `${minutes}m`;
   };
 
@@ -49,6 +49,15 @@ const CourseProgressWidget = () => {
           </div>
         ) : courses.length > 0 ? (
           courses.map((course) => {
+            const progressValue = course.pomodoroStudyTime || 0;
+            const progressMax = course.weeklyGoalMinutes || 120;
+            const progressColor = course.color || "#3b82f6";
+
+            const percent = Math.min(
+              (progressValue / progressMax) * 100 || 0,
+              100,
+            );
+
             return (
               <div key={course._id} className="flex flex-col gap-1.5">
                 {/* // course code and minutes */}
@@ -57,20 +66,20 @@ const CourseProgressWidget = () => {
                     {course.code}
                   </span>
                   <span className="text-[10px] font-mono opacity-60">
-                    {getHoursOrMinutes(course.pomodoroStudyTime)} /{" "}
-                    {getHoursOrMinutes(course.weeklyGoalMinutes)}
+                    {getHoursOrMinutes(progressValue)} /{" "}
+                    {getHoursOrMinutes(progressMax)}
                   </span>
                 </div>
 
-                {/* // progress bar  */}
-                <progress
-                  className="w-full h-4 rounded-full overflow-hidden 
-                [&::-webkit-progress-bar]:bg-[var(--surface-3)] 
-                [&::-webkit-progress-value]:bg-[var(--primary)]
-                [&::-moz-progress-bar]:bg-[var(--primary)]"
-                  value={course.pomodoroStudyTime}
-                  max={course.weeklyGoalMinutes || 120}
-                />
+                <div className="w-full h-4 rounded-full bg-[var(--surface-3)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${percent}%`,
+                      backgroundColor: progressColor,
+                    }}
+                  />
+                </div>
               </div>
             );
           })
