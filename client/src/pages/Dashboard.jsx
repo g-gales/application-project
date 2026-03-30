@@ -1,8 +1,53 @@
 import Card from "../components/ui/Card";
+import api from "../api/axiosConfig";
+
+import { useState, useEffect, useMemo } from "react";
 import CourseProgressWidget from "../components/ui/CourseProgressWidget";
 import HeatmapDangerZones from "../components/HeatmapDangerZones";
+import DashboardBurnoutRisk from "../components/wellness/DashboardBurnoutRisk";
+
+import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
+import { useCourses } from "../hooks/useCourses";
 
 export default function Dashboard() {
+  const [wellnessEntries, setWellnessEntries] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const { courses } = useCourses();
+
+  const fetchWellnessEntries = async () => {
+    try {
+      const res = await api.get("/wellness");
+      setWellnessEntries(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch wellness entries", error);
+      setWellnessEntries([]);
+    }
+  };
+
+  const fetchAssignments = async () => {
+    try {
+      const res = await api.get("/assignments");
+      setAssignments(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch assignments", error);
+      setAssignments([]);
+    }
+  };
+
+  //Only fetches data once instead of on every render
+  useEffect(() => {
+    fetchWellnessEntries();
+    fetchAssignments();
+  }, []);
+
+  const { burnoutRisk, previousBurnoutScore, workloadMetrics } = useBurnoutRisk(
+    {
+      wellnessEntries,
+      assignments,
+      courses,
+    },
+  );
+
   return (
     <div className="grid gap-5">
       <p className="text-[var(--muted-text)]">
@@ -11,21 +56,12 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 lg:col-span-4">
-          <Card title="Burnout Risk">
-            <p className="text-[var(--muted-text)]">
-              Placeholder: Low - High burnout risk
-            </p>
-          </Card>
+          <DashboardBurnoutRisk
+            burnoutRisk={burnoutRisk}
+            previousBurnoutScore={previousBurnoutScore}
+          />
         </div>
 
-        <div className="col-span-12 lg:col-span-4">
-          <Card title="Weekly Tasks Completed">
-            <p className="text-[var(--muted-text)]">
-              Placeholder: donut chart of % tasks completed this week vs. total
-              assigned.
-            </p>
-          </Card>
-        </div>
         <div className="col-span-12 lg:col-span-4">
           <CourseProgressWidget />
         </div>

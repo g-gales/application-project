@@ -9,12 +9,8 @@ import BurnoutInsights from "../components/wellness/BurnoutInsights";
 import BurnoutAlerts from "../components/wellness/BurnoutAlerts";
 import WellnessTrends from "../components/wellness/WellnessTrends";
 
-import { calculateBurnoutRisk } from "../utils/burnoutUtils";
-import { calculateWorkloadMetrics } from "../utils/workloadUtils";
-import { calculateStudySummary } from "../utils/courseWorkloadUtils";
 import { generateBurnoutAlerts } from "../utils/alertUtils";
-
-import Card from "../components/ui/Card";
+import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 
 const Wellness = () => {
   const [wellnessEntries, setWellnessEntries] = useState([]);
@@ -47,42 +43,13 @@ const Wellness = () => {
     fetchAssignments();
   }, []);
 
-  const studySummary = useMemo(() => {
-    return calculateStudySummary(courses);
-  }, [courses]);
-
-  const workloadMetrics = useMemo(() => {
-    return calculateWorkloadMetrics({
-      assignments,
-      studySummary,
-    });
-  }, [assignments, studySummary]);
-
-  const previousBurnoutScore = useMemo(() => {
-    if (wellnessEntries.length < 6) return null;
-
-    const sortedEntries = [...wellnessEntries].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
-
-    const previousSlice = sortedEntries.slice(0, -3);
-
-    if (!previousSlice.length) return null;
-
-    const previousRisk = calculateBurnoutRisk({
-      wellnessEntries: previousSlice,
-      workloadMetrics,
-    });
-
-    return previousRisk.score;
-  }, [wellnessEntries, workloadMetrics]);
-
-  const burnoutRisk = useMemo(() => {
-    return calculateBurnoutRisk({
+  const { burnoutRisk, previousBurnoutScore, workloadMetrics } = useBurnoutRisk(
+    {
       wellnessEntries,
-      workloadMetrics,
-    });
-  }, [wellnessEntries, workloadMetrics]);
+      assignments,
+      courses,
+    },
+  );
 
   const burnoutAlerts = useMemo(() => {
     return generateBurnoutAlerts({
@@ -105,7 +72,6 @@ const Wellness = () => {
     });
   }, [wellnessEntries, today]);
 
-  //----------------------
   const todaysEntry = useMemo(() => {
     return wellnessEntries.find((entry) => {
       const entryDate = new Date(entry.date).toISOString().split("T")[0];
@@ -113,11 +79,13 @@ const Wellness = () => {
     });
   }, [wellnessEntries, today]);
 
-  //----------------------------------
   return (
     <div className="stack gap-md">
       <section className="flex flex-col gap-4">
-        <WellnessOverview burnoutRisk={burnoutRisk} />
+        <WellnessOverview
+          burnoutRisk={burnoutRisk}
+          previousBurnoutScore={previousBurnoutScore}
+        />
         {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
         {localStorage.getItem("token") === "GUEST_USER_POWERUP" &&
           burnoutAlerts.length === 0 && (

@@ -4,7 +4,7 @@ export default function BurnoutInsights({ burnoutRisk }) {
   const { contributors = [] } = burnoutRisk || {};
 
   return (
-    <Card className="p-6 md:p-7">
+    <Card className="p-6 md:p-7" id="insights">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">
