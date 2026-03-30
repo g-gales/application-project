@@ -38,11 +38,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       setLoading(true);
       try {
         const res = await api.get(`/study-sessions/summary?offset=${offset}`);
-        console.log("SummaryModal fetched summary", {
-          courseSummary: res.data.courseSummary,
-          dailyBreakdown: res.data.dailyBreakdown,
-          offset,
-        });
+
         setSummaryData({
           courseSummary: res.data.courseSummary || [],
           dailyBreakdown: res.data.dailyBreakdown || [],
@@ -104,13 +100,6 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       ),
       isPeakDay: dayObj.minutes === maxMinutes && maxMinutes > 0,
     }));
-
-    console.log("SummaryModal mappedWeeklyData computed", {
-      dailyBreakdown: summaryData.dailyBreakdown,
-      baseWeek,
-      weeklyMaxGoal,
-      mapped,
-    });
 
     return mapped;
   }, [summaryData.dailyBreakdown]);
