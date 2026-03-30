@@ -1,27 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import api from "../api/axiosConfig"; // axios
+import { useCourses } from "../hooks/useCourses";
 
 import Card from "../components/ui/Card";
 
 const NEW_TERM_VALUE = "__new__";
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await api.get("/courses");
-        setCourses(Array.isArray(res.data) ? res.data : []);
-      } catch (error) {
-        console.error("Failed to fetch courses", error);
-        setCourses([]);
-      }
-    };
-
-    fetchCourses();
-  }, []);
+  const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
 
   const minutesToHhMm = (mins) => {
     const total = Number(mins || 0);
@@ -210,23 +196,19 @@ const Courses = () => {
 
     try {
       if (mode === "add") {
-        const response = await api.post("/courses", cleaned);
-        // if successful, savedCourse is the new MongoDB object
-        const savedCourse = response.data.data
-          ? response.data.data.course
-          : response.data;
-
-        setCourses((prev) => [savedCourse, ...(prev || [])]);
+        const result = await addCourse(cleaned);
+        if (!result.success) {
+          return setError(
+            result.message || "Server Error: Could not save course",
+          );
+        }
       } else {
-        const response = await api.patch(`/courses/${form.id}`, cleaned);
-        const updatedCourse = response.data.data
-          ? response.data.data.course
-          : response.data;
-
-        // setting the courses to either previous value, or empty array, if course ID equals the one on the form, returns the new, updatedCourse from DB, else returns the local course
-        setCourses((prev) =>
-          (prev || []).map((c) => (c._id === form.id ? updatedCourse : c)),
-        );
+        const result = await updateCourse(form.id, cleaned);
+        if (!result.success) {
+          return setError(
+            result.message || "Server Error: Could not save course",
+          );
+        }
       }
 
       closeModal();
@@ -238,15 +220,12 @@ const Courses = () => {
   };
 
   const handleRemoveCourse = async (id) => {
-    // return early if no
     if (!window.confirm("Remove course?")) return;
 
-    try {
-      await api.delete(`/courses/${id}`);
-      setCourses((prev) => prev.filter((c) => c._id !== id));
-    } catch (error) {
-      console.error(error);
-      alert(`Delete failed: ${error.response?.data?.message || error.message}`);
+    const result = await deleteCourse(id);
+    if (!result.success) {
+      console.error(result.message);
+      alert(`Delete failed: ${result.message}`);
     }
   };
 
