@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useCourses } from "../hooks/useCourses";
 import api from "../api/axiosConfig";
 
 import WellnessCheckIn from "../components/wellness/WellnessCheckIn";
@@ -18,7 +19,7 @@ import Card from "../components/ui/Card";
 const Wellness = () => {
   const [wellnessEntries, setWellnessEntries] = useState([]);
   const [assignments, setAssignments] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const { courses } = useCourses();
 
   const fetchWellnessEntries = async () => {
     try {
@@ -40,21 +41,10 @@ const Wellness = () => {
     }
   };
 
-  const fetchCourses = async () => {
-    try {
-      const res = await api.get("/courses");
-      setCourses(Array.isArray(res.data) ? res.data : []);
-    } catch (error) {
-      console.error("Failed to fetch courses", error);
-      setCourses([]);
-    }
-  };
-
   //Only fetches data once instead of on every render
   useEffect(() => {
     fetchWellnessEntries();
     fetchAssignments();
-    fetchCourses();
   }, []);
 
   const studySummary = useMemo(() => {

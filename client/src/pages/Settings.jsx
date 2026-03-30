@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useTheme } from "../components/theme/ThemeContext";
 import api from "../api/axiosConfig";
+import { useCourses } from "../hooks/useCourses";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import toast from "react-hot-toast";
@@ -9,23 +10,16 @@ import { AuthContext } from "../context/authContext";
 function Settings() {
   const { user, setUser, openSummary } = useContext(AuthContext);
   const { theme, toggleTheme } = useTheme();
+  const { courses, isLoading: coursesLoading } = useCourses();
 
-  const [courses, setCourses] = useState([]);
   const [selectedId, setSelectedId] = useState("");
-  const [loading, setLoading] = useState({ courses: true, saving: false });
+  const [loading, setLoading] = useState({ saving: false });
 
-  // Fetch courses on load
   useEffect(() => {
-    api
-      .get("/courses")
-      .then((res) => {
-        const data = res.data || [];
-        setCourses(data);
-        if (data.length > 0) setSelectedId(data[0]._id);
-      })
-      .catch(() => toast.error("Failed to load courses"))
-      .finally(() => setLoading((prev) => ({ ...prev, courses: false })));
-  }, []);
+    if (!selectedId && courses.length > 0) {
+      setSelectedId(courses[0]._id);
+    }
+  }, [courses, selectedId]);
 
   const currentCourse = courses.find((c) => c._id === selectedId);
 
@@ -88,7 +82,7 @@ function Settings() {
         <p className="text-sm text-[var(--muted-text)] pb-2">
           Set your weekly goals for each course here.
         </p>
-        {loading.courses ? (
+        {coursesLoading ? (
           <p className="text-sm animate-pulse text-[var(--muted-text)]">
             Loading your courses...
           </p>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useCourses } from "../hooks/useCourses";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -60,8 +61,14 @@ function Modal({ open, title, children, onClose }) {
 function SimpleCalendar() {
   const calRef = useRef(null);
 
-  const [courses, setCourses] = useState([]);
-  const [courseColors, setCourseColors] = useState({});
+  const { courses } = useCourses();
+  const courseColors = useMemo(() => {
+    const map = {};
+    for (const c of courses) {
+      map[c._id] = c.color || "#3b82f6";
+    }
+    return map;
+  }, [courses]);
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
@@ -74,25 +81,6 @@ function SimpleCalendar() {
     type: "event",
     notes: "",
   });
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await api.get("/courses");
-        const list = Array.isArray(res.data) ? res.data : [];
-        setCourses(list);
-
-        const map = {};
-        for (const c of list) map[c._id] = c.color || "#3b82f6";
-        setCourseColors(map);
-      } catch {
-        setCourses([]);
-        setCourseColors({});
-      }
-    };
-
-    fetchCourses();
-  }, []);
 
   const courseOptions = useMemo(
     () =>
@@ -181,7 +169,11 @@ function SimpleCalendar() {
     const payload = {
       title: form.title.trim(),
       start: form.allDay ? form.start : fromLocalInput(form.start),
-      end: form.end ? (form.allDay ? form.end : fromLocalInput(form.end)) : null,
+      end: form.end
+        ? form.allDay
+          ? form.end
+          : fromLocalInput(form.end)
+        : null,
       allDay: !!form.allDay,
       extendedProps: {
         courseId: form.courseId || undefined,
