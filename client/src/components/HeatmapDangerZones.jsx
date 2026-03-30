@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import api from "../api/axiosConfig"; // axios
+import api from "../api/axiosConfig";
 import Card from "./ui/Card";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -19,10 +19,10 @@ const MONTH_NAMES = [
 ];
 
 const HEAT_LEVELS = [
-  { bg: "#166534", swatch: "#166534" }, 
-  { bg: "#65a30d", swatch: "#65a30d" }, 
-  { bg: "#f59e0b", swatch: "#f59e0b" }, 
-  { bg: "#dc2626", swatch: "#dc2626" }, 
+  { bg: "#166534", swatch: "#166534" },
+  { bg: "#65a30d", swatch: "#65a30d" },
+  { bg: "#f59e0b", swatch: "#f59e0b" },
+  { bg: "#dc2626", swatch: "#dc2626" },
 ];
 
 function startOfDay(date) {
@@ -63,10 +63,10 @@ function getDangerLabel(hours) {
 }
 
 function getHeatIndex(hours) {
-  if (hours >= 6) return 3; // High
-  if (hours >= 4) return 2; // Medium
-  if (hours >= 2) return 1; // Medium-Low
-  return 0; // Low
+  if (hours >= 6) return 3;
+  if (hours >= 4) return 2;
+  if (hours >= 2) return 1;
+  return 0;
 }
 
 function calculateHoursForDay(event, dayStart, dayEnd) {
@@ -163,22 +163,24 @@ const HeatmapDangerZones = () => {
             {dayData.map((day) => (
               <div
                 key={day.key}
-                className="rounded-xl border border-[var(--border)] p-3 min-h-[96px] flex flex-col justify-between"
+                className="rounded-xl border border-[var(--border)] p-3 min-h-[96px] flex flex-col justify-between text-white"
                 style={{ backgroundColor: day.bg }}
                 title={`${day.dayLabel} ${day.dateLabel}: ${day.hours} hours`}
               >
                 <div className="flex flex-col leading-tight">
-                  <span className="text-sm font-extrabold">{day.dayLabel}</span>
-                  <span className="text-xs text-[var(--muted-text)] mt-0.5">
+                  <span className="text-sm font-extrabold text-white">
+                    {day.dayLabel}
+                  </span>
+                  <span className="text-xs text-white/80 mt-0.5">
                     {day.dateLabel}
                   </span>
                 </div>
 
-                <div className="text-sm leading-tight text-[var(--text)]">
+                <div className="text-sm leading-tight text-white">
                   {day.dangerLabel}
                 </div>
 
-                <div className="text-[11px] font-mono text-[var(--muted-text)]">
+                <div className="text-[11px] font-mono text-white/80">
                   {day.hours}h
                 </div>
               </div>
