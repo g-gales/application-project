@@ -1,11 +1,17 @@
 import { useMemo } from "react";
 
+import { useWeeklyStudySummary } from "./useWeeklyStudySummary";
 import { calculateBurnoutRisk } from "../utils/burnoutUtils";
 import { calculateWorkloadMetrics } from "../utils/workloadUtils";
 import { calculateStudySummary } from "../utils/courseWorkloadUtils";
 
 export function useBurnoutRisk({ wellnessEntries, assignments, courses }) {
-  const studySummary = useMemo(() => calculateStudySummary(courses), [courses]);
+  const { weeklyStudySummary } = useWeeklyStudySummary();
+
+  const studySummary = useMemo(
+    () => calculateStudySummary(courses, weeklyStudySummary),
+    [courses, weeklyStudySummary],
+  );
 
   const workloadMetrics = useMemo(() => {
     return calculateWorkloadMetrics({

@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
+import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import Card from "../components/ui/Card";
 
@@ -111,8 +112,11 @@ export default function CourseDetails() {
     return upcoming[0] ?? null;
   }, [course]);
 
+  const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
+  const weeklyStudyTime = course ? weeklyStudyMinutesByCourseId[course._id] : 0;
+
   const weeklyStudyPct = course
-    ? progressPct(course.pomodoroStudyTime, course.weeklyGoalMinutes)
+    ? progressPct(weeklyStudyTime, course.weeklyGoalMinutes)
     : 0;
 
   const totalUpcomingMinutes = useMemo(() => {
@@ -314,7 +318,7 @@ export default function CourseDetails() {
             </p>
             <div className="mt-2 flex items-end justify-between">
               <p className="text-lg font-bold text-[var(--text)]">
-                {minutesToHhMm(course.pomodoroStudyTime)}{" "}
+                {minutesToHhMm(weeklyStudyTime)}{" "}
                 <span className="text-sm font-medium text-[var(--muted-text-2)]">
                   / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                 </span>

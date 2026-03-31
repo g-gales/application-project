@@ -1,4 +1,5 @@
 import { useCourses } from "../../hooks/useCourses";
+import { useWeeklyStudySummary } from "../../hooks/useWeeklyStudySummary";
 import { useNavigate } from "react-router-dom";
 import Card from "./Card";
 import Button from "./Button";
@@ -7,6 +8,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 const CourseProgressWidget = () => {
   const { courses, isLoading: isLoadingCourses } = useCourses();
   const navigate = useNavigate();
+  const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
 
   const navigateToCourses = (
     <Button variant="secondary" onClick={() => navigate("/app/courses")}>
@@ -37,7 +39,7 @@ const CourseProgressWidget = () => {
           </div>
         ) : courses.length > 0 ? (
           courses.map((course) => {
-            const progressValue = course.pomodoroStudyTime || 0;
+            const progressValue = weeklyStudyMinutesByCourseId[course._id] || 0;
             const progressMax = course.weeklyGoalMinutes || 120;
             const progressColor = course.color || "#3b82f6";
 

@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCourses } from "../hooks/useCourses";
+import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 
 import Card from "../components/ui/Card";
 
@@ -8,6 +9,7 @@ const NEW_TERM_VALUE = "__new__";
 
 const Courses = () => {
   const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
+  const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
 
   const minutesToHhMm = (mins) => {
     const total = Number(mins || 0);
@@ -275,12 +277,12 @@ const Courses = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {viewCourses.map((course) => {
+            const weeklyMinutes = weeklyStudyMinutesByCourseId[course._id];
+            const studyMinutes = weeklyMinutes || 0;
             const pct = Math.min(
               100,
               Math.round(
-                (Number(course.pomodoroStudyTime || 0) /
-                  Number(course.weeklyGoalMinutes || 1)) *
-                  100,
+                (studyMinutes / Number(course.weeklyGoalMinutes || 1)) * 100,
               ),
             );
 
@@ -323,7 +325,7 @@ const Courses = () => {
                           <div className="text-sm text-[var(--muted-text-2)]">
                             Study This Week:{" "}
                             <span className="font-medium text-[var(--muted-text)]">
-                              {minutesToHhMm(course.pomodoroStudyTime)}
+                              {minutesToHhMm(studyMinutes)}
                             </span>{" "}
                             / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                           </div>
