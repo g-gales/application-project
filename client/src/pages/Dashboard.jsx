@@ -5,9 +5,11 @@ import { useState, useEffect, useMemo } from "react";
 import CourseProgressWidget from "../components/ui/CourseProgressWidget";
 import HeatmapDangerZones from "../components/HeatmapDangerZones";
 import DashboardBurnoutRisk from "../components/wellness/DashboardBurnoutRisk";
+import NextPriorityCard from "../components/ui/NextPriorityCard";
 
 import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 import { useCourses } from "../hooks/useCourses";
+import { getPriorityAssignments } from "../utils/priorityUtils";
 
 export default function Dashboard() {
   const [wellnessEntries, setWellnessEntries] = useState([]);
@@ -39,6 +41,10 @@ export default function Dashboard() {
     fetchWellnessEntries();
     fetchAssignments();
   }, []);
+
+  const priorityAssignments = useMemo(() => {
+    return getPriorityAssignments(assignments, 3);
+  }, [assignments]);
 
   const { burnoutRisk, previousBurnoutScore, workloadMetrics } = useBurnoutRisk(
     {
@@ -77,12 +83,12 @@ export default function Dashboard() {
           <HeatmapDangerZones />
         </div>
         <div className="col-span-12 lg:col-span-6">
-          <Card title="Burnout Contributors">
-            <p className="text-[var(--muted-text)]">
-              Placeholder: Top Burnout contributors with low - high contribution
-              factor chart
-            </p>
-          </Card>
+          <NextPriorityCard
+            assignments={assignments}
+            courses={courses}
+            priorityAssignments={priorityAssignments}
+            detailsPath="/assignments"
+          />
         </div>
         <div className="col-span-12 lg:col-span-6">
           <Card title="Suggested Actions">
