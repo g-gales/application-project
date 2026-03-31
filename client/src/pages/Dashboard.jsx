@@ -2,14 +2,19 @@ import Card from "../components/ui/Card";
 import api from "../api/axiosConfig";
 
 import { useState, useEffect, useMemo } from "react";
+
+// Components
 import CourseProgressWidget from "../components/ui/CourseProgressWidget";
 import HeatmapDangerZones from "../components/HeatmapDangerZones";
 import DashboardBurnoutRisk from "../components/wellness/DashboardBurnoutRisk";
 import NextPriorityCard from "../components/ui/NextPriorityCard";
+import WorkloadCard from "../components/ui/WorkloadCard";
 
+// Hooks and Utils
 import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 import { useCourses } from "../hooks/useCourses";
 import { getPriorityAssignments } from "../utils/priorityUtils";
+import { calculateWorkloadMetrics } from "../utils/workloadUtils";
 
 export default function Dashboard() {
   const [wellnessEntries, setWellnessEntries] = useState([]);
@@ -69,11 +74,7 @@ export default function Dashboard() {
         </div>
 
         <div className="col-span-12 lg:col-span-4">
-          <Card title="Workload vs Capacity">
-            <p className="text-[var(--muted-text)]">
-              Placeholder: Donut chart showing workload vs capacity.
-            </p>
-          </Card>
+          <WorkloadCard workloadMetrics={workloadMetrics} />
         </div>
         <div className="col-span-12">
           <HeatmapDangerZones />
