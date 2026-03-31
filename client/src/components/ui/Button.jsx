@@ -17,6 +17,7 @@ const Button = ({
   type = "button",
   disabled = false,
   fullWidth = false,
+  ...props
 }) => {
   // matching /styles/global.css
   const baseStyles =
@@ -48,6 +49,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${baseStyles} ${variants[variant]} ${widthStyle} ${className}`}
+      {...props}
     >
       {children}
     </button>

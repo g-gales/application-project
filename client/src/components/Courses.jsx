@@ -1,16 +1,54 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import api from "../api/axiosConfig";
 import { useCourses } from "../hooks/useCourses";
 import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 
+import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa";
+
 import Card from "../components/ui/Card";
+import Button from "./ui/Button";
+
+const getTransparentColor = (hex = "#3B82F6", opacity = 0.1) => {
+  const normalized = hex.replace("#", "");
+  const r = parseInt(normalized.substring(0, 2), 16);
+  const g = parseInt(normalized.substring(2, 4), 16);
+  const b = parseInt(normalized.substring(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
 
 const NEW_TERM_VALUE = "__new__";
 
 const Courses = () => {
   const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
   const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
+  const [assignments, setAssignments] = useState([]);
+
+  const fetchAssignments = async () => {
+    try {
+      const res = await api.get("/assignments");
+      setAssignments(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch assignments", error);
+      setAssignments([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
+  const assignmentsByCourseId = useMemo(() => {
+    return assignments.reduce((map, assignment) => {
+      if (!assignment || !assignment.courseId) return map;
+      const list = map.get(assignment.courseId) || [];
+      list.push(assignment);
+      map.set(assignment.courseId, list);
+      return map;
+    }, new Map());
+  }, [assignments]);
 
   const totalWeeklyGoals = useMemo(() => {
     const totalMinutes = (courses || []).reduce(
@@ -21,7 +59,7 @@ const Courses = () => {
     return formatMinutesToHoursMinutes(totalMinutes);
   }, [courses]);
 
-  const fmtDueShort = (yyyyMmDd) => {
+  const fmtDueShort = useCallback((yyyyMmDd) => {
     if (!yyyyMmDd) return "—";
     const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
     const date = new Date(Date.UTC(y, m - 1, d));
@@ -29,9 +67,9 @@ const Courses = () => {
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const fmtIsoShort = (yyyyMmDd) => {
+  const fmtIsoShort = useCallback((yyyyMmDd) => {
     if (!yyyyMmDd) return "—";
     const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
     const date = new Date(Date.UTC(y, m - 1, d));
@@ -40,17 +78,23 @@ const Courses = () => {
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const getNextDue = (assignments = []) => {
-    const upcoming = (assignments || [])
-      .filter((a) => a && a.status !== "done" && a.dueDate)
-      .sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate)));
+  const getNextDue = useCallback(
+    (assignments = []) => {
+      const upcoming = (assignments || [])
+        .filter((a) => a && a.status !== "done" && a.dueDate)
+        .sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate)));
 
-    const next = upcoming[0];
-    if (!next) return { title: "None", date: "—" };
-    return { title: next.title || "Untitled", date: fmtDueShort(next.dueDate) };
-  };
+      const next = upcoming[0];
+      if (!next) return { title: "None", date: "—" };
+      return {
+        title: next.title || "Untitled",
+        date: fmtDueShort(next.dueDate),
+      };
+    },
+    [fmtDueShort],
+  );
 
   const terms = useMemo(() => {
     const map = new Map();
@@ -136,10 +180,6 @@ const Courses = () => {
     setForm(makeBlankForm());
     setError("");
   };
-
-  // mock ID not needed
-  // const makeId = () =>
-  //   `course-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 
   const isValidIsoDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s || ""));
 
@@ -236,10 +276,12 @@ const Courses = () => {
 
   const viewCourses = useMemo(() => {
     return (courses || []).map((c) => {
-      const next = getNextDue(c.assignments || []);
+      const courseAssignments =
+        assignmentsByCourseId.get(c._id) || c.assignments || [];
+      const next = getNextDue(courseAssignments);
       return { ...c, nextDueTitle: next.title, nextDueDate: next.date };
     });
-  }, [courses]);
+  }, [courses, assignmentsByCourseId, getNextDue]);
 
   const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
   const selectedExistingTerm = !usingNewTerm
@@ -267,22 +309,25 @@ const Courses = () => {
 
   return (
     <Card>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between items-start gap-3 mb-8">
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
           <div>
-            <p className="text-sm font-semibold text-[var(--muted-text)] mt-1">
-              Total Weekly Goals: {totalWeeklyGoals}
+            <h1 className="text-2xl font-bold text-[var(--text)]">Courses</h1>
+            <p className="mt-2 text-sm text-[var(--muted-text)]">
+              {courses.length} course{courses.length === 1 ? "" : "s"} · Total
+              weekly goals: {totalWeeklyGoals}
             </p>
           </div>
+
           <button
             onClick={openAddCourse}
-            className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg transition"
+            className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[var(--hover-primary)]"
           >
             + Add Course
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 min-[850px]:grid-cols-2 xl:grid-cols-3 gap-5">
           {viewCourses.map((course) => {
             const weeklyMinutes = weeklyStudyMinutesByCourseId[course._id];
             const studyMinutes = weeklyMinutes || 0;
@@ -296,98 +341,107 @@ const Courses = () => {
             return (
               <div
                 key={course._id}
-                className="bg-[var(--surface)] rounded-lg shadow-md border border-gray-200 overflow-hidden transition hover:shadow-lg hover:border-gray-300"
+                className="rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                style={{
+                  backgroundColor: getTransparentColor(course.color, 0.05),
+                  borderColor: getTransparentColor(course.color, 0.3),
+                }}
               >
                 <Link
                   to={`/app/courses/${course._id}`}
-                  className="block p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block h-full p-5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label={`Open ${course.code} ${course.name}`}
                 >
-                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start sm:items-center gap-3">
+                  <div className="flex flex-col justify-between h-full gap-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2">
                         <span
-                          className="w-3 h-3 rounded-full"
+                          className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: course.color }}
                         />
-                        <div>
-                          <div className="text-sm font-semibold text-[var(--muted-text)]">
-                            {course.code}
-                          </div>
-                          <h2 className="text-base sm:text-lg font-bold text-[var(--text)]">
-                            {course.name}
-                          </h2>
-                          <p className="text-sm text-[var(--muted-text)]">
-                            {course.term || "—"}{" "}
-                            <span className="text-[var(--muted-text-2)]">
-                              ({fmtIsoShort(course.termStart)} →{" "}
-                              {fmtIsoShort(course.termEnd)})
-                            </span>
-                          </p>
-                        </div>
+                        <span className="text-sm font-semibold text-[var(--muted-text)]">
+                          {course.code}
+                        </span>
                       </div>
+                      <span className="text-xs uppercase tracking-[0.1em] text-[var(--muted-text)]">
+                        {course.term || "—"}
+                      </span>
+                    </div>
 
-                      <div className="mt-4">
-                        <div className="flex flex-col sm:flex-row items-baseline sm:justify-between">
-                          <div className="text-sm text-[var(--muted-text-2)]">
-                            Study This Week:{" "}
-                            <span className="font-medium text-[var(--muted-text)]">
-                              {formatMinutesToHoursMinutes(studyMinutes)}
-                            </span>{" "}
-                            /{" "}
-                            {formatMinutesToHoursMinutes(
-                              course.weeklyGoalMinutes,
-                            )}{" "}
-                            goal
-                          </div>
-                          <div className="text-sm text-[var(--muted-text-2)] mt-2 sm:mt-0">
-                            {pct}%
-                          </div>
-                        </div>
-                        <div className="w-full bg-[var(--tertiary)] rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
-                          <div
-                            className="h-2 sm:h-3 rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
-                            style={{
-                              width: `${pct}%`,
-                              backgroundColor: course.color,
-                            }}
-                          />
-                        </div>
+                    <h2 className="text-lg font-bold text-[var(--text)] leading-tight break-words">
+                      {course.name}
+                    </h2>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-[var(--surface-2)] p-4">
+                        <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted-text)]">
+                          Weekly goal
+                        </p>
+                        <p className="mt-2 text-sm font-semibold text-[var(--text)]">
+                          {formatMinutesToHoursMinutes(
+                            course.weeklyGoalMinutes,
+                          )}
+                        </p>
                       </div>
-
-                      <div className="mt-4 text-sm text-[var(--muted-text)]">
-                        <span className="font-medium">Next Due:</span>{" "}
-                        {course.nextDueTitle} – {course.nextDueDate}
+                      <div className="rounded-2xl bg-[var(--surface-2)] p-4">
+                        <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted-text)]">
+                          Studied this week
+                        </p>
+                        <p className="mt-2 text-sm font-semibold text-[var(--text)]">
+                          {formatMinutesToHoursMinutes(studyMinutes)}
+                        </p>
                       </div>
                     </div>
 
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm text-[var(--muted-text)]">
+                        <span>Progress</span>
+                        <span>{pct}%</span>
+                      </div>
+                      <div className="w-full rounded-full bg-[var(--tertiary)] h-2 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${pct}%`,
+                            backgroundColor: course.color,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-sm text-[var(--muted-text)]">
+                      <p className="font-medium text-[var(--text)]">Next due</p>
+                      <p className="mt-1">
+                        {course.nextDueTitle} - {course.nextDueDate}
+                      </p>
+                    </div>
+
                     <div
-                      className="flex-shrink-0 flex gap-2 sm:flex-col sm:gap-3 sm:ml-4 ml-0 mt-4 sm:mt-0"
+                      className="flex flex-wrap gap-2"
                       onClick={(e) => e.preventDefault()}
                     >
-                      <button
+                      <Button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           openEditCourse(course);
                         }}
-                        className="bg-green-500 hover:bg-green-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-green-600/40"
                         title="Edit"
+                        className="bg-green-600"
                       >
-                        ✎
-                      </button>
-
-                      <button
+                        <FaRegEdit />
+                      </Button>
+                      <Button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleRemoveCourse(course._id);
                         }}
-                        className="bg-red-500 hover:bg-red-600 text-[var(--primary-contrast)] p-2 rounded-full transition flex items-center justify-center border border-red-600/40"
                         title="Remove"
+                        className="bg-red-600"
                       >
-                        🗑
-                      </button>
+                        <FaRegTrashAlt />
+                      </Button>
                     </div>
                   </div>
                 </Link>
@@ -564,7 +618,8 @@ const Courses = () => {
                     className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <p className="mt-1 text-xs text-[var(--muted-text)]">
-                    ({minutesToHhMm(form.weeklyGoalMinutes)} per week)
+                    ({formatMinutesToHoursMinutes(form.weeklyGoalMinutes)} per
+                    week)
                   </p>
                 </div>
 
