@@ -88,15 +88,12 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
   const showSelectedDateWarning = selectedDateAlreadyExists && !justSubmitted;
 
   return (
-    <Card>
+    <Card title="Daily Check-In">
       <div className="flex flex-col gap-6">
         <div className="flex flex-row gap-6 md:items-center md:justify-between">
           <div className="flex flex-col gap-2">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">
-              Daily Check-In
-            </p>
             <div className="flex flex-col gap-1">
-              <h2 className="text-2xl font-extrabold text-[var(--text)]">
+              <h2 className="text-xl font-extrabold text-[var(--text)]">
                 How are you feeling today?
               </h2>
               <p className="text-sm text-[var(--muted-text)]">

@@ -157,39 +157,35 @@ const BurnoutRiskCard = ({
   const isDashboard = variant === "dashboard";
   const topContributors = contributors.slice(0, isDashboard ? 1 : 2);
 
-  const navigateToWellness = (
+  const navigateToWellness = isDashboard ? (
     <Button variant="secondary" onClick={() => navigate("/app/wellness")}>
       View Wellness Insights
       <FaExternalLinkAlt />
     </Button>
-  );
+  ) : null;
 
   return (
     <Card
       className={isDashboard ? "p-5 md:p-6 h-full" : "p-6 md:p-7"}
       footer={navigateToWellness}>
       <div className="flex h-full flex-col gap-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="pt-1 flex items-start justify-between gap-4">
+          <div className=" flex flex-col gap-2">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">
-              {isDashboard ? "Dashboard Summary" : "Wellness Overview"}
+              {isDashboard ? "Burnout Risk" : "Wellness Overview"}
             </p>
 
-            <div>
-              <h2
-                className={
-                  isDashboard
-                    ? "text-xl font-extrabold text-[var(--text)]"
-                    : "text-2xl font-extrabold text-[var(--text)]"
-                }>
-                Burnout Risk
-              </h2>
-              {isDashboard ? null : (
+            {isDashboard ? null : (
+              <div>
+                <h2 className="text-xl font-extrabold text-[var(--text)]">
+                  Burnout Risk
+                </h2>
+
                 <p className="mt-1 text-sm text-[var(--muted-text)]">
                   {style.copy}
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <span
@@ -203,6 +199,46 @@ const BurnoutRiskCard = ({
         <div className="flex flex-wrap items-center gap-3">
           <TrendPill score={score} previousScore={previousScore} />
         </div>
+
+        {isDashboard ? null : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="rounded-[var(--radius)] bg-[var(--surface-2)] p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-text-2)]">
+                Stress
+              </p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--text)]">
+                {burnoutRisk.averages?.stress ?? 0}/5
+              </p>
+            </div>
+
+            <div className="rounded-[var(--radius)] bg-[var(--surface-2)] p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-text-2)]">
+                Sleep
+              </p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--text)]">
+                {burnoutRisk.averages?.sleep ?? 0}h
+              </p>
+            </div>
+
+            <div className="rounded-[var(--radius)] bg-[var(--surface-2)] p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-text-2)]">
+                Mood
+              </p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--text)]">
+                {burnoutRisk.averages?.mood ?? 0}/5
+              </p>
+            </div>
+
+            <div className="rounded-[var(--radius)] bg-[var(--surface-2)] p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-text-2)]">
+                Focus
+              </p>
+              <p className="mt-1 text-lg font-extrabold text-[var(--text)]">
+                {burnoutRisk.averages?.focus ?? 0}/5
+              </p>
+            </div>
+          </div>
+        )}
 
         {isDashboard ? null : (
           <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4">

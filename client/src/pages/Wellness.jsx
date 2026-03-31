@@ -10,6 +10,7 @@ import BurnoutAlerts from "../components/wellness/BurnoutAlerts";
 import WellnessTrends from "../components/wellness/WellnessTrends";
 
 import { generateBurnoutAlerts } from "../utils/alertUtils";
+import { generateTailoredRecommendations } from "../utils/recommendationUtils";
 import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 
 const Wellness = () => {
@@ -60,6 +61,15 @@ const Wellness = () => {
     });
   }, [wellnessEntries, burnoutRisk, workloadMetrics, previousBurnoutScore]);
 
+  const tailoredRecommendations = useMemo(() => {
+    return generateTailoredRecommendations({
+      wellnessEntries,
+      burnoutRisk,
+      workloadMetrics,
+      previousBurnoutScore,
+    });
+  }, [wellnessEntries, burnoutRisk, workloadMetrics, previousBurnoutScore]);
+
   //Checks if a Wellness Entry was already submitted by this user today
   const today = useMemo(() => {
     return new Date().toISOString().split("T")[0];
@@ -81,16 +91,25 @@ const Wellness = () => {
 
   return (
     <div className="stack gap-md">
-      <section className="flex flex-col gap-4">
-        <WellnessOverview
-          burnoutRisk={burnoutRisk}
-          previousBurnoutScore={previousBurnoutScore}
-        />
-        {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
-        {localStorage.getItem("token") === "GUEST_USER_POWERUP" &&
-          burnoutAlerts.length === 0 && (
-            <BurnoutAlerts alerts={[]} testMode={true} />
-          )}
+      <section className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3 items-stretch">
+          <div className="xl:col-span-2">
+            <WellnessOverview
+              burnoutRisk={burnoutRisk}
+              previousBurnoutScore={previousBurnoutScore}
+            />
+          </div>
+
+          <div className="xl:col-span-1 flex flex-col">
+            <div className="flex-1 overflow-y-auto pr-1">
+              {burnoutAlerts.length > 0 ? (
+                <BurnoutAlerts alerts={burnoutAlerts} />
+              ) : localStorage.getItem("token") === "GUEST_USER_POWERUP" ? (
+                <BurnoutAlerts alerts={[]} testMode={true} />
+              ) : null}
+            </div>
+          </div>
+        </div>
         <WellnessTrends wellnessEntries={wellnessEntries} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
@@ -100,7 +119,18 @@ const Wellness = () => {
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <BurnoutInsights burnoutRisk={burnoutRisk} />
-          <BurnoutActions burnoutRisk={burnoutRisk} />
+          {localStorage.getItem("token") === "GUEST_USER_POWERUP" ? (
+            <BurnoutActions
+              burnoutRisk={burnoutRisk}
+              recommendations={tailoredRecommendations}
+              testMode={true}
+            />
+          ) : (
+            <BurnoutActions
+              burnoutRisk={burnoutRisk}
+              recommendations={tailoredRecommendations}
+            />
+          )}
         </div>
       </section>
     </div>

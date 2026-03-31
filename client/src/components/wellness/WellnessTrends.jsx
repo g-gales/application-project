@@ -65,7 +65,7 @@ export default function WellnessTrends({ wellnessEntries = [] }) {
   return (
     <Card className="p-6 md:p-7">
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className=" pt-1 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-1">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">
               Wellness Trends
