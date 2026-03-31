@@ -55,14 +55,6 @@ function Settings() {
     }
   };
 
-  if (!user) {
-    return (
-      <Card title="Settings">
-        <p className="text-sm text-[var(--muted-text)]">Please sign in.</p>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* 1. THEME SELECTION */}
@@ -91,7 +83,8 @@ function Settings() {
             <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
-              className="flex-1 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-sm outline-none focus:ring-2 focus:ring-[var(--primary)] text-[var(--text)]">
+              className="flex-1 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-sm outline-none focus:ring-2 focus:ring-[var(--primary)] text-[var(--text)]"
+            >
               {courses.map((c) => (
                 <option key={c._id} value={c._id}>
                   {c.name}
@@ -150,7 +143,8 @@ function Settings() {
                 )
               }
               disabled={loading.saving}
-              variant="secondary">
+              variant="secondary"
+            >
               Toggle to{" "}
               {user.settings?.summaryFrequency === "weekly"
                 ? "Daily"
@@ -161,7 +155,8 @@ function Settings() {
               View Study Summary
             </Button>
           </div>
-        }>
+        }
+      >
         <div className="space-y-2">
           <p className="text-sm text-[var(--muted-text)]">
             Review your recorded course times or change how often your automated
