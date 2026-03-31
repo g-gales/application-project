@@ -42,8 +42,7 @@ export default function Sidebar() {
                   ? "border-[var(--border)] bg-[var(--surface-2)] font-bold"
                   : "border-transparent hover:bg-[var(--surface-2)]",
               ].join(" ")
-            }
-          >
+            }>
             {l.label}
           </NavLink>
         ))}
@@ -54,7 +53,7 @@ export default function Sidebar() {
           Logout
         </Button>
         <div className="text-xs text-[var(--muted-text)]">
-          v0.2 • Sprint 2 shell
+          v0.3 • Sprint 3 Final Demo
         </div>
       </div>
     </div>
