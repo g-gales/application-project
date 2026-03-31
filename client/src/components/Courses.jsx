@@ -343,8 +343,7 @@ const Courses = () => {
                 key={course._id}
                 className="rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
-                  backgroundColor: getTransparentColor(course.color, 0.05),
-                  borderColor: getTransparentColor(course.color, 0.3),
+                  borderColor: getTransparentColor(course.color, 0.5),
                 }}
               >
                 <Link
@@ -417,7 +416,7 @@ const Courses = () => {
                     </div>
 
                     <div
-                      className="flex flex-wrap gap-2"
+                      className="flex flex-wrap justify-between gap-2"
                       onClick={(e) => e.preventDefault()}
                     >
                       <Button
@@ -427,7 +426,7 @@ const Courses = () => {
                           openEditCourse(course);
                         }}
                         title="Edit"
-                        className="bg-green-600"
+                        className="bg-green-200 text-green-600 hover:bg-green-100 "
                       >
                         <FaRegEdit />
                       </Button>
@@ -438,7 +437,7 @@ const Courses = () => {
                           handleRemoveCourse(course._id);
                         }}
                         title="Remove"
-                        className="bg-red-600"
+                        className="bg-red-100 text-red-600 hover:bg-red-200"
                       >
                         <FaRegTrashAlt />
                       </Button>
