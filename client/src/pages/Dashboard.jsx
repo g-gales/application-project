@@ -56,10 +56,6 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-5">
-      <p className="text-[var(--muted-text)]">
-        **Widgets are placeholders for later sprints.
-      </p>
-
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 lg:col-span-4">
           <DashboardBurnoutRisk
