@@ -9,12 +9,9 @@ import BurnoutInsights from "../components/wellness/BurnoutInsights";
 import BurnoutAlerts from "../components/wellness/BurnoutAlerts";
 import WellnessTrends from "../components/wellness/WellnessTrends";
 
-import { calculateBurnoutRisk } from "../utils/burnoutUtils";
-import { calculateWorkloadMetrics } from "../utils/workloadUtils";
-import { calculateStudySummary } from "../utils/courseWorkloadUtils";
 import { generateBurnoutAlerts } from "../utils/alertUtils";
-
-import Card from "../components/ui/Card";
+import { generateTailoredRecommendations } from "../utils/recommendationUtils";
+import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 
 const Wellness = () => {
   const [wellnessEntries, setWellnessEntries] = useState([]);
@@ -47,45 +44,25 @@ const Wellness = () => {
     fetchAssignments();
   }, []);
 
-  const studySummary = useMemo(() => {
-    return calculateStudySummary(courses);
-  }, [courses]);
-
-  const workloadMetrics = useMemo(() => {
-    return calculateWorkloadMetrics({
-      assignments,
-      studySummary,
-    });
-  }, [assignments, studySummary]);
-
-  const previousBurnoutScore = useMemo(() => {
-    if (wellnessEntries.length < 6) return null;
-
-    const sortedEntries = [...wellnessEntries].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
-
-    const previousSlice = sortedEntries.slice(0, -3);
-
-    if (!previousSlice.length) return null;
-
-    const previousRisk = calculateBurnoutRisk({
-      wellnessEntries: previousSlice,
-      workloadMetrics,
-    });
-
-    return previousRisk.score;
-  }, [wellnessEntries, workloadMetrics]);
-
-  const burnoutRisk = useMemo(() => {
-    return calculateBurnoutRisk({
+  const { burnoutRisk, previousBurnoutScore, workloadMetrics } = useBurnoutRisk(
+    {
       wellnessEntries,
-      workloadMetrics,
-    });
-  }, [wellnessEntries, workloadMetrics]);
+      assignments,
+      courses,
+    },
+  );
 
   const burnoutAlerts = useMemo(() => {
     return generateBurnoutAlerts({
+      wellnessEntries,
+      burnoutRisk,
+      workloadMetrics,
+      previousBurnoutScore,
+    });
+  }, [wellnessEntries, burnoutRisk, workloadMetrics, previousBurnoutScore]);
+
+  const tailoredRecommendations = useMemo(() => {
+    return generateTailoredRecommendations({
       wellnessEntries,
       burnoutRisk,
       workloadMetrics,
@@ -105,7 +82,6 @@ const Wellness = () => {
     });
   }, [wellnessEntries, today]);
 
-  //----------------------
   const todaysEntry = useMemo(() => {
     return wellnessEntries.find((entry) => {
       const entryDate = new Date(entry.date).toISOString().split("T")[0];
@@ -113,16 +89,27 @@ const Wellness = () => {
     });
   }, [wellnessEntries, today]);
 
-  //----------------------------------
   return (
     <div className="stack gap-md">
-      <section className="flex flex-col gap-4">
-        <WellnessOverview burnoutRisk={burnoutRisk} />
-        {burnoutAlerts.length > 0 && <BurnoutAlerts alerts={burnoutAlerts} />}
-        {localStorage.getItem("token") === "GUEST_USER_POWERUP" &&
-          burnoutAlerts.length === 0 && (
-            <BurnoutAlerts alerts={[]} testMode={true} />
-          )}
+      <section className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3 items-stretch">
+          <div className="xl:col-span-2">
+            <WellnessOverview
+              burnoutRisk={burnoutRisk}
+              previousBurnoutScore={previousBurnoutScore}
+            />
+          </div>
+
+          <div className="xl:col-span-1 flex flex-col">
+            <div className="flex-1 overflow-y-auto pr-1">
+              {burnoutAlerts.length > 0 ? (
+                <BurnoutAlerts alerts={burnoutAlerts} />
+              ) : localStorage.getItem("token") === "GUEST_USER_POWERUP" ? (
+                <BurnoutAlerts alerts={[]} testMode={true} />
+              ) : null}
+            </div>
+          </div>
+        </div>
         <WellnessTrends wellnessEntries={wellnessEntries} />
         <WellnessCheckIn
           hasSubmittedToday={hasSubmittedToday}
@@ -132,7 +119,18 @@ const Wellness = () => {
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <BurnoutInsights burnoutRisk={burnoutRisk} />
-          <BurnoutActions burnoutRisk={burnoutRisk} />
+          {localStorage.getItem("token") === "GUEST_USER_POWERUP" ? (
+            <BurnoutActions
+              burnoutRisk={burnoutRisk}
+              recommendations={tailoredRecommendations}
+              testMode={true}
+            />
+          ) : (
+            <BurnoutActions
+              burnoutRisk={burnoutRisk}
+              recommendations={tailoredRecommendations}
+            />
+          )}
         </div>
       </section>
     </div>

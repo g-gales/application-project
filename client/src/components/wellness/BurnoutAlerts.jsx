@@ -73,12 +73,9 @@ export default function BurnoutAlerts({
   const visibleAlerts = compact ? activeAlerts.slice(0, 1) : activeAlerts;
 
   return (
-    <Card className="p-6 md:p-7">
+    <Card title="Burnout Alerts" className="p-6 md:p-7">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">
-            Burnout Alerts
-          </p>
           <h2 className="text-xl font-extrabold text-[var(--text)]">
             Attention needed
           </h2>
