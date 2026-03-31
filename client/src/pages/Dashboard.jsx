@@ -14,7 +14,6 @@ import WorkloadCard from "../components/ui/WorkloadCard";
 import { useBurnoutRisk } from "../hooks/useBurnoutRisk";
 import { useCourses } from "../hooks/useCourses";
 import { getPriorityAssignments } from "../utils/priorityUtils";
-import { calculateWorkloadMetrics } from "../utils/workloadUtils";
 
 export default function Dashboard() {
   const [wellnessEntries, setWellnessEntries] = useState([]);

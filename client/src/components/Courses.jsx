@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCourses } from "../hooks/useCourses";
 import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
+import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 
 import Card from "../components/ui/Card";
 
@@ -11,12 +12,14 @@ const Courses = () => {
   const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
   const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
 
-  const minutesToHhMm = (mins) => {
-    const total = Number(mins || 0);
-    const h = Math.floor(total / 60);
-    const m = total % 60;
-    return `${h}h ${m}m`;
-  };
+  const totalWeeklyGoals = useMemo(() => {
+    const totalMinutes = (courses || []).reduce(
+      (sum, course) => sum + Number(course.weeklyGoalMinutes || 0),
+      0,
+    );
+
+    return formatMinutesToHoursMinutes(totalMinutes);
+  }, [courses]);
 
   const fmtDueShort = (yyyyMmDd) => {
     if (!yyyyMmDd) return "—";
@@ -265,8 +268,12 @@ const Courses = () => {
   return (
     <Card>
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between items-start gap-3 mb-8">
+          <div>
+            <p className="text-sm font-semibold text-[var(--muted-text)] mt-1">
+              Total Weekly Goals: {totalWeeklyGoals}
+            </p>
+          </div>
           <button
             onClick={openAddCourse}
             className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg transition"
@@ -325,9 +332,13 @@ const Courses = () => {
                           <div className="text-sm text-[var(--muted-text-2)]">
                             Study This Week:{" "}
                             <span className="font-medium text-[var(--muted-text)]">
-                              {minutesToHhMm(studyMinutes)}
+                              {formatMinutesToHoursMinutes(studyMinutes)}
                             </span>{" "}
-                            / {minutesToHhMm(course.weeklyGoalMinutes)} goal
+                            /{" "}
+                            {formatMinutesToHoursMinutes(
+                              course.weeklyGoalMinutes,
+                            )}{" "}
+                            goal
                           </div>
                           <div className="text-sm text-[var(--muted-text-2)] mt-2 sm:mt-0">
                             {pct}%

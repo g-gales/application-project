@@ -2,17 +2,12 @@ import { useMemo, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
 import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
+import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import Card from "../components/ui/Card";
 
 // helper functions
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-const minutesToHhMm = (mins) => {
-  const total = Number(mins || 0);
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  return `${h}h ${m}m`;
-};
 const fmtDate = (yyyyMmDd) => {
   if (!yyyyMmDd) return "—";
   const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
@@ -318,9 +313,9 @@ export default function CourseDetails() {
             </p>
             <div className="mt-2 flex items-end justify-between">
               <p className="text-lg font-bold text-[var(--text)]">
-                {minutesToHhMm(weeklyStudyTime)}{" "}
+                {formatMinutesToHoursMinutes(weeklyStudyTime)}{" "}
                 <span className="text-sm font-medium text-[var(--muted-text-2)]">
-                  / {minutesToHhMm(course.weeklyGoalMinutes)} goal
+                  / {formatMinutesToHoursMinutes(course.weeklyGoalMinutes)} goal
                 </span>
               </p>
               <p className="text-sm font-semibold text-[var(--muted-text)] ">
@@ -352,7 +347,8 @@ export default function CourseDetails() {
                     {dueLabel(nextDue.dueDate)}
                   </span>
                   <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
-                    Est: {minutesToHhMm(nextDue.estimatedMinutes || 0)}
+                    Est:{" "}
+                    {formatMinutesToHoursMinutes(nextDue.estimatedMinutes || 0)}
                   </span>
                 </div>
               </>
@@ -368,7 +364,7 @@ export default function CourseDetails() {
               Upcoming Workload
             </p>
             <p className="mt-2 text-lg font-bold text-[var(--text)]">
-              {minutesToHhMm(totalUpcomingMinutes)}
+              {formatMinutesToHoursMinutes(totalUpcomingMinutes)}
             </p>
             <p className="mt-1 text-sm text-[var(--muted-text)]">
               Total estimated time for unfinished assignments.
@@ -446,15 +442,24 @@ export default function CourseDetails() {
                           </span>
 
                           <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
-                            Est: {minutesToHhMm(a.estimatedMinutes || 0)}
+                            Est:{" "}
+                            {formatMinutesToHoursMinutes(
+                              a.estimatedMinutes || 0,
+                            )}
                           </span>
                         </div>
 
                         <div className="mt-2">
                           <div className="flex items-center justify-between text-sm text-[var(--muted-text)]">
                             <span>
-                              Progress: {minutesToHhMm(a.minutesCompleted || 0)}{" "}
-                              / {minutesToHhMm(a.estimatedMinutes || 0)}
+                              Progress:{" "}
+                              {formatMinutesToHoursMinutes(
+                                a.minutesCompleted || 0,
+                              )}{" "}
+                              /{" "}
+                              {formatMinutesToHoursMinutes(
+                                a.estimatedMinutes || 0,
+                              )}
                             </span>
                             <span className="font-semibold text-[var(--muted-text)]">
                               {pct}%

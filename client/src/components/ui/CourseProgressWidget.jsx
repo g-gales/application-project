@@ -3,6 +3,7 @@ import { useWeeklyStudySummary } from "../../hooks/useWeeklyStudySummary";
 import { useNavigate } from "react-router-dom";
 import Card from "./Card";
 import Button from "./Button";
+import { formatMinutesToHoursMinutes } from "../../utils/timeUtils";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
 const CourseProgressWidget = () => {
@@ -16,18 +17,6 @@ const CourseProgressWidget = () => {
       <FaExternalLinkAlt />
     </Button>
   );
-
-  // formatting into hours or minutes based on amount of minutes
-  const getHoursOrMinutes = (totalMinutes) => {
-    if (!totalMinutes || totalMinutes <= 0) return "0m";
-
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-
-    return hours > 0
-      ? `${hours}h ${minutes > 0 ? ` ${minutes}m` : ""}`
-      : `${minutes}m`;
-  };
 
   return (
     <Card title="Weekly Study Goals" footer={navigateToCourses}>
@@ -56,8 +45,8 @@ const CourseProgressWidget = () => {
                     {course.code}
                   </span>
                   <span className="text-[10px] font-mono opacity-60">
-                    {getHoursOrMinutes(progressValue)} /{" "}
-                    {getHoursOrMinutes(progressMax)}
+                    {formatMinutesToHoursMinutes(progressValue)} /{" "}
+                    {formatMinutesToHoursMinutes(progressMax)}
                   </span>
                 </div>
 

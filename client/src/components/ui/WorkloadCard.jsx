@@ -1,17 +1,5 @@
 import Card from "./Card";
-
-function formatHours(minutes = 0) {
-  if (!minutes || minutes <= 0) return "0h";
-
-  const hours = minutes / 60;
-
-  if (hours < 1) {
-    return `${Math.round(minutes)} min`;
-  }
-
-  const rounded = Math.round(hours * 10) / 10;
-  return `${rounded}h`;
-}
+import { formatMinutesToHoursMinutes } from "../../utils/timeUtils";
 
 function getCapacityStatus(loadRatio) {
   if (loadRatio > 1) {
@@ -76,7 +64,8 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
           </p>
 
           <span
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${status.badge}`}>
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${status.badge}`}
+          >
             {status.label}
           </span>
         </div>
@@ -88,7 +77,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
                 Workload
               </p>
               <p className="mt-1 text-2xl font-extrabold text-[var(--text)]">
-                {formatHours(workloadMinutes)}
+                {formatMinutesToHoursMinutes(workloadMinutes, "decimal")}
               </p>
             </div>
 
@@ -97,7 +86,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
                 Capacity
               </p>
               <p className="mt-1 text-2xl font-extrabold text-[var(--text)]">
-                {formatHours(capacityMinutes)}
+                {formatMinutesToHoursMinutes(capacityMinutes, "decimal")}
               </p>
             </div>
           </div>
@@ -130,7 +119,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
               {dueSoonCount}
             </p>
             <p className="text-sm text-[var(--muted-text)]">
-              {formatHours(dueSoonMinutes)}
+              {formatMinutesToHoursMinutes(dueSoonMinutes)}
             </p>
           </div>
 
@@ -142,7 +131,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
               {overdueCount}
             </p>
             <p className="text-sm text-[var(--muted-text)]">
-              {formatHours(overdueMinutes)}
+              {formatMinutesToHoursMinutes(overdueMinutes)}
             </p>
           </div>
         </div>
@@ -154,16 +143,16 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
                 Weekly study goal progress
               </p>
               <p className="mt-1 text-sm text-[var(--muted-text)]">
-                {formatHours(studyTimeCompleted)} completed
+                {formatMinutesToHoursMinutes(studyTimeCompleted)} completed
                 {weeklyStudyGoal > 0
-                  ? ` of ${formatHours(weeklyStudyGoal)}`
+                  ? ` of ${formatMinutesToHoursMinutes(weeklyStudyGoal)}`
                   : ""}
               </p>
             </div>
 
             {studyDeficitMinutes > 0 && (
               <span className="rounded-full bg-[var(--surface-3)] px-3 py-1 text-xs font-bold text-[var(--muted-text)]">
-                {formatHours(studyDeficitMinutes)} behind
+                {formatMinutesToHoursMinutes(studyDeficitMinutes)} behind
               </span>
             )}
           </div>
