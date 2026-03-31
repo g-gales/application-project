@@ -212,30 +212,6 @@ export default function CourseDetails() {
     }
   };
 
-  const bumpProgress = async (assignmentId, delta) => {
-    try {
-      // get the latest pomodoroStudyTime
-      const latest = await api.get(`/courses/${courseId}`);
-      const latestTotal = latest.data.pomodoroStudyTime || 0;
-
-      // update progress on assignment
-      await api.put(`/assignments/${assignmentId}/progress`, {
-        minutes: delta,
-      });
-
-      // add the time to course total
-      const newTotal = Math.max(0, latestTotal + delta);
-      await api.patch(`/courses/${courseId}`, {
-        pomodoroStudyTime: newTotal,
-      });
-
-      const refresh = await api.get(`/courses/${courseId}`);
-      setCourse(refresh.data);
-    } catch (err) {
-      console.error("Bump failed:", err);
-    }
-  };
-
   if (course === null) {
     return (
       <div className="min-h-screen p-6 bg-[var(--surface)] flex items-center justify-center">
@@ -484,22 +460,6 @@ export default function CourseDetails() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                        <button
-                          onClick={() => bumpProgress(a._id, -15)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Minus 15 minutes"
-                        >
-                          -15m
-                        </button>
-
-                        <button
-                          onClick={() => bumpProgress(a._id, 15)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Plus 15 minutes"
-                        >
-                          +15m
-                        </button>
-
                         <button
                           onClick={() => toggleDone(a._id)}
                           className={[
