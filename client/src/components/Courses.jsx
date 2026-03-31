@@ -335,7 +335,7 @@ const Courses = () => {
                         </div>
                         <div className="w-full bg-[var(--tertiary)] rounded-full h-2 sm:h-3 mt-2 overflow-hidden">
                           <div
-                            className="h-2 sm:h-3 rounded-full bg-[var(--primary)]"
+                            className="h-2 sm:h-3 rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
                             style={{
                               width: `${pct}%`,
                               backgroundColor: course.color,

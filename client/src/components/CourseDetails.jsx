@@ -323,13 +323,13 @@ export default function CourseDetails() {
                   / {minutesToHhMm(course.weeklyGoalMinutes)} goal
                 </span>
               </p>
-              <p className="text-sm font-semibold text-[var(--muted-text)]">
+              <p className="text-sm font-semibold text-[var(--muted-text)] ">
                 {weeklyStudyPct}%
               </p>
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--muted-text)]">
               <div
-                className="h-full rounded-full bg-[var(--primary)]"
+                className="h-full rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
                 style={{ width: `${weeklyStudyPct}%` }}
               />
             </div>
