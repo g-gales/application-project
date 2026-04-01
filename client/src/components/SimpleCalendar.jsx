@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCourses } from "../hooks/useCourses";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -141,6 +141,8 @@ function SimpleCalendar() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [mode, setMode] = useState("create");
+  // isMobile viewport size for calendar view + toolbar
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 850);
   const [form, setForm] = useState({
     id: "",
     title: "",
@@ -169,6 +171,32 @@ function SimpleCalendar() {
   const resetSeriesState = () => {
     setOriginalSeriesId(null);
   };
+
+  // switch to mobile view at 850px and less
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 850;
+      setIsMobile(mobile);
+
+      // if calendar isn't loaded, return early
+      const calendarApi = calRef.current?.getApi();
+      if (!calendarApi) return;
+
+      // change calendar view if mobile
+      if (mobile && calendarApi.view.type !== "timeGridDay") {
+        calendarApi.changeView("timeGridDay");
+      } else if (!mobile && calendarApi.view.type !== "dayGridMonth") {
+        calendarApi.changeView("dayGridMonth");
+      }
+    };
+
+    // attach resize to browser resize event
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    // cleanup event listener
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchEvents = async (info, success, failure) => {
     try {
@@ -779,16 +807,28 @@ function SimpleCalendar() {
       <FullCalendar
         ref={calRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        height="70vh"
+        // initial view depends on vierport size
+        initialView={isMobile ? "timeGridDay" : "dayGridMonth"}
+        headerToolbar={
+          isMobile
+            ? {
+                left: "prev,next",
+                center: "title",
+                right: "timeGridDay,timeGridWeek",
+              }
+            : {
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
+              }
+        }
+        height={isMobile ? "auto" : "70vh"}
         timeZone="local"
         selectable
         editable
+        // touch devices press delay to avoid accidental taps
+        longPressDelay={500}
+        eventLongPressDelay={500}
         events={fetchEvents}
         displayEventTime={true}
         eventTimeFormat={{
