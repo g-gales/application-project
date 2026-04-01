@@ -143,10 +143,11 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
                 Weekly Study Goal Progress
               </p>
               <p className="mt-1 text-sm text-[var(--muted-text)]">
-                {formatMinutesToHoursMinutes(studyTimeCompleted)} Completed
+                {formatMinutesToHoursMinutes(studyTimeCompleted)}
                 {weeklyStudyGoal > 0
-                  ? ` of ${formatMinutesToHoursMinutes(weeklyStudyGoal)}`
-                  : ""}
+                  ? ` of ${formatMinutesToHoursMinutes(weeklyStudyGoal, "decimal")}`
+                  : ""}{" "}
+                Completed
               </p>
             </div>
 

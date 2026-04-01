@@ -4,7 +4,9 @@ import api from "../api/axiosConfig";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-import { useGlobalTimer } from "../context/TimerContext";
+import toast from "react-hot-toast";
+
+import { useGlobalTimer } from "../context/timerContext";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -37,6 +39,17 @@ export default function Pomodoro() {
     setIsWorkMode,
   } = useGlobalTimer();
 
+  // Local derived timer state
+  const totalWorkSeconds = times.work * 60;
+  const currentRemainingSeconds = minutes * 60 + seconds;
+  const elapsedSeconds = totalWorkSeconds - currentRemainingSeconds;
+  const elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+  const isPaused =
+    isWorkMode &&
+    !isRunning &&
+    elapsedSeconds > 0 &&
+    elapsedSeconds < totalWorkSeconds;
+
   // Fetch assignments
   useEffect(() => {
     api
@@ -54,20 +67,26 @@ export default function Pomodoro() {
     );
   }, [selectedCourseId, assignments]);
 
-  const handleLogAndNext = async (nextAction) => {
+  const handleSaveSession = async ({
+    durationMinutes = times.work,
+    nextAction,
+    successMessage = "Session saved!",
+    errorMessage = "Failed to save session",
+  } = {}) => {
     if (isSaving) return;
     setIsSaving(true);
     try {
       await api.post("/study-sessions", {
         courseId: selectedCourseId,
-        durationMinutes: times.work,
+        durationMinutes,
         type: "pomodoro",
       });
       if (selectedAssignmentId) {
         await api.put(`/assignments/${selectedAssignmentId}/progress`, {
-          minutes: times.work,
+          minutes: durationMinutes,
         });
       }
+      toast.success(successMessage);
       if (nextAction === "BREAK") {
         setIsWorkMode(false);
         refreshTimer(times.break);
@@ -79,7 +98,8 @@ export default function Pomodoro() {
       }
       setIsSummaryOpen(false);
     } catch (err) {
-      console.error("Failed to log", err);
+      toast.error(errorMessage);
+      console.error(errorMessage, err);
     } finally {
       setIsSaving(false);
     }
@@ -95,6 +115,21 @@ export default function Pomodoro() {
     text: { fill: "var(--text)", fontSize: "20px", fontWeight: "900" },
   };
 
+  const canSavePausedSession = isPaused && selectedCourseId;
+
+  const handleApplySettings = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const nextTimes = {
+      work: Number(formData.get("work")) || times.work,
+      break: Number(formData.get("break")) || times.break,
+    };
+
+    setTimes(nextTimes);
+    refreshTimer(isWorkMode ? nextTimes.work : nextTimes.break);
+    setIsSettingsOpen(false);
+  };
+
   const footerControls = (
     <div className="flex mx-auto max-w-lg gap-2 w-full">
       <Button
@@ -105,6 +140,24 @@ export default function Pomodoro() {
       >
         {!selectedCourseId ? "Select a Course" : isRunning ? "Pause" : "Start"}
       </Button>
+
+      {canSavePausedSession && (
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={() =>
+            handleSaveSession({
+              durationMinutes: elapsedMinutes,
+              successMessage: "Paused session saved!",
+              errorMessage: "Failed to save paused session",
+            })
+          }
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving..." : "Save Session"}
+        </Button>
+      )}
+
       <Button
         variant="danger"
         fullWidth
@@ -180,21 +233,21 @@ export default function Pomodoro() {
               <Button
                 variant="primary"
                 fullWidth
-                onClick={() => handleLogAndNext("BREAK")}
+                onClick={() => handleSaveSession({ nextAction: "BREAK" })}
               >
                 Take a Break
               </Button>
               <Button
                 variant="secondary"
                 fullWidth
-                onClick={() => handleLogAndNext("WORK")}
+                onClick={() => handleSaveSession({ nextAction: "WORK" })}
               >
                 New Session
               </Button>
               <Button
                 variant="ghost"
                 fullWidth
-                onClick={() => handleLogAndNext("FINISH")}
+                onClick={() => handleSaveSession({ nextAction: "FINISH" })}
               >
                 Save Session
               </Button>
@@ -207,7 +260,7 @@ export default function Pomodoro() {
           onClose={() => setIsSettingsOpen(false)}
           title="Timer Settings"
         >
-          <div className="space-y-4">
+          <form className="space-y-4" onSubmit={handleApplySettings}>
             {["work", "break"].map((type) => (
               <div key={type}>
                 <label className="text-[10px] uppercase font-bold opacity-60 block mb-1">
@@ -215,24 +268,17 @@ export default function Pomodoro() {
                 </label>
                 <input
                   type="number"
-                  value={times[type]}
-                  onChange={(e) =>
-                    setTimes({ ...times, [type]: Number(e.target.value) })
-                  }
+                  name={type}
+                  min="1"
+                  defaultValue={times[type]}
                   className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-[var(--radius)] text-[var(--text)]"
                 />
               </div>
             ))}
-            <Button
-              fullWidth
-              onClick={() => {
-                refreshTimer(isWorkMode ? times.work : times.break);
-                setIsSettingsOpen(false);
-              }}
-            >
+            <Button fullWidth type="submit">
               Apply
             </Button>
-          </div>
+          </form>
         </Modal>
       </div>
     </Card>

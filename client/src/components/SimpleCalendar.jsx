@@ -23,10 +23,10 @@ function toLocalInput(value) {
   )}:${pad(d.getMinutes())}`;
 }
 
-function fromLocalInput(value) {
-  if (!value) return null;
-  return new Date(value).toISOString();
-}
+// function fromLocalInput(value) {
+//   if (!value) return null;
+//   return new Date(value).toISOString();
+// }
 
 function parseCourseTermEnd(termEnd) {
   if (!termEnd) return null;
@@ -92,7 +92,9 @@ function Modal({ open, title, children, onClose }) {
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div className="w-full max-w-lg rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-[var(--text)]">{title}</h3>
+            <h3 className="text-lg font-semibold text-[var(--text)]">
+              {title}
+            </h3>
             <button
               onClick={onClose}
               className="rounded border border-[var(--border)] px-2 py-1 text-[var(--text)]"
@@ -278,11 +280,7 @@ function SimpleCalendar() {
     return {
       title: title.trim(),
       start: allDay ? start : new Date(start).toISOString(),
-      end: end
-        ? allDay
-          ? end
-          : new Date(end).toISOString()
-        : null,
+      end: end ? (allDay ? end : new Date(end).toISOString()) : null,
       allDay: !!allDay,
       seriesId: seriesId || null,
       extendedProps: {

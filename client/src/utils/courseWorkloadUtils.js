@@ -10,10 +10,7 @@ export function calculateStudySummary(courses = [], weeklyCourseSummary = []) {
           (total, summaryItem) => total + Number(summaryItem.totalMinutes || 0),
           0,
         )
-      : courses.reduce(
-          (total, course) => total + Number(course.pomodoroStudyTime || 0),
-          0,
-        );
+      : 0;
 
   return {
     weeklyStudyGoal,

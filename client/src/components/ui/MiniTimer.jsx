@@ -1,4 +1,4 @@
-import { useGlobalTimer } from "../../context/TimerContext";
+import { useGlobalTimer } from "../../context/timerContext";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";

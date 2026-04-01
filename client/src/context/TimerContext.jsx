@@ -1,14 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTimer } from "react-timer-hook";
 import { useNavigate } from "react-router-dom";
-
-const TimerContext = createContext();
+import { TimerContext } from "./timerContext";
 
 const newDate = Date.now();
 
@@ -44,10 +37,15 @@ export const TimerProvider = ({ children }) => {
     [restart],
   );
 
+  const totalSeconds = useMemo(
+    () => ((isWorkMode ? times.work : times.break) || 0) * 60,
+    [isWorkMode, times],
+  );
+
   const percentage = useMemo(() => {
-    const total = (isWorkMode ? times.work : times.break) * 60;
-    return Math.round(((minutes * 60 + seconds) / total) * 100);
-  }, [minutes, seconds, isWorkMode, times]);
+    const total = totalSeconds;
+    return total > 0 ? Math.round(((minutes * 60 + seconds) / total) * 100) : 0;
+  }, [minutes, seconds, totalSeconds]);
 
   const value = {
     seconds,
@@ -74,5 +72,3 @@ export const TimerProvider = ({ children }) => {
     <TimerContext.Provider value={value}>{children}</TimerContext.Provider>
   );
 };
-
-export const useGlobalTimer = () => useContext(TimerContext);

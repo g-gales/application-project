@@ -22,7 +22,8 @@ const getTransparentColor = (hex = "#3B82F6", opacity = 0.1) => {
 const NEW_TERM_VALUE = "__new__";
 
 const Courses = () => {
-  const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
+  const { courses, addCourse, updateCourse, deleteCourse, fetchCourses } =
+    useCourses();
   const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
   const [assignments, setAssignments] = useState([]);
 
@@ -255,6 +256,8 @@ const Courses = () => {
             result.message || "Server Error: Could not save course",
           );
         }
+
+        await fetchCourses();
       }
 
       closeModal();
