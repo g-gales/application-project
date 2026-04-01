@@ -135,6 +135,9 @@ function SummaryModal({ isOpen, onClose, courses }) {
       ) : (
         <div className="space-y-6">
           {/* DAILY WORKLOAD RINGS */}
+          <h3 className="text-center font-semibold">
+            Here is your weekly activity breakdown:
+          </h3>
           <div className="flex flex-col gap-2 p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
             <h3 className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)]  text-center">
               Daily Activity

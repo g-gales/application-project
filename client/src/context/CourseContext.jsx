@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../hooks/useAuth";
 import api from "../api/axiosConfig";
 import toast from "react-hot-toast";
 import { CourseContext } from "../hooks/useCourses";
@@ -7,6 +8,8 @@ export const CourseProvider = ({ children }) => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const { user } = useAuth();
 
   const fetchCourses = useCallback(async () => {
     setIsLoading(true);
@@ -26,8 +29,17 @@ export const CourseProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (!user) {
+      setCourses([]);
+      return;
+    }
+
     fetchCourses();
-  }, [fetchCourses]);
+
+    return () => {
+      setCourses([]);
+    };
+  }, [user, fetchCourses]);
 
   const addCourse = async (courseData) => {
     try {

@@ -140,6 +140,7 @@ const Courses = () => {
   const [mode, setMode] = useState("add"); // "add" | "edit"
   const [form, setForm] = useState(() => makeBlankForm());
   const [error, setError] = useState("");
+  const [selectedTerm, setSelectedTerm] = useState("all");
 
   useEffect(() => {
     if (isModalOpen) return;
@@ -274,14 +275,21 @@ const Courses = () => {
     }
   };
 
+  const filteredCourses = useMemo(() => {
+    if (selectedTerm === "all") return courses || [];
+    return (courses || []).filter(
+      (course) => String(course.term || "").trim() === selectedTerm,
+    );
+  }, [courses, selectedTerm]);
+
   const viewCourses = useMemo(() => {
-    return (courses || []).map((c) => {
+    return (filteredCourses || []).map((c) => {
       const courseAssignments =
         assignmentsByCourseId.get(c._id) || c.assignments || [];
       const next = getNextDue(courseAssignments);
       return { ...c, nextDueTitle: next.title, nextDueDate: next.date };
     });
-  }, [courses, assignmentsByCourseId, getNextDue]);
+  }, [filteredCourses, assignmentsByCourseId, getNextDue]);
 
   const usingNewTerm = form.termSelect === NEW_TERM_VALUE;
   const selectedExistingTerm = !usingNewTerm
@@ -312,7 +320,6 @@ const Courses = () => {
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--text)]">Courses</h1>
             <p className="mt-2 text-sm text-[var(--muted-text)]">
               {courses.length} course{courses.length === 1 ? "" : "s"} · Total
               weekly goals: {totalWeeklyGoals}
@@ -321,10 +328,30 @@ const Courses = () => {
 
           <button
             onClick={openAddCourse}
-            className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[var(--hover-primary)]"
+            className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[var(--hover-primary)] mt-2"
           >
             + Add Course
           </button>
+        </div>
+
+        <div className="mb-6 max-w-sm">
+          <label className="space-y-2 block">
+            <span className="block text-xs font-extrabold uppercase tracking-wider text-[var(--muted-text)]">
+              Filter:
+            </span>
+            <select
+              value={selectedTerm}
+              onChange={(e) => setSelectedTerm(e.target.value)}
+              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]"
+            >
+              <option value="all">All Terms</option>
+              {terms.map((term) => (
+                <option key={term.term} value={term.term}>
+                  {term.term}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 min-[850px]:grid-cols-2 xl:grid-cols-3 gap-5">

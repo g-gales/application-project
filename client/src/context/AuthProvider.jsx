@@ -12,21 +12,39 @@ export const AuthProvider = ({ children }) => {
   // show summary modal based on user settings and last viewed timestamp
   useEffect(() => {
     if (user && !hasCheckedSummary) {
-      const lastViewed = user.lastSummaryViewedAt
-        ? new Date(user.lastSummaryViewedAt)
-        : new Date();
       const now = new Date();
-
       const frequency = user.settings?.summaryFrequency || "weekly";
 
-      // difference in days between now and last viewed
-      const diffInMs = now - lastViewed;
-      const daysSince = diffInMs / (1000 * 60 * 60 * 24);
+      const isMorning = now.getHours() >= 6;
 
-      if (frequency === "daily" && daysSince >= 1) {
-        setShowSummary(true);
-      } else if (frequency === "weekly" && daysSince >= 7) {
-        setShowSummary(true);
+      const lastViewed = user.lastSummaryViewedAt
+        ? new Date(user.lastSummaryViewedAt)
+        : new Date(0);
+
+      const todayDateOnly = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+      );
+      const lastDateOnly = new Date(
+        lastViewed.getFullYear(),
+        lastViewed.getMonth(),
+        lastViewed.getDate(),
+      );
+
+      const isNewDay = todayDateOnly > lastDateOnly;
+      const isSaturday = now.getDay() === 6; // 0 = Sunday, 6 = Saturday
+
+      if (frequency === "daily") {
+        // if it's a new day and at least 6 AM, show the summary
+        if (isNewDay && isMorning) {
+          setShowSummary(true);
+        }
+      } else if (frequency === "weekly") {
+        // if it's a new day AND Saturday AND at least 6 AM
+        if (isNewDay && isSaturday && isMorning) {
+          setShowSummary(true);
+        }
       }
 
       setHasCheckedSummary(true);
@@ -48,6 +66,7 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data.data.user);
       } catch (error) {
         console.error("Backend auth check failed:", error);
+        toast.error("Couldn't authenticate user. Try logging in again.");
         localStorage.removeItem("token");
         setUser(null);
       } finally {
@@ -60,12 +79,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);
+    setHasCheckedSummary(false);
     setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    // on logout, this will trigger a hard refresh to flush react memory and reset all state + axios token
+    window.location.href = "/login";
   };
 
   const closeSummary = async () => {
@@ -81,7 +103,6 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data?.data?.user || res.data);
     } catch (e) {
       console.error("Failed to save summary viewed timestamp", e);
-      toast.error("Couldn't save read receipt.");
     }
   };
   const openSummary = () => {
