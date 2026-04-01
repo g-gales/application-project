@@ -102,16 +102,6 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
               </p>
             </div>
           </div>
-          {/* {hasSubmittedToday && (
-            <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--green-bg)] px-4 py-3">
-              <p className="text-sm font-bold text-[var(--green-text)]">
-                Today’s check-in is already complete.
-              </p>
-              <p className="mt-1 text-sm text-[var(--green-text)]/90">
-                You can still add an entry for a previous day if you missed one.
-              </p>
-            </div>
-          )} */}
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -268,7 +258,7 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
           <Button
             type="submit"
             variant="primary"
-            fullwidt
+            fullwidth="true"
             disabled={loading || submittedDates.has(selectedDate)}>
             {loading ? "Saving..." : "Submit Check-In"}
           </Button>
