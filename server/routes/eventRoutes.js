@@ -4,11 +4,10 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// GET /api/events
 router.get("/", protect, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { start, end, courseId } = req.query;
+    const { start, end, courseId, seriesId } = req.query;
 
     const query = { userId };
 
@@ -25,6 +24,10 @@ router.get("/", protect, async (req, res) => {
       query["extendedProps.courseId"] = courseId;
     }
 
+    if (seriesId) {
+      query.seriesId = seriesId;
+    }
+
     const events = await Event.find(query).sort({ start: 1 });
 
     res.json(events);
@@ -34,7 +37,6 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
-// POST /api/events
 router.post("/", protect, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -42,6 +44,7 @@ router.post("/", protect, async (req, res) => {
     const created = await Event.create({
       ...req.body,
       userId,
+      seriesId: req.body.seriesId || null,
     });
 
     res.status(201).json(created);
@@ -51,7 +54,30 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-// PUT /api/events/:id
+router.post("/bulk", protect, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const events = Array.isArray(req.body?.events) ? req.body.events : [];
+
+    if (!events.length) {
+      return res.status(400).json({ message: "No events provided" });
+    }
+
+    const docs = events.map((event) => ({
+      ...event,
+      userId,
+      seriesId: event.seriesId || null,
+    }));
+
+    const created = await Event.insertMany(docs);
+
+    res.status(201).json(created);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Failed to create events" });
+  }
+});
+
 router.put("/:id", protect, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -59,8 +85,14 @@ router.put("/:id", protect, async (req, res) => {
 
     const updated = await Event.findOneAndUpdate(
       { _id: id, userId },
-      req.body,
-      { returnDocument: "after" }, // ✅ updated option
+      {
+        ...req.body,
+        seriesId:
+          Object.prototype.hasOwnProperty.call(req.body, "seriesId")
+            ? req.body.seriesId
+            : undefined,
+      },
+      { returnDocument: "after" },
     );
 
     if (!updated) {
@@ -74,7 +106,30 @@ router.put("/:id", protect, async (req, res) => {
   }
 });
 
-// DELETE /api/events/:id
+router.put("/series/:seriesId", protect, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { seriesId } = req.params;
+
+    const update = { ...req.body };
+
+    if (!Object.prototype.hasOwnProperty.call(update, "seriesId")) {
+      delete update.seriesId;
+    }
+
+    const result = await Event.updateMany({ userId, seriesId }, update);
+
+    res.json({
+      ok: true,
+      matchedCount: result.matchedCount ?? result.n ?? 0,
+      modifiedCount: result.modifiedCount ?? result.nModified ?? 0,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Failed to update series" });
+  }
+});
+
 router.delete("/:id", protect, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -90,6 +145,23 @@ router.delete("/:id", protect, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "Failed to delete event" });
+  }
+});
+
+router.delete("/series/:seriesId", protect, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { seriesId } = req.params;
+
+    const result = await Event.deleteMany({ userId, seriesId });
+
+    res.json({
+      ok: true,
+      deletedCount: result.deletedCount ?? 0,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Failed to delete series" });
   }
 });
 
