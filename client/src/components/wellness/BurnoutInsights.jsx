@@ -8,7 +8,7 @@ export default function BurnoutInsights({ burnoutRisk }) {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-extrabold text-[var(--text)]">
-            What’s contributing most
+            What’s Contributing Most
           </h2>
           <p className="text-sm text-[var(--muted-text)]">
             These are the patterns currently pushing your burnout risk upward.
@@ -36,9 +36,6 @@ export default function BurnoutInsights({ burnoutRisk }) {
                       <div>
                         <p className="text-sm font-bold text-[var(--text)]">
                           {item.label}
-                        </p>
-                        <p className="text-xs text-[var(--muted-text-2)]">
-                          Impact on current burnout risk
                         </p>
                       </div>
                     </div>

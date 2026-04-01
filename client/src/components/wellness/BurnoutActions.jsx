@@ -43,7 +43,7 @@ export default function BurnoutActions({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-extrabold text-[var(--text)]">
-            Ways to lower your risk
+            Ways to Lower Your Risk {testMode && "**TEST MODE** "}
           </h2>
           <p className="text-sm text-[var(--muted-text)]">
             These suggestions are based on your recent wellness and workload
