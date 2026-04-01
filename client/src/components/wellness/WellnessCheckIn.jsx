@@ -96,10 +96,6 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
               <h2 className="text-xl font-extrabold text-[var(--text)]">
                 How are you feeling today?
               </h2>
-              <p className="text-sm text-[var(--muted-text)]">
-                Log your mood, stress, sleep, and focus to keep track of
-                wellness trends over time.
-              </p>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ function getTrend(score = 0, previousScore = null) {
     return {
       delta: 0,
       direction: "neutral",
-      label: "Not enough history yet",
+      label: "Not Enough History Yet",
     };
   }
 
@@ -43,7 +43,7 @@ function getTrend(score = 0, previousScore = null) {
     return {
       delta,
       direction: "up",
-      label: `Up ${delta} from previous period`,
+      label: `Up ${delta} From Previous Period`,
     };
   }
 
@@ -51,14 +51,14 @@ function getTrend(score = 0, previousScore = null) {
     return {
       delta: Math.abs(delta),
       direction: "down",
-      label: `Down ${Math.abs(delta)} from previous period`,
+      label: `Down ${Math.abs(delta)} From Previous Period`,
     };
   }
 
   return {
     delta: 0,
     direction: "neutral",
-    label: "No change from previous period",
+    label: "No Change From Previous Period",
   };
 }
 
@@ -243,12 +243,12 @@ const BurnoutRiskCard = ({
         {isDashboard ? null : (
           <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4">
             <p className="text-sm font-bold text-[var(--text)]">
-              "Key contributors"
+              Key Contributors
             </p>
 
             {topContributors.length === 0 ? (
               <p className="mt-2 text-sm text-[var(--muted-text)]">
-                No major contributors detected yet.
+                No Major Contributors Detected Yet.
               </p>
             ) : (
               <div className="mt-3 flex flex-wrap gap-2">

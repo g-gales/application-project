@@ -140,10 +140,10 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-[var(--text)]">
-                Weekly study goal progress
+                Weekly Study Goal Progress
               </p>
               <p className="mt-1 text-sm text-[var(--muted-text)]">
-                {formatMinutesToHoursMinutes(studyTimeCompleted)} completed
+                {formatMinutesToHoursMinutes(studyTimeCompleted)} Completed
                 {weeklyStudyGoal > 0
                   ? ` of ${formatMinutesToHoursMinutes(weeklyStudyGoal)}`
                   : ""}
@@ -152,7 +152,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
 
             {studyDeficitMinutes > 0 && (
               <span className="rounded-full bg-[var(--surface-3)] px-3 py-1 text-xs font-bold text-[var(--muted-text)]">
-                {formatMinutesToHoursMinutes(studyDeficitMinutes)} behind
+                {formatMinutesToHoursMinutes(studyDeficitMinutes)} Behind
               </span>
             )}
           </div>

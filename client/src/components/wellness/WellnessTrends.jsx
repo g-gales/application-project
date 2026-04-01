@@ -71,7 +71,7 @@ export default function WellnessTrends({ wellnessEntries = [] }) {
               Wellness Trends
             </p>
             <h2 className="text-xl font-extrabold text-[var(--text)]">
-              {currentOption.label} over time
+              {currentOption.label} Over Time
             </h2>
             <p className="text-sm text-[var(--muted-text)]">
               {currentOption.description}

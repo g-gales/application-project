@@ -77,7 +77,7 @@ export default function BurnoutAlerts({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-extrabold text-[var(--text)]">
-            Attention needed
+            Attention needed {testMode && "**TEST MODE** "}
           </h2>
           <p className="text-sm text-[var(--muted-text)]">
             These warnings appear when your recent wellness or workload trends
