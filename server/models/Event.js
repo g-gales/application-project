@@ -6,8 +6,8 @@ const eventSchema = new mongoose.Schema(
     start: { type: Date, required: true },
     end: { type: Date },
     allDay: { type: Boolean, default: false },
+    seriesId: { type: String, default: null },
 
-    // extended props is additional event info from FullCalendar
     extendedProps: {
       courseId: { type: String },
       type: {
