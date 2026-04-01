@@ -1,17 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
+import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
+import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import Card from "../components/ui/Card";
 
 // helper functions
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-const minutesToHhMm = (mins) => {
-  const total = Number(mins || 0);
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  return `${h}h ${m}m`;
-};
 const fmtDate = (yyyyMmDd) => {
   if (!yyyyMmDd) return "—";
   const [y, m, d] = String(yyyyMmDd).split("-").map(Number);
@@ -111,8 +107,11 @@ export default function CourseDetails() {
     return upcoming[0] ?? null;
   }, [course]);
 
+  const { weeklyStudyMinutesByCourseId } = useWeeklyStudySummary();
+  const weeklyStudyTime = course ? weeklyStudyMinutesByCourseId[course._id] : 0;
+
   const weeklyStudyPct = course
-    ? progressPct(course.pomodoroStudyTime, course.weeklyGoalMinutes)
+    ? progressPct(weeklyStudyTime, course.weeklyGoalMinutes)
     : 0;
 
   const totalUpcomingMinutes = useMemo(() => {
@@ -213,30 +212,6 @@ export default function CourseDetails() {
     }
   };
 
-  const bumpProgress = async (assignmentId, delta) => {
-    try {
-      // get the latest pomodoroStudyTime
-      const latest = await api.get(`/courses/${courseId}`);
-      const latestTotal = latest.data.pomodoroStudyTime || 0;
-
-      // update progress on assignment
-      await api.put(`/assignments/${assignmentId}/progress`, {
-        minutes: delta,
-      });
-
-      // add the time to course total
-      const newTotal = Math.max(0, latestTotal + delta);
-      await api.patch(`/courses/${courseId}`, {
-        pomodoroStudyTime: newTotal,
-      });
-
-      const refresh = await api.get(`/courses/${courseId}`);
-      setCourse(refresh.data);
-    } catch (err) {
-      console.error("Bump failed:", err);
-    }
-  };
-
   if (course === null) {
     return (
       <div className="min-h-screen p-6 bg-[var(--surface)] flex items-center justify-center">
@@ -272,38 +247,41 @@ export default function CourseDetails() {
   return (
     <Card>
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3">
-            <span
-              className="mt-1 h-3 w-3 rounded-full"
-              style={{ backgroundColor: courseColor }}
-            />
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold text-[var(--text)]">
-                  {course.code} — {course.name}
-                </h1>
-                <span className="rounded-full bg-[var(--surface-3)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text-2)]">
-                  {courseTerm}
-                </span>
-              </div>
-
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Link
-                  to="/app/courses"
-                  className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50"
-                >
-                  ← Back to Courses
-                </Link>
-
-                <button
-                  onClick={openAdd}
-                  className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-                >
-                  + Add Assignment
-                </button>
-              </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <span
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: courseColor }}
+              />
+              <span className="text-sm font-semibold text-[var(--muted-text)]">
+                {course.code}
+              </span>
             </div>
+
+            <span className="rounded-full bg-[var(--surface-3)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text-2)]">
+              {courseTerm}
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-bold text-[var(--text)] break-words">
+            {course.code} — {course.name}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/app/courses"
+              className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50"
+            >
+              ← Back to Courses
+            </Link>
+
+            <button
+              onClick={openAdd}
+              className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
+            >
+              + Add Assignment
+            </button>
           </div>
         </div>
 
@@ -314,18 +292,18 @@ export default function CourseDetails() {
             </p>
             <div className="mt-2 flex items-end justify-between">
               <p className="text-lg font-bold text-[var(--text)]">
-                {minutesToHhMm(course.pomodoroStudyTime)}{" "}
+                {formatMinutesToHoursMinutes(weeklyStudyTime)}{" "}
                 <span className="text-sm font-medium text-[var(--muted-text-2)]">
-                  / {minutesToHhMm(course.weeklyGoalMinutes)} goal
+                  / {formatMinutesToHoursMinutes(course.weeklyGoalMinutes)} goal
                 </span>
               </p>
-              <p className="text-sm font-semibold text-[var(--muted-text)]">
+              <p className="text-sm font-semibold text-[var(--muted-text)] ">
                 {weeklyStudyPct}%
               </p>
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--muted-text)]">
               <div
-                className="h-full rounded-full bg-[var(--primary)]"
+                className="h-full rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
                 style={{ width: `${weeklyStudyPct}%` }}
               />
             </div>
@@ -348,7 +326,8 @@ export default function CourseDetails() {
                     {dueLabel(nextDue.dueDate)}
                   </span>
                   <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
-                    Est: {minutesToHhMm(nextDue.estimatedMinutes || 0)}
+                    Est:{" "}
+                    {formatMinutesToHoursMinutes(nextDue.estimatedMinutes || 0)}
                   </span>
                 </div>
               </>
@@ -364,7 +343,7 @@ export default function CourseDetails() {
               Upcoming Workload
             </p>
             <p className="mt-2 text-lg font-bold text-[var(--text)]">
-              {minutesToHhMm(totalUpcomingMinutes)}
+              {formatMinutesToHoursMinutes(totalUpcomingMinutes)}
             </p>
             <p className="mt-1 text-sm text-[var(--muted-text)]">
               Total estimated time for unfinished assignments.
@@ -442,15 +421,24 @@ export default function CourseDetails() {
                           </span>
 
                           <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
-                            Est: {minutesToHhMm(a.estimatedMinutes || 0)}
+                            Est:{" "}
+                            {formatMinutesToHoursMinutes(
+                              a.estimatedMinutes || 0,
+                            )}
                           </span>
                         </div>
 
                         <div className="mt-2">
                           <div className="flex items-center justify-between text-sm text-[var(--muted-text)]">
                             <span>
-                              Progress: {minutesToHhMm(a.minutesCompleted || 0)}{" "}
-                              / {minutesToHhMm(a.estimatedMinutes || 0)}
+                              Progress:{" "}
+                              {formatMinutesToHoursMinutes(
+                                a.minutesCompleted || 0,
+                              )}{" "}
+                              /{" "}
+                              {formatMinutesToHoursMinutes(
+                                a.estimatedMinutes || 0,
+                              )}
                             </span>
                             <span className="font-semibold text-[var(--muted-text)]">
                               {pct}%
@@ -472,22 +460,6 @@ export default function CourseDetails() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                        <button
-                          onClick={() => bumpProgress(a._id, -15)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Minus 15 minutes"
-                        >
-                          -15m
-                        </button>
-
-                        <button
-                          onClick={() => bumpProgress(a._id, 15)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                          title="Plus 15 minutes"
-                        >
-                          +15m
-                        </button>
-
                         <button
                           onClick={() => toggleDone(a._id)}
                           className={[
@@ -613,7 +585,9 @@ export default function CourseDetails() {
                       className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <p className="mt-1 text-xs text-[var(--muted-text-2)]">
-                      {minutesToHhMm(Number(form.estimatedMinutes || 0))}
+                      {formatMinutesToHoursMinutes(
+                        Number(form.estimatedMinutes || 0),
+                      )}
                     </p>
                   </div>
 

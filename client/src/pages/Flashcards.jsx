@@ -374,7 +374,7 @@ export default function Flashcards() {
   };
 
   const deckCountText =
-    filteredDecks.length === 1 ? "1 deck" : `${filteredDecks.length} decks`;
+    filteredDecks.length === 1 ? "1 Deck" : `${filteredDecks.length} Decks`;
 
   return (
     <div className="bg-[var(--bg)] text-[var(--text)]">
@@ -397,8 +397,7 @@ export default function Flashcards() {
             <p className="text-xs text-[var(--muted-text)]">
               Showing {deckCountText}
             </p>
-          }
-        >
+          }>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
               <span className="block text-xs font-extrabold uppercase tracking-wider text-[var(--muted-text)]">
@@ -407,8 +406,7 @@ export default function Flashcards() {
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
-                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]"
-              >
+                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]">
                 <option value="all">All Courses</option>
                 {courses.map((course) => (
                   <option key={course._id} value={course._id}>
@@ -425,8 +423,7 @@ export default function Flashcards() {
               <select
                 value={selectedSemester}
                 onChange={(e) => setSelectedSemester(e.target.value)}
-                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]"
-              >
+                className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]">
                 <option value="all">All Semesters</option>
                 {semesters.map((semester) => (
                   <option key={semester} value={semester}>
@@ -469,34 +466,29 @@ export default function Flashcards() {
                       variant="primary"
                       className="min-w-[120px] flex-1"
                       onClick={() => startStudyMode(deck)}
-                      disabled={!deck.cards?.length}
-                    >
+                      disabled={!deck.cards?.length}>
                       Learn Mode
                     </Button>
                     <Button
                       variant="secondary"
                       className="min-w-[120px] flex-1"
-                      onClick={() => openAddCardModal(deck._id)}
-                    >
+                      onClick={() => openAddCardModal(deck._id)}>
                       Add Card
                     </Button>
                     <Button
                       variant="ghost"
                       className="min-w-[120px] flex-1"
-                      onClick={() => openViewModal(deck._id)}
-                    >
+                      onClick={() => openViewModal(deck._id)}>
                       View
                     </Button>
                     <Button
                       variant="danger"
                       className="min-w-[120px] flex-1"
-                      onClick={() => handleDeleteDeck(deck._id)}
-                    >
+                      onClick={() => handleDeleteDeck(deck._id)}>
                       Delete
                     </Button>
                   </div>
-                }
-              >
+                }>
                 <div className="space-y-3 text-sm">
                   <p className="text-[var(--muted-text)]">
                     {deck.description || "No description yet."}
@@ -523,8 +515,7 @@ export default function Flashcards() {
       <Modal
         isOpen={deckModalOpen}
         onClose={() => setDeckModalOpen(false)}
-        title="Create Flashcard Deck"
-      >
+        title="Create Flashcard Deck">
         <form onSubmit={handleCreateDeck} className="space-y-4">
           <label className="block space-y-2">
             <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--muted-text)]">
@@ -549,8 +540,7 @@ export default function Flashcards() {
               value={deckForm.courseId}
               onChange={handleDeckInputChange}
               className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]"
-              required
-            >
+              required>
               <option value="">Select a course</option>
               {courses.map((course) => (
                 <option key={course._id} value={course._id}>
@@ -586,8 +576,7 @@ export default function Flashcards() {
           setCardModalOpen(false);
           resetCardForm();
         }}
-        title="Add Flashcard"
-      >
+        title="Add Flashcard">
         <form onSubmit={handleCreateCard} className="space-y-4">
           <label className="block space-y-2">
             <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--muted-text)]">
@@ -633,8 +622,7 @@ export default function Flashcards() {
         }}
         title={
           selectedDeck ? `Deck Details · ${selectedDeck.title}` : "Deck Details"
-        }
-      >
+        }>
         {selectedDeck ? (
           <div className="min-w-[300px] space-y-5 sm:min-w-[720px]">
             <div className="flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4 sm:flex-row sm:items-start sm:justify-between">
@@ -659,8 +647,7 @@ export default function Flashcards() {
               <div className="sm:shrink-0">
                 <Button
                   variant="secondary"
-                  onClick={() => openAddCardModal(selectedDeck._id, true)}
-                >
+                  onClick={() => openAddCardModal(selectedDeck._id, true)}>
                   + Add Card
                 </Button>
               </div>
@@ -678,8 +665,7 @@ export default function Flashcards() {
                   return (
                     <div
                       key={card._id || `${card.front}-${index}`}
-                      className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]"
-                    >
+                      className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
                       <div className="space-y-4">
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-text)]">
@@ -713,16 +699,14 @@ export default function Flashcards() {
                               <Button
                                 variant="ghost"
                                 className="min-w-[110px]"
-                                onClick={() => startEditCard(card)}
-                              >
+                                onClick={() => startEditCard(card)}>
                                 Edit
                               </Button>
                               <Button
                                 variant="danger"
                                 className="min-w-[110px]"
                                 disabled={deletingCardId === card._id}
-                                onClick={() => handleDeleteCard(card._id)}
-                              >
+                                onClick={() => handleDeleteCard(card._id)}>
                                 {deletingCardId === card._id
                                   ? "Deleting..."
                                   : "Delete"}
@@ -733,8 +717,7 @@ export default function Flashcards() {
                               type="button"
                               variant="secondary"
                               className="min-w-[110px]"
-                              onClick={cancelEditCard}
-                            >
+                              onClick={cancelEditCard}>
                               Cancel
                             </Button>
                           )}
@@ -743,8 +726,7 @@ export default function Flashcards() {
                         {isEditing ? (
                           <form
                             onSubmit={handleUpdateCard}
-                            className="space-y-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4"
-                          >
+                            className="space-y-4 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] p-4">
                             <div className="flex items-center justify-between gap-3">
                               <h3 className="text-sm font-black text-[var(--text)]">
                                 Edit Card
@@ -787,16 +769,14 @@ export default function Flashcards() {
                                 type="submit"
                                 variant="primary"
                                 className="min-w-[140px]"
-                                disabled={savingCard}
-                              >
+                                disabled={savingCard}>
                                 {savingCard ? "Saving..." : "Save Changes"}
                               </Button>
                               <Button
                                 type="button"
                                 variant="secondary"
                                 className="min-w-[110px]"
-                                onClick={cancelEditCard}
-                              >
+                                onClick={cancelEditCard}>
                                 Cancel
                               </Button>
                             </div>
@@ -817,8 +797,7 @@ export default function Flashcards() {
       <Modal
         isOpen={studyModalOpen}
         onClose={closeStudyMode}
-        title={studyDeck ? `Learn Mode · ${studyDeck.title}` : "Learn Mode"}
-      >
+        title={studyDeck ? `Learn Mode · ${studyDeck.title}` : "Learn Mode"}>
         {currentStudyCard ? (
           <div className="min-w-[280px] space-y-5 sm:min-w-[520px]">
             <div>
@@ -845,8 +824,7 @@ export default function Flashcards() {
               }`}
               onClick={() => {
                 if (!showAnswer) setShowAnswer(true);
-              }}
-            >
+              }}>
               {!showAnswer ? (
                 <>
                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted-text)]">
@@ -875,15 +853,13 @@ export default function Flashcards() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button
                   variant="secondary"
-                  onClick={() => handleStudyResponse("dont-got-it")}
-                >
+                  onClick={() => handleStudyResponse("dont-got-it")}>
                   Don’t Got It
                 </Button>
 
                 <Button
                   variant="primary"
-                  onClick={() => handleStudyResponse("got-it")}
-                >
+                  onClick={() => handleStudyResponse("got-it")}>
                   Got It
                 </Button>
               </div>

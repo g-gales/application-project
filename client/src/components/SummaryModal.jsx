@@ -8,8 +8,8 @@ import {
 } from "react-icons/fi";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import api from "../api/axiosConfig";
 import toast from "react-hot-toast";
+import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 
 // fallback helper for inputting correct theme color into circular progress bars
 const getCSSVariableColor = (variableName, fallbackColor) => {
@@ -20,43 +20,25 @@ const getCSSVariableColor = (variableName, fallbackColor) => {
   return color || fallbackColor;
 };
 
-function SummaryModal({ isOpen, onClose, user, courses }) {
+function SummaryModal({ isOpen, onClose, courses }) {
   const [offset, setOffset] = useState(0);
-  const frequency = user?.settings?.summaryFrequency || "weekly";
 
-  const [summaryData, setSummaryData] = useState({
-    courseSummary: [],
-    dailyBreakdown: [],
-  });
-  const [loading, setLoading] = useState(false);
+  const {
+    weeklyStudySummary: courseSummary,
+    dailyBreakdown,
+    isLoading: loading,
+    error,
+  } = useWeeklyStudySummary(offset, isOpen);
 
-  // fetch summary data whenever modal opens or offset changes
   useEffect(() => {
-    if (!isOpen) return;
-
-    const fetchSummary = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/study-sessions/summary?offset=${offset}`);
-
-        setSummaryData({
-          courseSummary: res.data.courseSummary || [],
-          dailyBreakdown: res.data.dailyBreakdown || [],
-        });
-      } catch (err) {
-        console.error("Failed to load summary", err);
-        toast.error("Could not load your study summary.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSummary();
-  }, [isOpen, offset]);
+    if (error && isOpen) {
+      toast.error("Could not load your study summary.");
+    }
+  }, [error, isOpen]);
 
   // get min and most minutes courses for highlights
   const { mostEffort, leastEffort } = useMemo(() => {
-    const list = summaryData.courseSummary;
+    const list = courseSummary;
     if (list.length === 0) return { mostEffort: null, leastEffort: null };
 
     const sortedList = [...list].sort(
@@ -68,7 +50,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       leastEffort:
         sortedList.length > 1 ? sortedList[sortedList.length - 1] : null,
     };
-  }, [summaryData.courseSummary]);
+  }, [courseSummary]);
 
   const mappedWeeklyData = useMemo(() => {
     const baseWeek = [
@@ -82,7 +64,7 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     ];
 
     // set minutes from baseWeek for each day based on fetched data
-    summaryData.dailyBreakdown.forEach((item) => {
+    dailyBreakdown.forEach((item) => {
       const dayRef = baseWeek.find((b) => String(b.id) === String(item._id));
       if (dayRef) {
         dayRef.minutes = item.minutes;
@@ -102,33 +84,23 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
     }));
 
     return mapped;
-  }, [summaryData.dailyBreakdown]);
+  }, [dailyBreakdown]);
 
   // data range for card pagination
   const dateRange = useMemo(() => {
     const today = new Date();
+    const dayOfWeek = today.getDay();
+    const currentSunday = new Date(today);
+    currentSunday.setDate(today.getDate() - dayOfWeek);
 
-    if (frequency === "daily") {
-      today.setDate(today.getDate() + offset);
-      return today.toLocaleDateString(undefined, {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-      });
-    } else {
-      const dayOfWeek = today.getDay();
-      const currentSunday = new Date(today);
-      currentSunday.setDate(today.getDate() - dayOfWeek);
+    const start = new Date(currentSunday);
+    start.setDate(currentSunday.getDate() + offset * 7);
 
-      const start = new Date(currentSunday);
-      start.setDate(currentSunday.getDate() + offset * 7);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
 
-      const end = new Date(start);
-      end.setDate(start.getDate() + 6);
-
-      return `${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
-    }
-  }, [offset, frequency]);
+    return `${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+  }, [offset]);
 
   // controls for card pagination
   const datePagination = (
@@ -163,6 +135,9 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
       ) : (
         <div className="space-y-6">
           {/* DAILY WORKLOAD RINGS */}
+          <h3 className="text-center font-semibold">
+            Here is your weekly activity breakdown:
+          </h3>
           <div className="flex flex-col gap-2 p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
             <h3 className="text-xs font-bold uppercase tracking-wide text-[var(--muted-text)]  text-center">
               Daily Activity
@@ -264,8 +239,8 @@ function SummaryModal({ isOpen, onClose, user, courses }) {
             </h3>
 
             <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-              {summaryData.courseSummary.length > 0 ? (
-                summaryData.courseSummary.map((item) => {
+              {courseSummary.length > 0 ? (
+                courseSummary.map((item) => {
                   const courseConfig = courses.find((c) => c._id === item._id);
                   const goal = courseConfig?.weeklyGoalMinutes || 120;
                   const percentage = Math.min(
