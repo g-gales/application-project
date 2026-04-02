@@ -17,8 +17,12 @@ export default function Sidebar() {
   return (
     <div className="h-full p-4 md:p-5 grid gap-4 overflow-y-auto">
       <div className="flex items-center gap-3 p-3 rounded-[14px] border border-[var(--border)] bg-[var(--surface-2)]">
-        <div className="w-10 h-10 grid place-items-center rounded-xl bg-[var(--primary)] text-[var(--primary-contrast)] font-extrabold">
-          &lt;/&gt;
+        <div className="w-10 h-10 grid place-items-center rounded-xl bg-transparent">
+          <img
+            src="/logo.svg"
+            alt="Student Powerup Logo"
+            className="w-full h-full object-contain bg-transparent"
+          />
         </div>{" "}
         {/* Placeholder logo/mark */}
         <div>
@@ -42,7 +46,8 @@ export default function Sidebar() {
                   ? "border-[var(--border)] bg-[var(--surface-2)] font-bold"
                   : "border-transparent hover:bg-[var(--surface-2)]",
               ].join(" ")
-            }>
+            }
+          >
             {l.label}
           </NavLink>
         ))}
