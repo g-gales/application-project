@@ -19,10 +19,10 @@ const MONTH_NAMES = [
 ];
 
 const HEAT_LEVELS = [
-  { bg: "#166534", swatch: "#166534" },
-  { bg: "#65a30d", swatch: "#65a30d" },
-  { bg: "#f59e0b", swatch: "#f59e0b" },
-  { bg: "#dc2626", swatch: "#dc2626" },
+  { bg: "bg-[var(--heatmap-1)]", swatch: "bg-[var(--heatmap-1)]" },
+  { bg: "bg-[var(--heatmap-2)]", swatch: "bg-[var(--heatmap-2)]" },
+  { bg: "bg-[var(--heatmap-3)]", swatch: "bg-[var(--heatmap-3)]" },
+  { bg: "bg-[var(--heatmap-4)]", swatch: "bg-[var(--heatmap-4)]" },
 ];
 
 function startOfDay(date) {
@@ -163,10 +163,8 @@ const HeatmapDangerZones = () => {
             {dayData.map((day) => (
               <div
                 key={day.key}
-                className="rounded-xl border border-[var(--border)] p-3 min-h-[96px] flex flex-col justify-between text-white"
-                style={{ backgroundColor: day.bg }}
-                title={`${day.dayLabel} ${day.dateLabel}: ${day.hours} hours`}
-              >
+                className={`${day.bg} rounded-xl border border-[var(--border)] p-3 min-h-[96px] flex flex-col justify-between text-white`}
+                title={`${day.dayLabel} ${day.dateLabel}: ${day.hours} hours`}>
                 <div className="flex flex-col leading-tight">
                   <span className="text-sm font-extrabold text-white">
                     {day.dayLabel}
@@ -193,8 +191,7 @@ const HeatmapDangerZones = () => {
             {HEAT_LEVELS.map((level, index) => (
               <span
                 key={index}
-                className="w-4 h-4 rounded-[4px] border border-[var(--border)]"
-                style={{ backgroundColor: level.swatch }}
+                className={`${level.swatch} w-4 h-4 rounded-[4px] border border-[var(--border)]`}
                 aria-hidden="true"
               />
             ))}

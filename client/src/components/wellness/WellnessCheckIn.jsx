@@ -135,7 +135,7 @@ const WellnessCheckIn = ({ hasSubmittedToday, onSuccess, wellnessEntries }) => {
                 />
 
                 {showSelectedDateWarning && (
-                  <p className="mt-2 text-xs font-medium text-red-500">
+                  <p className="mt-2 text-xs font-medium text-[var(--danger)]">
                     A wellness check-in already exists for this date.
                   </p>
                 )}

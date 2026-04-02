@@ -2,9 +2,9 @@ import Card from "../ui/Card";
 
 const levelStyles = {
   warning:
-    "border-yellow-300 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200",
+    "border-[var(--warning)] bg-[var(--pill-yellow-bg)] text-[var(--pill-yellow-text)]",
   danger:
-    "border-red-300 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200",
+    "border-[var(--danger)] bg-[var(--pill-red-bg)] text-[var(--pill-red-text)]",
   info: "border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)]",
 };
 

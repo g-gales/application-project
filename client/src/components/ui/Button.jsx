@@ -37,8 +37,12 @@ const Button = ({
     ghost:
       "bg-transparent text-[var(--muted-text)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]",
 
-    danger:
-      "bg-transparent text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20",
+    danger: "bg-transparent text-[var(--danger)] hover:bg-[var(--danger-bg)]",
+
+    green:
+      "bg-[var(--button-green-bg)] text-[var(--button-green-text)] hover:bg-[var(--hover-button-green-bg)]",
+
+    red: "bg-[var(--button-red-bg)] text-[var(--button-red-text)] hover:bg-[var(--hover-button-red-bg)]",
   };
 
   const widthStyle = fullWidth ? "w-full" : "";
@@ -49,8 +53,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${baseStyles} ${variants[variant]} ${widthStyle} ${className}`}
-      {...props}
-    >
+      {...props}>
       {children}
     </button>
   );

@@ -331,8 +331,7 @@ const Courses = () => {
 
           <button
             onClick={openAddCourse}
-            className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[var(--hover-primary)] mt-2"
-          >
+            className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[var(--hover-primary)] mt-2">
             + Add Course
           </button>
         </div>
@@ -345,8 +344,7 @@ const Courses = () => {
             <select
               value={selectedTerm}
               onChange={(e) => setSelectedTerm(e.target.value)}
-              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm text-[var(--text)]"
-            >
+              className="w-full rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-2)] px-3 py-3 text-sm text-[var(--text)]">
               <option value="all">All Terms</option>
               {terms.map((term) => (
                 <option key={term.term} value={term.term}>
@@ -374,13 +372,11 @@ const Courses = () => {
                 className="rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   borderColor: getTransparentColor(course.color, 0.5),
-                }}
-              >
+                }}>
                 <Link
                   to={`/app/courses/${course._id}`}
                   className="block h-full p-5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label={`Open ${course.code} ${course.name}`}
-                >
+                  aria-label={`Open ${course.code} ${course.name}`}>
                   <div className="flex flex-col justify-between h-full gap-5">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
@@ -447,8 +443,7 @@ const Courses = () => {
 
                     <div
                       className="flex flex-wrap justify-between gap-2"
-                      onClick={(e) => e.preventDefault()}
-                    >
+                      onClick={(e) => e.preventDefault()}>
                       <Button
                         onClick={(e) => {
                           e.preventDefault();
@@ -456,8 +451,7 @@ const Courses = () => {
                           openEditCourse(course);
                         }}
                         title="Edit"
-                        className="bg-green-200 text-green-600 hover:bg-green-100 "
-                      >
+                        variant="green">
                         <FaRegEdit />
                       </Button>
                       <Button
@@ -467,8 +461,7 @@ const Courses = () => {
                           handleRemoveCourse(course._id);
                         }}
                         title="Remove"
-                        className="bg-red-100 text-red-600 hover:bg-red-200"
-                      >
+                        variant="red">
                         <FaRegTrashAlt />
                       </Button>
                     </div>
@@ -486,8 +479,7 @@ const Courses = () => {
             </p>
             <button
               onClick={openAddCourse}
-              className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg mt-4 transition"
-            >
+              className="bg-[var(--primary)] hover:bg-[var(--hover-primary)] text-[var(--primary-contrast)] font-semibold py-2 px-4 rounded-lg mt-4 transition">
               + Add Course
             </button>
           </div>
@@ -509,8 +501,7 @@ const Courses = () => {
               <button
                 onClick={closeModal}
                 className="rounded-lg p-2 text-[var(--muted-text)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-                aria-label="Close"
-              >
+                aria-label="Close">
                 ✕
               </button>
             </div>
@@ -538,8 +529,7 @@ const Courses = () => {
                   <select
                     value={form.termSelect}
                     onChange={(e) => onChangeTermSelect(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                     {terms.length ? (
                       <>
                         {terms.map((t) => (
@@ -688,14 +678,12 @@ const Courses = () => {
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   onClick={closeModal}
-                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--text)] shadow-sm hover:bg-[var(--surface)]"
-                >
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--text)] shadow-sm hover:bg-[var(--surface)]">
                   Cancel
                 </button>
                 <button
                   onClick={saveCourse}
-                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-                >
+                  className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
                   {mode === "add" ? "Add" : "Save"}
                 </button>
               </div>

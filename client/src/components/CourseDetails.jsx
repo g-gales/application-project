@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
 import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 // helper functions
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -42,9 +43,9 @@ const statusPill = (status) => {
   const base =
     "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold";
   if (status === "done")
-    return `${base} bg-[var(--green-bg)] text-[var(--green-text)]`;
+    return `${base} bg-[var(--pill-green-bg)] text-[var(--pill-green-text)]`;
   if (status === "in-progress")
-    return `${base} bg-[var(--tertiary)] text-[var(--tertiary-contrast)]`;
+    return `${base} bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]`;
   return `${base} bg-[var(--bg)] text-[var(--muted-text)]`;
 };
 const toInputDate = (date) => {
@@ -89,6 +90,8 @@ export default function CourseDetails() {
     };
     if (courseId) getCourse();
   }, [courseId]);
+
+  const navigate = useNavigate();
 
   const sortedAssignments = useMemo(() => {
     if (!course?.assignments) return [];
@@ -226,12 +229,9 @@ export default function CourseDetails() {
             </code>
           </p>
 
-          <Link
-            to="/app/courses"
-            className="mt-6 inline-flex rounded-lg bg-[var(--primary)] px-6 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)] transition"
-          >
+          <Button variant="primary" onClick={() => navigate("/app/courses")}>
             Return to Courses
-          </Link>
+          </Button>
         </div>
       </div>
     );
@@ -269,19 +269,15 @@ export default function CourseDetails() {
           </h1>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Link
-              to="/app/courses"
-              className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50"
-            >
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/app/courses")}>
               ← Back to Courses
-            </Link>
+            </Button>
 
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-            >
+            <Button variant="primary" onClick={openAdd}>
               + Add Assignment
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -301,7 +297,7 @@ export default function CourseDetails() {
                 {weeklyStudyPct}%
               </p>
             </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--muted-text)]">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--muted-text-2)]">
               <div
                 className="h-full rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
                 style={{ width: `${weeklyStudyPct}%` }}
@@ -319,13 +315,13 @@ export default function CourseDetails() {
                   {nextDue.title}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
+                  <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
                     {fmtDate(nextDue.dueDate)}
                   </span>
-                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                  <span className="rounded-full bg-[var(--pill-yellow-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--pill-yellow-text)]">
                     {dueLabel(nextDue.dueDate)}
                   </span>
-                  <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
+                  <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
                     Est:{" "}
                     {formatMinutesToHoursMinutes(nextDue.estimatedMinutes || 0)}
                   </span>
@@ -394,8 +390,8 @@ export default function CourseDetails() {
 
                 return (
                   <li key={a._id} className="p-4">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div className="min-w-0">
+                    <div className="flex flex-col gap-3 lg:gap-20 xl:gap-50 md:flex-row md:items-start md:justify-between">
+                      <div className="min-w-0 grow">
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="truncate text-base font-bold text-[var(--text)]">
                             {a.title}
@@ -409,23 +405,30 @@ export default function CourseDetails() {
                                 : "Done"}
                           </span>
 
-                          <span
-                            className={[
-                              "rounded-full px-2.5 py-1 text-xs font-semibold",
-                              isLate
-                                ? "bg-red-100 text-red-700"
-                                : "bg-[var(--bg)] text-[var(--muted-text)]",
-                            ].join(" ")}
-                          >
-                            {fmtDate(a.dueDate)} • {dueLabel(a.dueDate)}
-                          </span>
+                          {a.status === "done" ? (
+                            <span className="rounded-full px-2.5 py-1 text-xs font-semibold bg-[var(--bg)] text-[var(--muted-text)]">
+                              {fmtDate(a.dueDate)}{" "}
+                            </span>
+                          ) : (
+                            <>
+                              <span
+                                className={[
+                                  "rounded-full px-2.5 py-1 text-xs font-semibold",
+                                  isLate
+                                    ? "bg-[var(--pill-red-bg)] text-[var(--pill-red-text)]"
+                                    : "bg-[var(--bg)] text-[var(--muted-text)]",
+                                ].join(" ")}>
+                                {fmtDate(a.dueDate)} • {dueLabel(a.dueDate)}
+                              </span>
 
-                          <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
-                            Est:{" "}
-                            {formatMinutesToHoursMinutes(
-                              a.estimatedMinutes || 0,
-                            )}
-                          </span>
+                              <span className="rounded-full bg-[var(--bg)] px-2.5 py-1 text-xs font-semibold text-[var(--muted-text)]">
+                                Est:{" "}
+                                {formatMinutesToHoursMinutes(
+                                  a.estimatedMinutes || 0,
+                                )}
+                              </span>
+                            </>
+                          )}
                         </div>
 
                         <div className="mt-2">
@@ -465,24 +468,21 @@ export default function CourseDetails() {
                           className={[
                             "rounded-lg px-3 py-2 text-sm font-semibold shadow-sm transition",
                             a.status === "done"
-                              ? "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                              ? "border border-[var(--border-green)] bg-[var(--green-bg)] text-[var(--green-text)] hover:bg-[var(--hover-green-bg)]"
                               : "border border-[var(--border)] bg-[var(--surface)] text-[var(--muted-text)] hover:bg-[var(--bg)]",
-                          ].join(" ")}
-                        >
+                          ].join(" ")}>
                           {a.status === "done" ? "Mark not done" : "Mark done"}
                         </button>
 
                         <button
                           onClick={() => openEdit(a)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                        >
+                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
                           Edit
                         </button>
 
                         <button
                           onClick={() => deleteAssignment(a._id)}
-                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100"
-                        >
+                          className="rounded-lg border border-[var(--danger)] bg-[var(--danger-bg)] px-3 py-2 text-sm font-semibold text-[var(--danger-text)] shadow-sm hover:bg-[var(--hover-danger-bg)]">
                           Delete
                         </button>
                       </div>
@@ -500,7 +500,7 @@ export default function CourseDetails() {
               className="absolute inset-0 bg-black/40"
               onClick={closeModal}
             />
-            <div className="relative w-full max-w-lg rounded-2xl bg-[var(--surface)] p-5 shadow-xl">
+            <div className="relative w-full max-w-lg rounded-2xl bg-[var(--surface-2)] p-5 shadow-xl">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-[var(--text)]">
@@ -513,8 +513,7 @@ export default function CourseDetails() {
                 <button
                   onClick={closeModal}
                   className="rounded-lg p-2 text-[var(--muted-text-2)] hover:bg-slate-100 hover:text-[var(--muted-text)]"
-                  aria-label="Close"
-                >
+                  aria-label="Close">
                   ✕
                 </button>
               </div>
@@ -558,8 +557,7 @@ export default function CourseDetails() {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, status: e.target.value }))
                       }
-                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                    >
+                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                       <option value="not-started">Not started</option>
                       <option value="in-progress">In progress</option>
                       <option value="done">Done</option>
@@ -626,7 +624,7 @@ export default function CourseDetails() {
                 </div>
 
                 {error ? (
-                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
+                  <div className="rounded-lg border border-[var(--danger)] bg-[var(--danger-bg)] px-3 py-2 text-sm font-semibold text-[var(--danger-text)] shadow-sm">
                     {error}
                   </div>
                 ) : null}
@@ -634,14 +632,12 @@ export default function CourseDetails() {
                 <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     onClick={closeModal}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                  >
+                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
                     Cancel
                   </button>
                   <button
                     onClick={saveAssignment}
-                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-                  >
+                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
                     {mode === "add" ? "Add" : "Save"}
                   </button>
                 </div>

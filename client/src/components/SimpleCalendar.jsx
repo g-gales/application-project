@@ -97,8 +97,7 @@ function Modal({ open, title, children, onClose }) {
             </h3>
             <button
               onClick={onClose}
-              className="rounded border border-[var(--border)] px-2 py-1 text-[var(--text)]"
-            >
+              className="rounded border border-[var(--border)] px-2 py-1 text-[var(--text)]">
               ✕
             </button>
           </div>
@@ -854,8 +853,7 @@ function SimpleCalendar() {
           setModalOpen(false);
           closeDeleteModal();
           resetSeriesState();
-        }}
-      >
+        }}>
         <div className="space-y-3">
           <input
             className={input}
@@ -867,8 +865,7 @@ function SimpleCalendar() {
           <select
             className={input}
             value={form.type}
-            onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
-          >
+            onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}>
             {TYPES.map((t) => (
               <option key={t} value={t}>
                 {t}
@@ -881,8 +878,7 @@ function SimpleCalendar() {
             value={form.courseId}
             onChange={(e) =>
               setForm((p) => ({ ...p, courseId: e.target.value }))
-            }
-          >
+            }>
             <option value="">No course</option>
             {courseOptions.map((c) => (
               <option key={c.id} value={c.id}>
@@ -960,8 +956,7 @@ function SimpleCalendar() {
             {mode === "edit" && (
               <button
                 onClick={handleDelete}
-                className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]"
-              >
+                className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]">
                 Delete
               </button>
             )}
@@ -972,15 +967,13 @@ function SimpleCalendar() {
                 closeDeleteModal();
                 resetSeriesState();
               }}
-              className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]"
-            >
+              className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]">
               Cancel
             </button>
 
             <button
               onClick={handleSave}
-              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-[var(--primaryText)]"
-            >
+              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-[var(--primaryText)]">
               Save
             </button>
           </div>
@@ -990,8 +983,7 @@ function SimpleCalendar() {
       <Modal
         open={confirmDeleteOpen}
         title="Delete occurrences?"
-        onClose={closeDeleteModal}
-      >
+        onClose={closeDeleteModal}>
         <div className="space-y-3">
           <p className="text-[var(--text)]">
             This is a repeating event. Do you want to delete all occurrences?
@@ -1000,15 +992,13 @@ function SimpleCalendar() {
           <div className="flex justify-end gap-2">
             <button
               onClick={handleDeleteOne}
-              className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]"
-            >
+              className="rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)]">
               No
             </button>
 
             <button
               onClick={handleDeleteAll}
-              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-[var(--primaryText)]"
-            >
+              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-[var(--primaryText)]">
               Yes
             </button>
           </div>
