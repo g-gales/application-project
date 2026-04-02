@@ -38,6 +38,11 @@ const Button = ({
       "bg-transparent text-[var(--muted-text)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]",
 
     danger: "bg-transparent text-[var(--danger)] hover:bg-[var(--danger-bg)]",
+
+    green:
+      "bg-[var(--button-green-bg)] text-[var(--button-green-text)] hover:bg-[var(--hover-button-green-bg)]",
+
+    red: "bg-[var(--button-red-bg)] text-[var(--button-red-text)] hover:bg-[var(--hover-button-red-bg)]",
   };
 
   const widthStyle = fullWidth ? "w-full" : "";
