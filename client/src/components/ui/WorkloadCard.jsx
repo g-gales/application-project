@@ -5,8 +5,8 @@ function getCapacityStatus(loadRatio) {
   if (loadRatio > 1) {
     return {
       label: "Over capacity",
-      badge: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-      bar: "bg-red-500",
+      badge: "bg-[var(--pill-red-bg)] text-[var(--pill-red-text)]",
+      bar: "bg-[var(--danger)]",
       copy: "Your urgent workload is currently higher than your saved weekly study goals.",
     };
   }
@@ -14,7 +14,7 @@ function getCapacityStatus(loadRatio) {
   if (loadRatio > 0.8) {
     return {
       label: "Near capacity",
-      badge: "bg-[var(--tertiary)] text-[var(--tertiary-contrast)]",
+      badge: "bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]",
       bar: "bg-[var(--tertiary)]",
       copy: "You are getting close to your saved study goals this week.",
     };
@@ -22,7 +22,7 @@ function getCapacityStatus(loadRatio) {
 
   return {
     label: "Within capacity",
-    badge: "bg-[var(--green-bg)] text-[var(--green-text)]",
+    badge: "bg-[var(--pill-green-bg)] text-[var(--pill-green-text)]",
     bar: "bg-[var(--green-text)]",
     copy: "Your current workload looks manageable relative to your saved weekly study goals.",
   };
@@ -64,8 +64,7 @@ export default function WorkloadCard({ workloadMetrics = {} }) {
           </p>
 
           <span
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${status.badge}`}
-          >
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${status.badge}`}>
             {status.label}
           </span>
         </div>

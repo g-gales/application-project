@@ -6,24 +6,24 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 
 const riskStyles = {
   Low: {
-    badge: "bg-[var(--green-bg)] text-[var(--green-text)]",
+    badge: "bg-[var(--pill-green-bg)] text-[var(--pill-green-text)]",
     ringTrack: "bg-[var(--surface-3)]",
     ringFill: "bg-[var(--green-text)]",
     outline: "border-[var(--border)]",
     copy: "You're in a healthy range right now.",
   },
   Moderate: {
-    badge: "bg-[var(--tertiary)] text-[var(--tertiary-contrast)]",
+    badge: "bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]",
     ringTrack: "bg-[var(--surface-3)]",
     ringFill: "bg-[var(--primary)]",
     outline: "border-[var(--border)]",
     copy: "A few signs suggest your burnout risk is rising.",
   },
   High: {
-    badge: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+    badge: "bg-[var(--pill-red-bg)] text-[var(--pill-red-text)]",
     ringTrack: "bg-[var(--surface-3)]",
-    ringFill: "bg-red-500",
-    outline: "border-red-200 dark:border-red-800",
+    ringFill: "bg-[var(--danger)]",
+    outline: "border-[var(--danger-text)]",
     copy: "Your current patterns suggest a high burnout risk.",
   },
 };
@@ -128,11 +128,11 @@ function TrendPill({ score, previousScore }) {
 
   if (trend.direction === "up") {
     toneClass =
-      "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800";
+      "bg-[var(--pill-red-bg)] text-[var(--pill-red-text)] border-[var(--danger)]/20";
     arrow = "↑";
   } else if (trend.direction === "down") {
     toneClass =
-      "bg-[var(--green-bg)] text-[var(--green-text)] border-[var(--green-text)]/20";
+      "bg-[var(--pill-green-bg)] text-[var(--pill-green-text)] border-[var(--green-text)]/20";
     arrow = "↓";
   }
 

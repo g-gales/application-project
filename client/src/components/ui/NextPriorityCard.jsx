@@ -19,15 +19,15 @@ function getDueLabel(daysUntil) {
 
 function getPriorityTone(daysUntil) {
   if (daysUntil < 0) {
-    return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
+    return "bg-[var(--danger-bg)] text-[var(--danger-text)]";
   }
 
   if (daysUntil <= 1) {
-    return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300";
+    return "bg-[var(--warning-bg)] text-[var(--warning-text)]";
   }
 
   if (daysUntil <= 3) {
-    return "bg-[var(--tertiary)] text-[var(--tertiary-contrast)]";
+    return "bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]";
   }
 
   return "bg-[var(--surface-3)] text-[var(--muted-text)]";

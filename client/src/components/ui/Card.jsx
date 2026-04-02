@@ -1,6 +1,6 @@
 export default function Card({ title, children, footer }) {
   return (
-    <section className="rounded-[14px] bg-[var(--surface)] border border-[var(--border)] shadow-[0_8px_24px_rgba(0,0,0,0.08)] overflow-hidden">
+    <section className="rounded-[14px] bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow)] overflow-hidden">
       {title ? (
         <header className="px-4 pt-4">
           <h2 className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--muted-text-2)]">

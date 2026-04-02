@@ -75,9 +75,9 @@ export default function BurnoutActions({
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${
                         rec.priority === "high"
-                          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                          ? "bg-[var(--pill-red-bg)] text-[var(--pill-red-text)]"
                           : rec.priority === "medium"
-                            ? "bg-[var(--tertiary)] text-[var(--tertiary-contrast)]"
+                            ? "bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]"
                             : "bg-[var(--surface-3)] text-[var(--muted-text)]"
                       }`}>
                       {rec.priority}

@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
 import { useWeeklyStudySummary } from "../hooks/useWeeklyStudySummary";
 import { formatMinutesToHoursMinutes } from "../utils/timeUtils";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 // helper functions
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -42,9 +43,9 @@ const statusPill = (status) => {
   const base =
     "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold";
   if (status === "done")
-    return `${base} bg-[var(--green-bg)] text-[var(--green-text)]`;
+    return `${base} bg-[var(--pill-green-bg)] text-[var(--pill-green-text)]`;
   if (status === "in-progress")
-    return `${base} bg-[var(--tertiary)] text-[var(--tertiary-contrast)]`;
+    return `${base} bg-[var(--pill-blue-bg)] text-[var(--pill-blue-text)]`;
   return `${base} bg-[var(--bg)] text-[var(--muted-text)]`;
 };
 const toInputDate = (date) => {
@@ -89,6 +90,8 @@ export default function CourseDetails() {
     };
     if (courseId) getCourse();
   }, [courseId]);
+
+  const navigate = useNavigate();
 
   const sortedAssignments = useMemo(() => {
     if (!course?.assignments) return [];
@@ -226,12 +229,9 @@ export default function CourseDetails() {
             </code>
           </p>
 
-          <Link
-            to="/app/courses"
-            className="mt-6 inline-flex rounded-lg bg-[var(--primary)] px-6 py-2 text-sm font-semibold text-[var(--primary-contrast)] hover:bg-[var(--hover-primary)] hover:text-[var(--hover-primary-contrast)] transition"
-          >
+          <Button variant="primary" onClick={() => navigate("/app/courses")}>
             Return to Courses
-          </Link>
+          </Button>
         </div>
       </div>
     );
@@ -269,24 +269,20 @@ export default function CourseDetails() {
           </h1>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Link
-              to="/app/courses"
-              className="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-slate-50"
-            >
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/app/courses")}>
               ← Back to Courses
-            </Link>
+            </Button>
 
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-            >
+            <Button variant="primary" onClick={openAdd}>
               + Add Assignment
-            </button>
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 shadow-sm">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-4 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-text-2)]">
               Study Progress
             </p>
@@ -301,7 +297,7 @@ export default function CourseDetails() {
                 {weeklyStudyPct}%
               </p>
             </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--muted-text)]">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
               <div
                 className="h-full rounded-full bg-[var(--primary)] transition-all duration-500 ease-out"
                 style={{ width: `${weeklyStudyPct}%` }}
@@ -415,8 +411,7 @@ export default function CourseDetails() {
                               isLate
                                 ? "bg-red-100 text-red-700"
                                 : "bg-[var(--bg)] text-[var(--muted-text)]",
-                            ].join(" ")}
-                          >
+                            ].join(" ")}>
                             {fmtDate(a.dueDate)} • {dueLabel(a.dueDate)}
                           </span>
 
@@ -467,22 +462,19 @@ export default function CourseDetails() {
                             a.status === "done"
                               ? "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                               : "border border-[var(--border)] bg-[var(--surface)] text-[var(--muted-text)] hover:bg-[var(--bg)]",
-                          ].join(" ")}
-                        >
+                          ].join(" ")}>
                           {a.status === "done" ? "Mark not done" : "Mark done"}
                         </button>
 
                         <button
                           onClick={() => openEdit(a)}
-                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                        >
+                          className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
                           Edit
                         </button>
 
                         <button
                           onClick={() => deleteAssignment(a._id)}
-                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100"
-                        >
+                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100">
                           Delete
                         </button>
                       </div>
@@ -513,8 +505,7 @@ export default function CourseDetails() {
                 <button
                   onClick={closeModal}
                   className="rounded-lg p-2 text-[var(--muted-text-2)] hover:bg-slate-100 hover:text-[var(--muted-text)]"
-                  aria-label="Close"
-                >
+                  aria-label="Close">
                   ✕
                 </button>
               </div>
@@ -558,8 +549,7 @@ export default function CourseDetails() {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, status: e.target.value }))
                       }
-                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                    >
+                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                       <option value="not-started">Not started</option>
                       <option value="in-progress">In progress</option>
                       <option value="done">Done</option>
@@ -634,14 +624,12 @@ export default function CourseDetails() {
                 <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     onClick={closeModal}
-                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]"
-                  >
+                    className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-semibold text-[var(--muted-text)] shadow-sm hover:bg-[var(--bg)]">
                     Cancel
                   </button>
                   <button
                     onClick={saveAssignment}
-                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]"
-                  >
+                    className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm hover:bg-[var(--hover-primary)]">
                     {mode === "add" ? "Add" : "Save"}
                   </button>
                 </div>
